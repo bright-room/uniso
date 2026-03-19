@@ -14,6 +14,7 @@ import net.brightroom.uniso.ui.content.MainContentArea
 import net.brightroom.uniso.ui.dialogs.AddAccountDialog
 import net.brightroom.uniso.ui.dialogs.DeleteAccountDialog
 import net.brightroom.uniso.ui.sidebar.Sidebar
+import net.brightroom.uniso.ui.sidebar.SidebarAccount
 import net.brightroom.uniso.ui.sidebar.SidebarViewModel
 import net.brightroom.uniso.ui.theme.AppColors
 import net.brightroom.uniso.ui.theme.Dimensions
@@ -44,7 +45,7 @@ fun MainLayout(
             Sidebar(
                 accounts = accounts,
                 activeAccountId = activeAccountId.orEmpty(),
-                onAccountClick = { account -> viewModel.onAccountClick(account.accountId) },
+                onAccountClick = { viewModel.onAccountClick(it.accountId) },
                 onAddAccountClick = { viewModel.onAddAccountClick() },
             )
 
