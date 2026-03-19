@@ -19,6 +19,7 @@ enum class StringKey(
 
     // Dialog — Account Select
     DIALOG_ACCOUNT_SELECT_TITLE("dialog.account_select.title"),
+    DIALOG_ACCOUNT_SELECT_OPEN_EXTERNAL("dialog.account_select.open_external"),
 
     // Dialog — Crash Recovery
     DIALOG_CRASH_TITLE("dialog.crash.title"),
@@ -26,6 +27,17 @@ enum class StringKey(
 
     // Dialog — Update
     DIALOG_UPDATE_TITLE("dialog.update.title"),
+    DIALOG_UPDATE_MESSAGE("dialog.update.message"),
+
+    // Dialog — Telemetry Consent
+    DIALOG_TELEMETRY_TITLE("dialog.telemetry.title"),
+    DIALOG_TELEMETRY_MESSAGE("dialog.telemetry.message"),
+    DIALOG_TELEMETRY_ALLOW("dialog.telemetry.allow"),
+    DIALOG_TELEMETRY_DENY("dialog.telemetry.deny"),
+
+    // Context menu
+    CONTEXT_MENU_ACCOUNT_INFO("context_menu.account_info"),
+    CONTEXT_MENU_DELETE_ACCOUNT("context_menu.delete_account"),
 
     // Errors
     ERROR_CONNECTION_FAILED("error.connection_failed"),

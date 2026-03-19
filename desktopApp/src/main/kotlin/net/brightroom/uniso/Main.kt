@@ -1,5 +1,6 @@
 package net.brightroom.uniso
 
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.unit.dp
@@ -8,7 +9,9 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import net.brightroom.uniso.di.AppDependencies
 import net.brightroom.uniso.platform.JvmKeychainAccessor
+import net.brightroom.uniso.platform.JvmPlatformLocale
 import net.brightroom.uniso.platform.JvmPlatformPaths
+import net.brightroom.uniso.ui.LocalI18n
 import net.brightroom.uniso.ui.MainLayout
 import net.brightroom.uniso.ui.sidebar.SidebarViewModel
 import net.brightroom.uniso.ui.theme.AppTheme
@@ -18,6 +21,7 @@ fun main() {
         AppDependencies(
             platformPaths = JvmPlatformPaths(),
             keychainAccessor = JvmKeychainAccessor(),
+            platformLocale = JvmPlatformLocale(),
         )
     dependencies.initialize()
 
@@ -41,7 +45,9 @@ fun main() {
             state = rememberWindowState(width = 1280.dp, height = 800.dp),
         ) {
             AppTheme {
-                MainLayout(viewModel = sidebarViewModel)
+                CompositionLocalProvider(LocalI18n provides dependencies.i18nManager) {
+                    MainLayout(viewModel = sidebarViewModel)
+                }
             }
         }
     }

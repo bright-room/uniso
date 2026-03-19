@@ -24,6 +24,9 @@ class SidebarViewModel(
     private val _showAddAccountDialog = MutableStateFlow(false)
     val showAddAccountDialog: StateFlow<Boolean> = _showAddAccountDialog.asStateFlow()
 
+    private val _deleteTargetAccount = MutableStateFlow<SidebarAccount?>(null)
+    val deleteTargetAccount: StateFlow<SidebarAccount?> = _deleteTargetAccount.asStateFlow()
+
     private val pluginCache = mutableMapOf<String, ServicePlugin>()
 
     init {
@@ -45,6 +48,27 @@ class SidebarViewModel(
     fun dismissAddAccountDialog() {
         _showAddAccountDialog.value = false
     }
+
+    fun addAccount(serviceId: String) {
+        accountManager.addAccount(serviceId)
+        _showAddAccountDialog.value = false
+    }
+
+    fun requestDeleteAccount(account: SidebarAccount) {
+        _deleteTargetAccount.value = account
+    }
+
+    fun dismissDeleteDialog() {
+        _deleteTargetAccount.value = null
+    }
+
+    fun confirmDeleteAccount() {
+        val target = _deleteTargetAccount.value ?: return
+        accountManager.removeAccount(target.accountId)
+        _deleteTargetAccount.value = null
+    }
+
+    fun getAvailableServices(): List<ServicePlugin> = servicePluginRegistry.getAll()
 
     fun getActiveAccount(): SidebarAccount? {
         val activeId = activeAccountId.value ?: return null
