@@ -2,7 +2,6 @@ package net.brightroom.uniso
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
@@ -11,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import net.brightroom.uniso.ui.theme.AppTheme
 
 fun main() =
     application {
@@ -19,7 +19,7 @@ fun main() =
             title = "${Constants.APP_NAME} — ${getPlatformName()}",
             state = rememberWindowState(width = 1280.dp, height = 800.dp),
         ) {
-            MaterialTheme {
+            AppTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     Box(
                         contentAlignment = Alignment.Center,
@@ -27,7 +27,6 @@ fun main() =
                     ) {
                         Text(
                             text = "${Constants.APP_NAME} v${Constants.APP_VERSION}",
-                            style = MaterialTheme.typography.headlineMedium,
                         )
                     }
                 }
