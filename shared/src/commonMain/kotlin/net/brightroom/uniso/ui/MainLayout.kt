@@ -9,22 +9,35 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import net.brightroom.uniso.ui.content.MainContentArea
 import net.brightroom.uniso.ui.dialogs.AddAccountDialog
 import net.brightroom.uniso.ui.dialogs.DeleteAccountDialog
+import net.brightroom.uniso.ui.settings.SettingsScreen
+import net.brightroom.uniso.ui.settings.SettingsViewModel
 import net.brightroom.uniso.ui.sidebar.Sidebar
 import net.brightroom.uniso.ui.sidebar.SidebarAccount
 import net.brightroom.uniso.ui.sidebar.SidebarViewModel
 import net.brightroom.uniso.ui.theme.AppColors
 import net.brightroom.uniso.ui.theme.Dimensions
 
+sealed class MainScreen {
+    data object WebView : MainScreen()
+
+    data object Settings : MainScreen()
+}
+
 @Composable
 fun MainLayout(
     viewModel: SidebarViewModel,
+    settingsViewModel: SettingsViewModel,
     activatedAccounts: List<SidebarAccount>,
     webViewReady: Boolean = false,
     webViewContent: @Composable (accounts: List<SidebarAccount>, activeAccountId: String?, visible: Boolean) -> Unit = { _, _, _ -> },
+    onWebViewCleanup: (String) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val colors = AppColors.current
@@ -33,11 +46,16 @@ fun MainLayout(
     val activeAccount = accounts.find { it.accountId == activeAccountId }
     val showAddDialog by viewModel.showAddAccountDialog.collectAsState()
     val deleteTarget by viewModel.deleteTargetAccount.collectAsState()
+    val settingsDeleteTarget by settingsViewModel.deleteTarget.collectAsState()
+
+    var currentScreen by remember { mutableStateOf<MainScreen>(MainScreen.WebView) }
 
     // Shrink WebView to 0 when any overlay is active to avoid z-ordering issues
     // with the native CEF heavyweight component. The WebView stays in the composition
     // tree so its session state is preserved (no reload).
-    val overlayActive = showAddDialog || deleteTarget != null
+    val overlayActive =
+        showAddDialog || deleteTarget != null || settingsDeleteTarget != null ||
+            currentScreen is MainScreen.Settings
 
     Box(modifier = modifier.fillMaxSize()) {
         Row(modifier = Modifier.fillMaxSize()) {
@@ -45,8 +63,20 @@ fun MainLayout(
             Sidebar(
                 accounts = accounts,
                 activeAccountId = activeAccountId.orEmpty(),
-                onAccountClick = { viewModel.onAccountClick(it.accountId) },
+                onAccountClick = {
+                    currentScreen = MainScreen.WebView
+                    viewModel.onAccountClick(it.accountId)
+                },
                 onAddAccountClick = { viewModel.onAddAccountClick() },
+                isSettingsActive = currentScreen is MainScreen.Settings,
+                onSettingsClick = {
+                    currentScreen =
+                        if (currentScreen is MainScreen.Settings) {
+                            MainScreen.WebView
+                        } else {
+                            MainScreen.Settings
+                        }
+                },
             )
 
             // Vertical separator between sidebar and main area
@@ -59,13 +89,25 @@ fun MainLayout(
             )
 
             // Main content area
-            MainContentArea(
-                activeAccount = activeAccount,
-                activatedAccounts = activatedAccounts,
-                webViewReady = webViewReady,
-                webViewVisible = !overlayActive,
-                webViewContent = webViewContent,
-            )
+            when (currentScreen) {
+                is MainScreen.Settings -> {
+                    SettingsScreen(
+                        viewModel = settingsViewModel,
+                        onClose = { currentScreen = MainScreen.WebView },
+                        onWebViewCleanup = onWebViewCleanup,
+                    )
+                }
+
+                is MainScreen.WebView -> {
+                    MainContentArea(
+                        activeAccount = activeAccount,
+                        activatedAccounts = activatedAccounts,
+                        webViewReady = webViewReady,
+                        webViewVisible = !overlayActive,
+                        webViewContent = webViewContent,
+                    )
+                }
+            }
         }
 
         // Add Account Dialog
@@ -77,12 +119,23 @@ fun MainLayout(
             )
         }
 
-        // Delete Account Confirmation Dialog
+        // Delete Account Confirmation Dialog (from sidebar)
         deleteTarget?.let { target ->
             DeleteAccountDialog(
                 account = target,
                 onConfirm = { viewModel.confirmDeleteAccount() },
                 onDismiss = { viewModel.dismissDeleteDialog() },
+            )
+        }
+
+        // Delete Account Confirmation Dialog (from settings)
+        settingsDeleteTarget?.let { target ->
+            DeleteAccountDialog(
+                accountName = target.accountName,
+                serviceName = target.serviceName,
+                brandColor = target.brandColor,
+                onConfirm = { settingsViewModel.confirmDeleteAccount(onWebViewCleanup) },
+                onDismiss = { settingsViewModel.dismissDeleteDialog() },
             )
         }
     }

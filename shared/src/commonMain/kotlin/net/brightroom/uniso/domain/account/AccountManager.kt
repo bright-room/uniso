@@ -79,6 +79,26 @@ class AccountManager(
         }
     }
 
+    fun updateDisplayName(
+        accountId: String,
+        name: String,
+    ) {
+        accountRepository.updateDisplayName(accountId, name)
+        _accounts.value = accountRepository.getAll()
+    }
+
+    fun swapSortOrder(
+        accountId1: String,
+        accountId2: String,
+    ) {
+        val accounts = _accounts.value
+        val a1 = accounts.find { it.accountId == accountId1 } ?: return
+        val a2 = accounts.find { it.accountId == accountId2 } ?: return
+        accountRepository.updateSortOrder(accountId1, a2.sortOrder)
+        accountRepository.updateSortOrder(accountId2, a1.sortOrder)
+        _accounts.value = accountRepository.getAll()
+    }
+
     fun loadAccounts() {
         _accounts.value = accountRepository.getAll()
     }

@@ -31,7 +31,41 @@ import net.brightroom.uniso.ui.theme.Dimensions
 
 @Composable
 fun DeleteAccountDialog(
+    accountName: String,
+    serviceName: String,
+    brandColor: Color,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    DeleteAccountDialogContent(
+        accountName = accountName,
+        serviceName = serviceName,
+        brandColor = brandColor,
+        onConfirm = onConfirm,
+        onDismiss = onDismiss,
+    )
+}
+
+@Composable
+fun DeleteAccountDialog(
     account: SidebarAccount,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    DeleteAccountDialogContent(
+        accountName = account.accountName,
+        serviceName = account.serviceName,
+        brandColor = account.brandColor,
+        onConfirm = onConfirm,
+        onDismiss = onDismiss,
+    )
+}
+
+@Composable
+private fun DeleteAccountDialogContent(
+    accountName: String,
+    serviceName: String,
+    brandColor: Color,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -95,11 +129,11 @@ fun DeleteAccountDialog(
                     Modifier
                         .size(Dimensions.ServiceIconSm)
                         .clip(RoundedCornerShape(6.dp))
-                        .background(account.brandColor),
+                        .background(brandColor),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = account.serviceName.first().toString(),
+                    text = serviceName.first().toString(),
                     style = MaterialTheme.typography.labelSmall,
                     color = Color.White,
                 )
@@ -109,12 +143,12 @@ fun DeleteAccountDialog(
 
             Column {
                 Text(
-                    text = account.serviceName,
+                    text = serviceName,
                     style = MaterialTheme.typography.bodyMedium,
                     color = colors.textPrimary,
                 )
                 Text(
-                    text = account.accountName,
+                    text = accountName,
                     style = MaterialTheme.typography.bodySmall,
                     color = colors.textSecondary,
                 )

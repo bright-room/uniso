@@ -19,6 +19,7 @@ import net.brightroom.uniso.platform.JvmPlatformPaths
 import net.brightroom.uniso.ui.LocalI18n
 import net.brightroom.uniso.ui.MainLayout
 import net.brightroom.uniso.ui.dialogs.CrashRecoveryDialog
+import net.brightroom.uniso.ui.settings.SettingsViewModel
 import net.brightroom.uniso.ui.sidebar.SidebarViewModel
 import net.brightroom.uniso.ui.sidebar.WebViewLifecycleCallback
 import net.brightroom.uniso.ui.theme.AppTheme
@@ -53,6 +54,10 @@ fun main() {
         val cefState by dependencies.cefInitializer.initState.collectAsState()
         val webViewLifecycleManager = dependencies.webViewLifecycleManager
         var showCrashDialog by remember { mutableStateOf(needsCrashRecovery) }
+        val webViewCleanup: (String) -> Unit = { accountId ->
+            webViewLifecycleManager.destroyWebView(accountId)
+            sessionManager.saveImmediate()
+        }
         val sidebarViewModel =
             remember {
                 SidebarViewModel(
@@ -61,10 +66,19 @@ fun main() {
                     webViewLifecycleCallback =
                         object : WebViewLifecycleCallback {
                             override fun onAccountDeleted(accountId: String) {
-                                webViewLifecycleManager.destroyWebView(accountId)
-                                sessionManager.saveImmediate()
+                                webViewCleanup(accountId)
                             }
                         },
+                    scope = scope,
+                )
+            }
+        val settingsViewModel =
+            remember {
+                SettingsViewModel(
+                    accountManager = dependencies.accountManager,
+                    servicePluginRegistry = dependencies.servicePluginRegistry,
+                    i18nManager = dependencies.i18nManager,
+                    settingsRepository = dependencies.settingsRepository,
                     scope = scope,
                 )
             }
@@ -139,6 +153,7 @@ fun main() {
                         if (webViewReady) {
                             MainLayout(
                                 viewModel = sidebarViewModel,
+                                settingsViewModel = settingsViewModel,
                                 activatedAccounts = activatedAccounts,
                                 webViewReady = true,
                                 webViewContent = { accounts, activeId, visible ->
@@ -151,6 +166,7 @@ fun main() {
                                         },
                                     )
                                 },
+                                onWebViewCleanup = webViewCleanup,
                             )
                         } else {
                             SplashScreen(initState = cefState)
