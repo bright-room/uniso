@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
@@ -17,8 +18,11 @@ import net.brightroom.uniso.platform.ExternalBrowserLauncher
 import net.brightroom.uniso.platform.JvmKeychainAccessor
 import net.brightroom.uniso.platform.JvmPlatformLocale
 import net.brightroom.uniso.platform.JvmPlatformPaths
+import net.brightroom.uniso.ui.KeyboardShortcutHandler
 import net.brightroom.uniso.ui.LocalI18n
 import net.brightroom.uniso.ui.MainLayout
+import net.brightroom.uniso.ui.MainScreen
+import net.brightroom.uniso.ui.ShortcutAction
 import net.brightroom.uniso.ui.dialogs.CrashRecoveryDialog
 import net.brightroom.uniso.ui.settings.SettingsViewModel
 import net.brightroom.uniso.ui.sidebar.ExternalBrowserCallback
@@ -27,6 +31,7 @@ import net.brightroom.uniso.ui.sidebar.WebViewLifecycleCallback
 import net.brightroom.uniso.ui.theme.AppTheme
 import net.brightroom.uniso.ui.webview.CefInitState
 import net.brightroom.uniso.ui.webview.SplashScreen
+import net.brightroom.uniso.ui.webview.WebViewNavigatorRegistry
 import net.brightroom.uniso.ui.webview.WebViewPanel
 
 fun main() {
@@ -126,6 +131,43 @@ fun main() {
             }
         }
 
+        val navigatorRegistry = remember { WebViewNavigatorRegistry() }
+        var currentScreen by remember { mutableStateOf<MainScreen>(MainScreen.WebView) }
+
+        val handleKeyEvent: (KeyEvent) -> Boolean = handler@{ event ->
+            val action = KeyboardShortcutHandler.resolve(event) ?: return@handler false
+            when (action) {
+                ShortcutAction.NEXT_ACCOUNT -> {
+                    currentScreen = MainScreen.WebView
+                    dependencies.accountManager.switchToNextAccount()
+                }
+                ShortcutAction.PREVIOUS_ACCOUNT -> {
+                    currentScreen = MainScreen.WebView
+                    dependencies.accountManager.switchToPreviousAccount()
+                }
+                ShortcutAction.ADD_ACCOUNT -> {
+                    sidebarViewModel.onAddAccountClick()
+                }
+                ShortcutAction.OPEN_SETTINGS -> {
+                    currentScreen =
+                        if (currentScreen is MainScreen.Settings) MainScreen.WebView else MainScreen.Settings
+                }
+                ShortcutAction.RELOAD -> {
+                    val activeId = dependencies.accountManager.activeAccountId.value
+                    if (activeId != null) navigatorRegistry.reload(activeId)
+                }
+                ShortcutAction.FORCE_RELOAD -> {
+                    val activeId = dependencies.accountManager.activeAccountId.value
+                    if (activeId != null) navigatorRegistry.forceReload(activeId)
+                }
+                ShortcutAction.CLOSE_WINDOW -> {
+                    dependencies.close()
+                    exitApplication()
+                }
+            }
+            true
+        }
+
         Window(
             onCloseRequest = {
                 dependencies.close()
@@ -133,6 +175,7 @@ fun main() {
             },
             title = "${Constants.APP_NAME} — ${getPlatformName()}",
             state = rememberWindowState(width = 1280.dp, height = 800.dp),
+            onKeyEvent = handleKeyEvent,
         ) {
             AppTheme {
                 CompositionLocalProvider(LocalI18n provides dependencies.i18nManager) {
@@ -161,6 +204,8 @@ fun main() {
                                 viewModel = sidebarViewModel,
                                 settingsViewModel = settingsViewModel,
                                 activatedAccounts = activatedAccounts,
+                                currentScreen = currentScreen,
+                                onScreenChange = { currentScreen = it },
                                 webViewReady = true,
                                 webViewContent = { accounts, activeId, visible ->
                                     WebViewPanel(
@@ -168,6 +213,7 @@ fun main() {
                                         activeAccountId = activeId,
                                         visible = visible,
                                         linkRouter = dependencies.linkRouter,
+                                        navigatorRegistry = navigatorRegistry,
                                         onUrlChanged = { accountId, url ->
                                             webViewLifecycleManager.updateAccountUrl(accountId, url)
                                         },

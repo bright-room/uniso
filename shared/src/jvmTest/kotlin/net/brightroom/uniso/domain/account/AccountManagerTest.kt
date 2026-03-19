@@ -180,4 +180,52 @@ class AccountManagerTest {
         accountManager.removeAccount(account.accountId)
         assertNull(accountManager.activeAccountId.value)
     }
+
+    @Test
+    fun switchToNextAccountCyclesToNext() {
+        val a = accountManager.addAccount("x").getOrThrow()
+        val b = accountManager.addAccount("instagram").getOrThrow()
+        accountManager.setActiveAccount(a.accountId)
+
+        accountManager.switchToNextAccount()
+        assertEquals(b.accountId, accountManager.activeAccountId.value)
+
+        // Wraps around
+        accountManager.switchToNextAccount()
+        assertEquals(a.accountId, accountManager.activeAccountId.value)
+    }
+
+    @Test
+    fun switchToPreviousAccountCyclesToPrevious() {
+        val a = accountManager.addAccount("x").getOrThrow()
+        val b = accountManager.addAccount("instagram").getOrThrow()
+        accountManager.setActiveAccount(a.accountId)
+
+        // Wraps around to last
+        accountManager.switchToPreviousAccount()
+        assertEquals(b.accountId, accountManager.activeAccountId.value)
+
+        accountManager.switchToPreviousAccount()
+        assertEquals(a.accountId, accountManager.activeAccountId.value)
+    }
+
+    @Test
+    fun switchAccountDoesNothingWithSingleAccount() {
+        val a = accountManager.addAccount("x").getOrThrow()
+
+        accountManager.switchToNextAccount()
+        assertEquals(a.accountId, accountManager.activeAccountId.value)
+
+        accountManager.switchToPreviousAccount()
+        assertEquals(a.accountId, accountManager.activeAccountId.value)
+    }
+
+    @Test
+    fun switchAccountDoesNothingWithNoAccounts() {
+        accountManager.switchToNextAccount()
+        assertNull(accountManager.activeAccountId.value)
+
+        accountManager.switchToPreviousAccount()
+        assertNull(accountManager.activeAccountId.value)
+    }
 }

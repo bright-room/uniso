@@ -37,6 +37,8 @@ fun MainLayout(
     viewModel: SidebarViewModel,
     settingsViewModel: SettingsViewModel,
     activatedAccounts: List<SidebarAccount>,
+    currentScreen: MainScreen = MainScreen.WebView,
+    onScreenChange: (MainScreen) -> Unit = {},
     webViewReady: Boolean = false,
     webViewContent: @Composable (accounts: List<SidebarAccount>, activeAccountId: String?, visible: Boolean) -> Unit = { _, _, _ -> },
     onWebViewCleanup: (String) -> Unit = {},
@@ -55,8 +57,6 @@ fun MainLayout(
         mutableStateOf<LinkClassification.InternalMultiAccount?>(null)
     }
 
-    var currentScreen by remember { mutableStateOf<MainScreen>(MainScreen.WebView) }
-
     // Shrink WebView to 0 when any overlay is active to avoid z-ordering issues
     // with the native CEF heavyweight component. The WebView stays in the composition
     // tree so its session state is preserved (no reload).
@@ -71,18 +71,17 @@ fun MainLayout(
                 accounts = accounts,
                 activeAccountId = activeAccountId.orEmpty(),
                 onAccountClick = {
-                    currentScreen = MainScreen.WebView
+                    onScreenChange(MainScreen.WebView)
                     viewModel.onAccountClick(it.accountId)
                 },
                 onAddAccountClick = { viewModel.onAddAccountClick() },
                 isSettingsActive = currentScreen is MainScreen.Settings,
                 onSettingsClick = {
-                    currentScreen =
-                        if (currentScreen is MainScreen.Settings) {
-                            MainScreen.WebView
-                        } else {
-                            MainScreen.Settings
-                        }
+                    if (currentScreen is MainScreen.Settings) {
+                        onScreenChange(MainScreen.WebView)
+                    } else {
+                        onScreenChange(MainScreen.Settings)
+                    }
                 },
             )
 
@@ -100,7 +99,7 @@ fun MainLayout(
                 is MainScreen.Settings -> {
                     SettingsScreen(
                         viewModel = settingsViewModel,
-                        onClose = { currentScreen = MainScreen.WebView },
+                        onClose = { onScreenChange(MainScreen.WebView) },
                         onWebViewCleanup = onWebViewCleanup,
                     )
                 }

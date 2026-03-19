@@ -61,6 +61,7 @@ enum class StringKey(
     SETTINGS_SHORTCUT_ADD("settings.shortcut.add_account"),
     SETTINGS_SHORTCUT_SETTINGS("settings.shortcut.settings"),
     SETTINGS_SHORTCUT_RELOAD("settings.shortcut.reload"),
+    SETTINGS_SHORTCUT_FORCE_RELOAD("settings.shortcut.force_reload"),
     SETTINGS_SHORTCUT_CLOSE("settings.shortcut.close"),
     SETTINGS_MOVE_UP("settings.move_up"),
     SETTINGS_MOVE_DOWN("settings.move_down"),
