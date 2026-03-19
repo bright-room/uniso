@@ -3,17 +3,18 @@ package net.brightroom.uniso.data
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import net.brightroom.uniso.data.db.UnisoDatabase
 import net.brightroom.uniso.platform.KeychainAccessor
-import net.brightroom.uniso.platform.getDatabaseDir
+import net.brightroom.uniso.platform.PlatformPaths
 import java.io.File
 import java.security.SecureRandom
 
 class DatabaseFactory(
     private val keychainAccessor: KeychainAccessor,
+    private val platformPaths: PlatformPaths,
 ) {
     private var driver: JdbcSqliteDriver? = null
 
     fun createDatabase(): UnisoDatabase {
-        val dbDir = File(getDatabaseDir())
+        val dbDir = File(platformPaths.getDatabaseDir())
         dbDir.mkdirs()
 
         val dbPath = File(dbDir, DB_NAME).absolutePath
