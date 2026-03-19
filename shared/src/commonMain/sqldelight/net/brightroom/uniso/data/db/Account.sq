@@ -25,3 +25,6 @@ SELECT COUNT(*) FROM account;
 
 updateDisplayName:
 UPDATE account SET display_name = ? WHERE account_id = ?;
+
+updateSortOrder:
+UPDATE account SET sort_order = ? WHERE account_id = ?;

@@ -25,6 +25,8 @@ fun Sidebar(
     activeAccountId: String,
     onAccountClick: (SidebarAccount) -> Unit,
     onAddAccountClick: () -> Unit,
+    isSettingsActive: Boolean = false,
+    onSettingsClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val colors = AppColors.current
@@ -63,9 +65,11 @@ fun Sidebar(
             }
         }
 
-        // Add account button (bottom-fixed)
+        // Bottom-fixed buttons
         Spacer(modifier = Modifier.height(8.dp))
         AddAccountButton(onClick = onAddAccountClick)
+        Spacer(modifier = Modifier.height(4.dp))
+        SettingsButton(isActive = isSettingsActive, onClick = onSettingsClick)
         Spacer(modifier = Modifier.height(8.dp))
     }
 }

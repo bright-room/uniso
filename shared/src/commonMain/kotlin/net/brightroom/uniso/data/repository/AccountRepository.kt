@@ -57,4 +57,11 @@ class AccountRepository(
     ) {
         database.accountQueries.updateDisplayName(name, accountId)
     }
+
+    fun updateSortOrder(
+        accountId: String,
+        sortOrder: Int,
+    ) {
+        database.accountQueries.updateSortOrder(sortOrder.toLong(), accountId)
+    }
 }
