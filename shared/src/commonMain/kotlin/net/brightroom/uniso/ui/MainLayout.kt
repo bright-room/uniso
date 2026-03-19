@@ -32,6 +32,10 @@ fun MainLayout(
     val showAddDialog by viewModel.showAddAccountDialog.collectAsState()
     val deleteTarget by viewModel.deleteTargetAccount.collectAsState()
 
+    // Hide WebView when any dialog/overlay is active to avoid z-ordering issues
+    // with the native CEF heavyweight component rendering on top of Compose UI
+    val dialogActive = showAddDialog || deleteTarget != null
+
     Box(modifier = modifier.fillMaxSize()) {
         Row(modifier = Modifier.fillMaxSize()) {
             // Sidebar
@@ -55,7 +59,7 @@ fun MainLayout(
             // Main content area
             MainContentArea(
                 activeAccount = activeAccount,
-                webViewReady = webViewReady,
+                webViewReady = webViewReady && !dialogActive,
                 webViewContent = webViewContent,
             )
         }
