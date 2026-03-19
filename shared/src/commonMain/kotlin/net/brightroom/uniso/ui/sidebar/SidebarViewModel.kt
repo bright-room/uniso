@@ -27,9 +27,6 @@ class SidebarViewModel(
     private val _deleteTargetAccount = MutableStateFlow<SidebarAccount?>(null)
     val deleteTargetAccount: StateFlow<SidebarAccount?> = _deleteTargetAccount.asStateFlow()
 
-    private val _contextMenuTargetAccount = MutableStateFlow<SidebarAccount?>(null)
-    val contextMenuTargetAccount: StateFlow<SidebarAccount?> = _contextMenuTargetAccount.asStateFlow()
-
     private val pluginCache = mutableMapOf<String, ServicePlugin>()
 
     init {
@@ -58,20 +55,11 @@ class SidebarViewModel(
     }
 
     fun requestDeleteAccount(account: SidebarAccount) {
-        _contextMenuTargetAccount.value = null
         _deleteTargetAccount.value = account
     }
 
     fun dismissDeleteDialog() {
         _deleteTargetAccount.value = null
-    }
-
-    fun showContextMenu(account: SidebarAccount) {
-        _contextMenuTargetAccount.value = account
-    }
-
-    fun dismissContextMenu() {
-        _contextMenuTargetAccount.value = null
     }
 
     fun confirmDeleteAccount() {

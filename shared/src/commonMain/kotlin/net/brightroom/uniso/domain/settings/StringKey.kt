@@ -35,10 +35,6 @@ enum class StringKey(
     DIALOG_TELEMETRY_ALLOW("dialog.telemetry.allow"),
     DIALOG_TELEMETRY_DENY("dialog.telemetry.deny"),
 
-    // Context menu
-    CONTEXT_MENU_ACCOUNT_INFO("context_menu.account_info"),
-    CONTEXT_MENU_DELETE_ACCOUNT("context_menu.delete_account"),
-
     // Errors
     ERROR_CONNECTION_FAILED("error.connection_failed"),
     ERROR_RETRY("error.retry"),

@@ -15,21 +15,16 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.PointerButton
-import androidx.compose.ui.input.pointer.PointerEventType
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import net.brightroom.uniso.ui.theme.AppColors
 import net.brightroom.uniso.ui.theme.Dimensions
 
-@OptIn(androidx.compose.ui.ExperimentalComposeUiApi::class)
 @Composable
 fun Sidebar(
     accounts: List<SidebarAccount>,
     activeAccountId: String,
     onAccountClick: (SidebarAccount) -> Unit,
     onAddAccountClick: () -> Unit,
-    onAccountRightClick: (SidebarAccount) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = AppColors.current
@@ -60,27 +55,11 @@ fun Sidebar(
                 }
                 previousServiceId = account.serviceId
 
-                Box(
-                    modifier =
-                        Modifier.pointerInput(account.accountId) {
-                            awaitPointerEventScope {
-                                while (true) {
-                                    val event = awaitPointerEvent()
-                                    if (event.type == PointerEventType.Press &&
-                                        event.button == PointerButton.Secondary
-                                    ) {
-                                        onAccountRightClick(account)
-                                    }
-                                }
-                            }
-                        },
-                ) {
-                    AccountItem(
-                        account = account,
-                        isActive = account.accountId == activeAccountId,
-                        onClick = { onAccountClick(account) },
-                    )
-                }
+                AccountItem(
+                    account = account,
+                    isActive = account.accountId == activeAccountId,
+                    onClick = { onAccountClick(account) },
+                )
             }
         }
 
