@@ -11,6 +11,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import net.brightroom.uniso.ui.content.MainContentArea
+import net.brightroom.uniso.ui.dialogs.AddAccountDialog
+import net.brightroom.uniso.ui.dialogs.DeleteAccountDialog
 import net.brightroom.uniso.ui.sidebar.Sidebar
 import net.brightroom.uniso.ui.sidebar.SidebarViewModel
 import net.brightroom.uniso.ui.theme.AppColors
@@ -25,26 +27,49 @@ fun MainLayout(
     val accounts by viewModel.sidebarAccounts.collectAsState()
     val activeAccountId by viewModel.activeAccountId.collectAsState()
     val activeAccount = accounts.find { it.accountId == activeAccountId }
+    val showAddDialog by viewModel.showAddAccountDialog.collectAsState()
+    val deleteTarget by viewModel.deleteTargetAccount.collectAsState()
 
-    Row(modifier = modifier.fillMaxSize()) {
-        // Sidebar
-        Sidebar(
-            accounts = accounts,
-            activeAccountId = activeAccountId.orEmpty(),
-            onAccountClick = { account -> viewModel.onAccountClick(account.accountId) },
-            onAddAccountClick = { viewModel.onAddAccountClick() },
-        )
+    Box(modifier = modifier.fillMaxSize()) {
+        Row(modifier = Modifier.fillMaxSize()) {
+            // Sidebar
+            Sidebar(
+                accounts = accounts,
+                activeAccountId = activeAccountId.orEmpty(),
+                onAccountClick = { account -> viewModel.onAccountClick(account.accountId) },
+                onAddAccountClick = { viewModel.onAddAccountClick() },
+                onAccountContextMenu = { account -> viewModel.requestDeleteAccount(account) },
+            )
 
-        // Vertical separator between sidebar and main area
-        Box(
-            modifier =
-                Modifier
-                    .width(Dimensions.BorderWidthThin)
-                    .fillMaxHeight()
-                    .background(colors.borderTertiary),
-        )
+            // Vertical separator between sidebar and main area
+            Box(
+                modifier =
+                    Modifier
+                        .width(Dimensions.BorderWidthThin)
+                        .fillMaxHeight()
+                        .background(colors.borderTertiary),
+            )
 
-        // Main content area
-        MainContentArea(activeAccount = activeAccount)
+            // Main content area
+            MainContentArea(activeAccount = activeAccount)
+        }
+
+        // Add Account Dialog
+        if (showAddDialog) {
+            AddAccountDialog(
+                services = viewModel.getAvailableServices(),
+                onServiceSelected = { service -> viewModel.addAccount(service.serviceId) },
+                onDismiss = { viewModel.dismissAddAccountDialog() },
+            )
+        }
+
+        // Delete Account Confirmation Dialog
+        deleteTarget?.let { target ->
+            DeleteAccountDialog(
+                account = target,
+                onConfirm = { viewModel.confirmDeleteAccount() },
+                onDismiss = { viewModel.dismissDeleteDialog() },
+            )
+        }
     }
 }

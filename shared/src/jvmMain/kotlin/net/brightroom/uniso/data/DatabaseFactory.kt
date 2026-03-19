@@ -17,8 +17,9 @@ class DatabaseFactory(
         val dbDir = File(platformPaths.getDatabaseDir())
         dbDir.mkdirs()
 
-        val dbPath = File(dbDir, DB_NAME).absolutePath
-        val jdbcUrl = "jdbc:sqlite:$dbPath"
+        val dbFile = File(dbDir, DB_NAME)
+        val dbExists = dbFile.exists()
+        val jdbcUrl = "jdbc:sqlite:${dbFile.absolutePath}"
 
         val newDriver =
             JdbcSqliteDriver(jdbcUrl).also {
@@ -27,11 +28,15 @@ class DatabaseFactory(
 
         newDriver.execute(null, "PRAGMA foreign_keys = ON;", 0)
 
-        UnisoDatabase.Schema.create(newDriver)
+        if (!dbExists) {
+            UnisoDatabase.Schema.create(newDriver)
+        }
 
         val database = UnisoDatabase(newDriver)
 
-        insertInitialServicePlugins(database)
+        if (!dbExists) {
+            insertInitialServicePlugins(database)
+        }
 
         return database
     }

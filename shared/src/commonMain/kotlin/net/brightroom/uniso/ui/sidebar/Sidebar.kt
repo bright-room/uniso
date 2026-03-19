@@ -1,5 +1,7 @@
 package net.brightroom.uniso.ui.sidebar
 
+import androidx.compose.foundation.ContextMenuArea
+import androidx.compose.foundation.ContextMenuItem
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,6 +18,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import net.brightroom.uniso.domain.settings.StringKey
+import net.brightroom.uniso.ui.stringResource
 import net.brightroom.uniso.ui.theme.AppColors
 import net.brightroom.uniso.ui.theme.Dimensions
 
@@ -25,9 +29,11 @@ fun Sidebar(
     activeAccountId: String,
     onAccountClick: (SidebarAccount) -> Unit,
     onAddAccountClick: () -> Unit,
+    onAccountContextMenu: (SidebarAccount) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = AppColors.current
+    val deleteLabel = stringResource(StringKey.CONTEXT_MENU_DELETE_ACCOUNT)
 
     Column(
         modifier =
@@ -55,11 +61,21 @@ fun Sidebar(
                 }
                 previousServiceId = account.serviceId
 
-                AccountItem(
-                    account = account,
-                    isActive = account.accountId == activeAccountId,
-                    onClick = { onAccountClick(account) },
-                )
+                ContextMenuArea(
+                    items = {
+                        listOf(
+                            ContextMenuItem(deleteLabel) {
+                                onAccountContextMenu(account)
+                            },
+                        )
+                    },
+                ) {
+                    AccountItem(
+                        account = account,
+                        isActive = account.accountId == activeAccountId,
+                        onClick = { onAccountClick(account) },
+                    )
+                }
             }
         }
 
