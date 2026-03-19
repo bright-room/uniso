@@ -20,11 +20,26 @@ dependencies {
     implementation(libs.kotlinx.coroutinesSwing)
 }
 
+afterEvaluate {
+    tasks.withType<JavaExec> {
+        if (System.getProperty("os.name").contains("Mac")) {
+            jvmArgs("--add-opens", "java.desktop/sun.lwawt=ALL-UNNAMED")
+            jvmArgs("--add-opens", "java.desktop/sun.lwawt.macosx=ALL-UNNAMED")
+        }
+    }
+}
+
 compose.desktop {
     application {
         mainClass = "net.brightroom.uniso.MainKt"
 
         jvmArgs("--enable-native-access=ALL-UNNAMED")
+        jvmArgs("--add-opens", "java.desktop/sun.awt=ALL-UNNAMED")
+        jvmArgs("--add-opens", "java.desktop/java.awt.peer=ALL-UNNAMED")
+
+        buildTypes.release.proguard {
+            configurationFiles.from("compose-desktop.pro")
+        }
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi)

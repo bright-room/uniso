@@ -1,6 +1,9 @@
 package net.brightroom.uniso
 
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.unit.dp
@@ -15,6 +18,9 @@ import net.brightroom.uniso.ui.LocalI18n
 import net.brightroom.uniso.ui.MainLayout
 import net.brightroom.uniso.ui.sidebar.SidebarViewModel
 import net.brightroom.uniso.ui.theme.AppTheme
+import net.brightroom.uniso.ui.webview.CefInitState
+import net.brightroom.uniso.ui.webview.SplashScreen
+import net.brightroom.uniso.ui.webview.WebViewContent
 
 fun main() {
     val dependencies =
@@ -27,6 +33,7 @@ fun main() {
 
     application {
         val scope = rememberCoroutineScope()
+        val cefState by dependencies.cefInitializer.initState.collectAsState()
         val sidebarViewModel =
             remember {
                 SidebarViewModel(
@@ -35,6 +42,10 @@ fun main() {
                     scope = scope,
                 )
             }
+
+        LaunchedEffect(Unit) {
+            dependencies.cefInitializer.initialize()
+        }
 
         Window(
             onCloseRequest = {
@@ -46,7 +57,17 @@ fun main() {
         ) {
             AppTheme {
                 CompositionLocalProvider(LocalI18n provides dependencies.i18nManager) {
-                    MainLayout(viewModel = sidebarViewModel)
+                    val webViewReady = cefState is CefInitState.Ready
+
+                    if (webViewReady) {
+                        MainLayout(
+                            viewModel = sidebarViewModel,
+                            webViewReady = true,
+                            webViewContent = { url -> WebViewContent(url = url) },
+                        )
+                    } else {
+                        SplashScreen(initState = cefState)
+                    }
                 }
             }
         }
