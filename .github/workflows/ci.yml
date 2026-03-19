@@ -2,30 +2,31 @@ name: CI
 
 on:
   pull_request:
-  push:
-    branches:
-      - main
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
-  check:
-    name: Build & Test
+  lint:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v6
 
-      - uses: actions/setup-java@v4
+      - name: Spotless Check
+        uses: ./.github/actions/gradle-action
         with:
-          distribution: temurin
-          java-version: 25
+          command: spotlessCheck
 
-      - uses: gradle/actions/setup-gradle@v4
+  check:
+    needs: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
 
-      - name: Run checks
-        run: ./gradlew check
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
 
-      - name: Build desktop application
-        run: ./gradlew :desktopApp:jar
+      - name: Build & Test
+        uses: ./.github/actions/gradle-action
+        with:
+          command: check
