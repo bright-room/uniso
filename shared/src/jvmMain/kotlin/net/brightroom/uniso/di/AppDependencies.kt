@@ -7,6 +7,7 @@ import net.brightroom.uniso.data.repository.AccountRepository
 import net.brightroom.uniso.data.repository.SessionRepository
 import net.brightroom.uniso.data.repository.SqlSettingsRepository
 import net.brightroom.uniso.domain.account.AccountManager
+import net.brightroom.uniso.domain.link.LinkRouter
 import net.brightroom.uniso.domain.plan.FreePlanProvider
 import net.brightroom.uniso.domain.plan.PlanProvider
 import net.brightroom.uniso.domain.plugin.ServicePluginRegistry
@@ -45,6 +46,12 @@ class AppDependencies(
             accountRepository = accountRepository,
             sessionRepository = sessionRepository,
             planProvider = planProvider,
+        )
+
+    val linkRouter =
+        LinkRouter(
+            servicePluginRegistry = servicePluginRegistry,
+            accountManager = accountManager,
         )
 
     val cefInitializer = CefInitializer(platformPaths)

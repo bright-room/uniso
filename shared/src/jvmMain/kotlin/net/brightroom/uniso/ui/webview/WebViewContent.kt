@@ -6,12 +6,20 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.multiplatform.webview.request.RequestInterceptor
+import com.multiplatform.webview.request.WebRequest
+import com.multiplatform.webview.request.WebRequestInterceptResult
 import com.multiplatform.webview.web.WebView
+import com.multiplatform.webview.web.WebViewNavigator
 import com.multiplatform.webview.web.rememberWebViewNavigator
 import com.multiplatform.webview.web.rememberWebViewState
+import net.brightroom.uniso.domain.link.LinkClassification
+import net.brightroom.uniso.domain.link.LinkRouter
+import net.brightroom.uniso.platform.ExternalBrowserLauncher
 import net.brightroom.uniso.ui.sidebar.SidebarAccount
 
 /**
@@ -25,14 +33,20 @@ import net.brightroom.uniso.ui.sidebar.SidebarAccount
  * @param accounts List of accounts that have been activated (should have WebViews).
  * @param activeAccountId The currently active account ID.
  * @param visible Whether WebViews should be visible (false when dialogs are active for z-ordering).
+ * @param linkRouter Optional LinkRouter for intercepting navigation events.
  * @param onUrlChanged Callback invoked when a WebView navigates to a new URL.
+ * @param onAccountSwitch Callback invoked when link routing decides to switch to another account.
+ * @param onShowAccountSelector Callback invoked when link routing needs to show account selection dialog.
  */
 @Composable
 fun WebViewPanel(
     accounts: List<SidebarAccount>,
     activeAccountId: String?,
     visible: Boolean,
+    linkRouter: LinkRouter? = null,
     onUrlChanged: ((accountId: String, url: String) -> Unit)? = null,
+    onAccountSwitch: ((accountId: String, url: String) -> Unit)? = null,
+    onShowAccountSelector: ((LinkClassification.InternalMultiAccount) -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier) {
@@ -45,11 +59,15 @@ fun WebViewPanel(
                     modifier = if (shouldShow) Modifier.fillMaxSize() else Modifier.size(0.dp),
                 ) {
                     AccountWebView(
+                        accountId = account.accountId,
                         url = account.url,
+                        linkRouter = linkRouter,
                         onUrlChanged =
                             onUrlChanged?.let { callback ->
                                 { url -> callback(account.accountId, url) }
                             },
+                        onAccountSwitch = onAccountSwitch,
+                        onShowAccountSelector = onShowAccountSelector,
                     )
                 }
             }
@@ -64,11 +82,30 @@ fun WebViewPanel(
  */
 @Composable
 private fun AccountWebView(
+    accountId: String,
     url: String,
+    linkRouter: LinkRouter? = null,
     onUrlChanged: ((String) -> Unit)? = null,
+    onAccountSwitch: ((accountId: String, url: String) -> Unit)? = null,
+    onShowAccountSelector: ((LinkClassification.InternalMultiAccount) -> Unit)? = null,
 ) {
     val state = rememberWebViewState(url)
-    val navigator = rememberWebViewNavigator()
+
+    val interceptor =
+        remember(accountId, linkRouter) {
+            if (linkRouter != null) {
+                createRequestInterceptor(
+                    linkRouter = linkRouter,
+                    accountId = accountId,
+                    onAccountSwitch = onAccountSwitch,
+                    onShowAccountSelector = onShowAccountSelector,
+                )
+            } else {
+                null
+            }
+        }
+
+    val navigator = rememberWebViewNavigator(requestInterceptor = interceptor)
 
     if (onUrlChanged != null) {
         LaunchedEffect(state) {
@@ -87,3 +124,38 @@ private fun AccountWebView(
         modifier = Modifier.fillMaxSize(),
     )
 }
+
+private fun createRequestInterceptor(
+    linkRouter: LinkRouter,
+    accountId: String,
+    onAccountSwitch: ((accountId: String, url: String) -> Unit)?,
+    onShowAccountSelector: ((LinkClassification.InternalMultiAccount) -> Unit)?,
+): RequestInterceptor =
+    object : RequestInterceptor {
+        override fun onInterceptUrlRequest(
+            request: WebRequest,
+            navigator: WebViewNavigator,
+        ): WebRequestInterceptResult {
+            // Only intercept main frame navigations
+            if (!request.isForMainFrame) return WebRequestInterceptResult.Allow
+
+            val shouldCancel =
+                linkRouter.handleNavigation(
+                    url = request.url,
+                    sourceAccountId = accountId,
+                    onExternalLink = { url -> ExternalBrowserLauncher.open(url) },
+                    onSwitchAccount = { targetAccountId, url ->
+                        onAccountSwitch?.invoke(targetAccountId, url)
+                    },
+                    onShowAccountSelector = { classification ->
+                        onShowAccountSelector?.invoke(classification)
+                    },
+                )
+
+            return if (shouldCancel) {
+                WebRequestInterceptResult.Reject
+            } else {
+                WebRequestInterceptResult.Allow
+            }
+        }
+    }
