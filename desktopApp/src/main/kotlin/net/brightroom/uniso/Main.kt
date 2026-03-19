@@ -141,25 +141,31 @@ fun main() {
                     currentScreen = MainScreen.WebView
                     dependencies.accountManager.switchToNextAccount()
                 }
+
                 ShortcutAction.PREVIOUS_ACCOUNT -> {
                     currentScreen = MainScreen.WebView
                     dependencies.accountManager.switchToPreviousAccount()
                 }
+
                 ShortcutAction.ADD_ACCOUNT -> {
                     sidebarViewModel.onAddAccountClick()
                 }
+
                 ShortcutAction.OPEN_SETTINGS -> {
                     currentScreen =
                         if (currentScreen is MainScreen.Settings) MainScreen.WebView else MainScreen.Settings
                 }
+
                 ShortcutAction.RELOAD -> {
                     val activeId = dependencies.accountManager.activeAccountId.value
                     if (activeId != null) navigatorRegistry.reload(activeId)
                 }
+
                 ShortcutAction.FORCE_RELOAD -> {
                     val activeId = dependencies.accountManager.activeAccountId.value
                     if (activeId != null) navigatorRegistry.forceReload(activeId)
                 }
+
                 ShortcutAction.CLOSE_WINDOW -> {
                     dependencies.close()
                     exitApplication()

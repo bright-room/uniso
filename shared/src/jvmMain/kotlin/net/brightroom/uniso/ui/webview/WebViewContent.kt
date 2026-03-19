@@ -29,7 +29,10 @@ import net.brightroom.uniso.ui.sidebar.SidebarAccount
 class WebViewNavigatorRegistry {
     private val navigators = mutableMapOf<String, WebViewNavigator>()
 
-    fun register(accountId: String, navigator: WebViewNavigator) {
+    fun register(
+        accountId: String,
+        navigator: WebViewNavigator,
+    ) {
         navigators[accountId] = navigator
     }
 
