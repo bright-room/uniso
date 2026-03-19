@@ -2,6 +2,7 @@ package net.brightroom.uniso.di
 
 import net.brightroom.uniso.data.DatabaseFactory
 import net.brightroom.uniso.data.db.UnisoDatabase
+import net.brightroom.uniso.data.model.AccountState
 import net.brightroom.uniso.data.repository.AccountRepository
 import net.brightroom.uniso.data.repository.SessionRepository
 import net.brightroom.uniso.data.repository.SqlSettingsRepository
@@ -47,7 +48,13 @@ class AppDependencies(
 
     val cefInitializer = CefInitializer(platformPaths)
 
-    val webViewLifecycleManager = WebViewLifecycleManager(platformPaths)
+    val webViewLifecycleManager =
+        WebViewLifecycleManager(
+            platformPaths = platformPaths,
+            accountStateSaver = { state: AccountState ->
+                sessionRepository.saveAccountState(state)
+            },
+        )
 
     fun initialize() {
         i18nManager.initialize()
