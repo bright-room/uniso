@@ -21,6 +21,8 @@ import net.brightroom.uniso.ui.theme.Dimensions
 @Composable
 fun MainLayout(
     viewModel: SidebarViewModel,
+    webViewReady: Boolean = false,
+    webViewContent: @Composable (url: String) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val colors = AppColors.current
@@ -51,7 +53,11 @@ fun MainLayout(
             )
 
             // Main content area
-            MainContentArea(activeAccount = activeAccount)
+            MainContentArea(
+                activeAccount = activeAccount,
+                webViewReady = webViewReady,
+                webViewContent = webViewContent,
+            )
         }
 
         // Add Account Dialog

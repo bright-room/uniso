@@ -15,6 +15,8 @@ import net.brightroom.uniso.ui.theme.Dimensions
 @Composable
 fun MainContentArea(
     activeAccount: SidebarAccount?,
+    webViewReady: Boolean,
+    webViewContent: @Composable (url: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = AppColors.current
@@ -33,8 +35,12 @@ fun MainContentArea(
                         .background(colors.borderTertiary),
             )
 
-            // Content area (placeholder for now)
-            ContentPlaceholder(account = activeAccount)
+            // Content area: WebView when ready, placeholder otherwise
+            if (webViewReady && activeAccount.url.isNotBlank()) {
+                webViewContent(activeAccount.url)
+            } else {
+                ContentPlaceholder(account = activeAccount)
+            }
         }
     }
 }

@@ -26,6 +26,7 @@ kotlin {
         }
         jvmMain.dependencies {
             implementation(libs.sqldelight.sqliteDriver)
+            api(libs.compose.webview)
         }
         jvmTest.dependencies {
             implementation(libs.sqldelight.sqliteDriver)

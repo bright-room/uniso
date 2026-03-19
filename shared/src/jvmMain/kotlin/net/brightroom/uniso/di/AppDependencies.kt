@@ -14,9 +14,10 @@ import net.brightroom.uniso.domain.settings.SettingsRepository
 import net.brightroom.uniso.platform.KeychainAccessor
 import net.brightroom.uniso.platform.PlatformLocale
 import net.brightroom.uniso.platform.PlatformPaths
+import net.brightroom.uniso.ui.webview.CefInitializer
 
 class AppDependencies(
-    platformPaths: PlatformPaths,
+    private val platformPaths: PlatformPaths,
     keychainAccessor: KeychainAccessor,
     platformLocale: PlatformLocale,
 ) {
@@ -43,12 +44,15 @@ class AppDependencies(
             planProvider = planProvider,
         )
 
+    val cefInitializer = CefInitializer(platformPaths)
+
     fun initialize() {
         i18nManager.initialize()
         accountManager.loadAccounts()
     }
 
     fun close() {
+        cefInitializer.dispose()
         databaseFactory.close()
     }
 }
