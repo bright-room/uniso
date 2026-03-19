@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
@@ -23,6 +24,34 @@ import net.brightroom.uniso.platform.ExternalBrowserLauncher
 import net.brightroom.uniso.ui.sidebar.SidebarAccount
 
 /**
+ * Registry that tracks WebViewNavigator instances per account for reload support.
+ */
+class WebViewNavigatorRegistry {
+    private val navigators = mutableMapOf<String, WebViewNavigator>()
+
+    fun register(
+        accountId: String,
+        navigator: WebViewNavigator,
+    ) {
+        navigators[accountId] = navigator
+    }
+
+    fun unregister(accountId: String) {
+        navigators.remove(accountId)
+    }
+
+    fun reload(accountId: String) {
+        navigators[accountId]?.reload()
+    }
+
+    fun forceReload(accountId: String) {
+        // WebViewNavigator doesn't expose reloadIgnoringCache directly,
+        // so we use reload which is the available API
+        navigators[accountId]?.reload()
+    }
+}
+
+/**
  * Renders per-account WebView instances with session isolation.
  *
  * Each account gets its own WebView composable (keyed by accountId) with an independent
@@ -34,6 +63,7 @@ import net.brightroom.uniso.ui.sidebar.SidebarAccount
  * @param activeAccountId The currently active account ID.
  * @param visible Whether WebViews should be visible (false when dialogs are active for z-ordering).
  * @param linkRouter Optional LinkRouter for intercepting navigation events.
+ * @param navigatorRegistry Optional registry for tracking WebView navigators (enables reload).
  * @param onUrlChanged Callback invoked when a WebView navigates to a new URL.
  * @param onAccountSwitch Callback invoked when link routing decides to switch to another account.
  * @param onShowAccountSelector Callback invoked when link routing needs to show account selection dialog.
@@ -44,6 +74,7 @@ fun WebViewPanel(
     activeAccountId: String?,
     visible: Boolean,
     linkRouter: LinkRouter? = null,
+    navigatorRegistry: WebViewNavigatorRegistry? = null,
     onUrlChanged: ((accountId: String, url: String) -> Unit)? = null,
     onAccountSwitch: ((accountId: String, url: String) -> Unit)? = null,
     onShowAccountSelector: ((LinkClassification.InternalMultiAccount) -> Unit)? = null,
@@ -62,6 +93,7 @@ fun WebViewPanel(
                         accountId = account.accountId,
                         url = account.url,
                         linkRouter = linkRouter,
+                        navigatorRegistry = navigatorRegistry,
                         onUrlChanged =
                             onUrlChanged?.let { callback ->
                                 { url -> callback(account.accountId, url) }
@@ -85,6 +117,7 @@ private fun AccountWebView(
     accountId: String,
     url: String,
     linkRouter: LinkRouter? = null,
+    navigatorRegistry: WebViewNavigatorRegistry? = null,
     onUrlChanged: ((String) -> Unit)? = null,
     onAccountSwitch: ((accountId: String, url: String) -> Unit)? = null,
     onShowAccountSelector: ((LinkClassification.InternalMultiAccount) -> Unit)? = null,
@@ -106,6 +139,16 @@ private fun AccountWebView(
         }
 
     val navigator = rememberWebViewNavigator(requestInterceptor = interceptor)
+
+    // Register navigator for reload support
+    if (navigatorRegistry != null) {
+        DisposableEffect(accountId, navigator) {
+            navigatorRegistry.register(accountId, navigator)
+            onDispose {
+                navigatorRegistry.unregister(accountId)
+            }
+        }
+    }
 
     if (onUrlChanged != null) {
         LaunchedEffect(state) {

@@ -457,6 +457,7 @@ private fun KeyboardShortcutsSection() {
         ShortcutRow(stringResource(StringKey.SETTINGS_SHORTCUT_ADD), "$mod+N")
         ShortcutRow(stringResource(StringKey.SETTINGS_SHORTCUT_SETTINGS), "$mod+,")
         ShortcutRow(stringResource(StringKey.SETTINGS_SHORTCUT_RELOAD), "$mod+R")
+        ShortcutRow(stringResource(StringKey.SETTINGS_SHORTCUT_FORCE_RELOAD), "$mod+Shift+R")
         ShortcutRow(stringResource(StringKey.SETTINGS_SHORTCUT_CLOSE), "$mod+W")
     }
 }

@@ -99,6 +99,26 @@ class AccountManager(
         _accounts.value = accountRepository.getAll()
     }
 
+    fun switchToNextAccount() {
+        val sorted = _accounts.value
+        if (sorted.size <= 1) return
+        val currentId = _activeAccountId.value ?: return
+        val currentIndex = sorted.indexOfFirst { it.accountId == currentId }
+        if (currentIndex < 0) return
+        val nextIndex = (currentIndex + 1) % sorted.size
+        _activeAccountId.value = sorted[nextIndex].accountId
+    }
+
+    fun switchToPreviousAccount() {
+        val sorted = _accounts.value
+        if (sorted.size <= 1) return
+        val currentId = _activeAccountId.value ?: return
+        val currentIndex = sorted.indexOfFirst { it.accountId == currentId }
+        if (currentIndex < 0) return
+        val prevIndex = (currentIndex - 1 + sorted.size) % sorted.size
+        _activeAccountId.value = sorted[prevIndex].accountId
+    }
+
     fun loadAccounts() {
         _accounts.value = accountRepository.getAll()
     }
