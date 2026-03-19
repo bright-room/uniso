@@ -14,6 +14,7 @@ import net.brightroom.uniso.ui.content.MainContentArea
 import net.brightroom.uniso.ui.dialogs.AddAccountDialog
 import net.brightroom.uniso.ui.dialogs.DeleteAccountDialog
 import net.brightroom.uniso.ui.sidebar.Sidebar
+import net.brightroom.uniso.ui.sidebar.SidebarAccount
 import net.brightroom.uniso.ui.sidebar.SidebarViewModel
 import net.brightroom.uniso.ui.theme.AppColors
 import net.brightroom.uniso.ui.theme.Dimensions
@@ -21,8 +22,9 @@ import net.brightroom.uniso.ui.theme.Dimensions
 @Composable
 fun MainLayout(
     viewModel: SidebarViewModel,
+    activatedAccounts: List<SidebarAccount>,
     webViewReady: Boolean = false,
-    webViewContent: @Composable (url: String) -> Unit = {},
+    webViewContent: @Composable (accounts: List<SidebarAccount>, activeAccountId: String?, visible: Boolean) -> Unit = { _, _, _ -> },
     modifier: Modifier = Modifier,
 ) {
     val colors = AppColors.current
@@ -43,7 +45,7 @@ fun MainLayout(
             Sidebar(
                 accounts = accounts,
                 activeAccountId = activeAccountId.orEmpty(),
-                onAccountClick = { account -> viewModel.onAccountClick(account.accountId) },
+                onAccountClick = { viewModel.onAccountClick(it.accountId) },
                 onAddAccountClick = { viewModel.onAddAccountClick() },
             )
 
@@ -59,6 +61,7 @@ fun MainLayout(
             // Main content area
             MainContentArea(
                 activeAccount = activeAccount,
+                activatedAccounts = activatedAccounts,
                 webViewReady = webViewReady,
                 webViewVisible = !overlayActive,
                 webViewContent = webViewContent,

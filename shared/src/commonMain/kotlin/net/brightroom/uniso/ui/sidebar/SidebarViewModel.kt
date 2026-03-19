@@ -11,9 +11,18 @@ import net.brightroom.uniso.domain.account.AccountManager
 import net.brightroom.uniso.domain.plugin.ServicePlugin
 import net.brightroom.uniso.domain.plugin.ServicePluginRegistry
 
+/**
+ * Callback interface for WebView lifecycle operations triggered from the sidebar.
+ * This avoids a direct dependency on the jvmMain WebViewLifecycleManager from commonMain.
+ */
+interface WebViewLifecycleCallback {
+    fun onAccountDeleted(accountId: String)
+}
+
 class SidebarViewModel(
     private val accountManager: AccountManager,
     private val servicePluginRegistry: ServicePluginRegistry,
+    private val webViewLifecycleCallback: WebViewLifecycleCallback? = null,
     private val scope: CoroutineScope,
 ) {
     private val _sidebarAccounts = MutableStateFlow<List<SidebarAccount>>(emptyList())
@@ -64,6 +73,7 @@ class SidebarViewModel(
 
     fun confirmDeleteAccount() {
         val target = _deleteTargetAccount.value ?: return
+        webViewLifecycleCallback?.onAccountDeleted(target.accountId)
         accountManager.removeAccount(target.accountId)
         _deleteTargetAccount.value = null
     }

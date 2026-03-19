@@ -15,6 +15,7 @@ import net.brightroom.uniso.platform.KeychainAccessor
 import net.brightroom.uniso.platform.PlatformLocale
 import net.brightroom.uniso.platform.PlatformPaths
 import net.brightroom.uniso.ui.webview.CefInitializer
+import net.brightroom.uniso.ui.webview.WebViewLifecycleManager
 
 class AppDependencies(
     private val platformPaths: PlatformPaths,
@@ -46,12 +47,15 @@ class AppDependencies(
 
     val cefInitializer = CefInitializer(platformPaths)
 
+    val webViewLifecycleManager = WebViewLifecycleManager(platformPaths)
+
     fun initialize() {
         i18nManager.initialize()
         accountManager.loadAccounts()
     }
 
     fun close() {
+        webViewLifecycleManager.destroyAll()
         cefInitializer.dispose()
         databaseFactory.close()
     }
