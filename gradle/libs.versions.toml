@@ -1,5 +1,5 @@
 [versions]
-composeMultiplatform = "1.10.0"
+composeMultiplatform = "1.10.2"
 composeWebview = "2.0.3"
 junit = "4.13.2"
 kotlin = "2.3.0"
