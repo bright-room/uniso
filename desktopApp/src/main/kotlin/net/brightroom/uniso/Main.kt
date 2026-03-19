@@ -17,10 +17,11 @@ import net.brightroom.uniso.platform.JvmPlatformPaths
 import net.brightroom.uniso.ui.LocalI18n
 import net.brightroom.uniso.ui.MainLayout
 import net.brightroom.uniso.ui.sidebar.SidebarViewModel
+import net.brightroom.uniso.ui.sidebar.WebViewLifecycleCallback
 import net.brightroom.uniso.ui.theme.AppTheme
 import net.brightroom.uniso.ui.webview.CefInitState
 import net.brightroom.uniso.ui.webview.SplashScreen
-import net.brightroom.uniso.ui.webview.WebViewContent
+import net.brightroom.uniso.ui.webview.WebViewPanel
 
 fun main() {
     val dependencies =
@@ -34,17 +35,30 @@ fun main() {
     application {
         val scope = rememberCoroutineScope()
         val cefState by dependencies.cefInitializer.initState.collectAsState()
+        val webViewLifecycleManager = dependencies.webViewLifecycleManager
         val sidebarViewModel =
             remember {
                 SidebarViewModel(
                     accountManager = dependencies.accountManager,
                     servicePluginRegistry = dependencies.servicePluginRegistry,
+                    webViewLifecycleCallback =
+                        object : WebViewLifecycleCallback {
+                            override fun onAccountDeleted(accountId: String) {
+                                webViewLifecycleManager.destroyWebView(accountId)
+                            }
+                        },
                     scope = scope,
                 )
             }
 
         LaunchedEffect(Unit) {
             dependencies.cefInitializer.initialize()
+        }
+
+        // Activate WebViews for the active account when it changes
+        val activeAccountId by dependencies.accountManager.activeAccountId.collectAsState()
+        LaunchedEffect(activeAccountId) {
+            activeAccountId?.let { webViewLifecycleManager.activateWebView(it) }
         }
 
         Window(
@@ -58,12 +72,22 @@ fun main() {
             AppTheme {
                 CompositionLocalProvider(LocalI18n provides dependencies.i18nManager) {
                     val webViewReady = cefState is CefInitState.Ready
+                    val sidebarAccounts by sidebarViewModel.sidebarAccounts.collectAsState()
+                    val activatedIds by webViewLifecycleManager.activatedAccountIds.collectAsState()
+                    val activatedAccounts = sidebarAccounts.filter { it.accountId in activatedIds }
 
                     if (webViewReady) {
                         MainLayout(
                             viewModel = sidebarViewModel,
+                            activatedAccounts = activatedAccounts,
                             webViewReady = true,
-                            webViewContent = { url -> WebViewContent(url = url) },
+                            webViewContent = { accounts, activeId, visible ->
+                                WebViewPanel(
+                                    accounts = accounts,
+                                    activeAccountId = activeId,
+                                    visible = visible,
+                                )
+                            },
                         )
                     } else {
                         SplashScreen(initState = cefState)
