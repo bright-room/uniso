@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.multiplatform.webview.web.WebView
@@ -23,12 +25,14 @@ import net.brightroom.uniso.ui.sidebar.SidebarAccount
  * @param accounts List of accounts that have been activated (should have WebViews).
  * @param activeAccountId The currently active account ID.
  * @param visible Whether WebViews should be visible (false when dialogs are active for z-ordering).
+ * @param onUrlChanged Callback invoked when a WebView navigates to a new URL.
  */
 @Composable
 fun WebViewPanel(
     accounts: List<SidebarAccount>,
     activeAccountId: String?,
     visible: Boolean,
+    onUrlChanged: ((accountId: String, url: String) -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier) {
@@ -42,6 +46,10 @@ fun WebViewPanel(
                 ) {
                     AccountWebView(
                         url = account.url,
+                        onUrlChanged =
+                            onUrlChanged?.let { callback ->
+                                { url -> callback(account.accountId, url) }
+                            },
                     )
                 }
             }
@@ -55,9 +63,23 @@ fun WebViewPanel(
  * providing cookie and storage isolation.
  */
 @Composable
-private fun AccountWebView(url: String) {
+private fun AccountWebView(
+    url: String,
+    onUrlChanged: ((String) -> Unit)? = null,
+) {
     val state = rememberWebViewState(url)
     val navigator = rememberWebViewNavigator()
+
+    if (onUrlChanged != null) {
+        LaunchedEffect(state) {
+            snapshotFlow { state.lastLoadedUrl }
+                .collect { loadedUrl ->
+                    if (!loadedUrl.isNullOrBlank()) {
+                        onUrlChanged(loadedUrl)
+                    }
+                }
+        }
+    }
 
     WebView(
         state = state,

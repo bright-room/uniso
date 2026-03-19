@@ -4,8 +4,10 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
@@ -55,10 +57,19 @@ fun main() {
             dependencies.cefInitializer.initialize()
         }
 
-        // Activate WebViews for the active account when it changes
+        // Track active account switches for background queue management
         val activeAccountId by dependencies.accountManager.activeAccountId.collectAsState()
+        var previousAccountId by remember { mutableStateOf<String?>(null) }
         LaunchedEffect(activeAccountId) {
-            activeAccountId?.let { webViewLifecycleManager.activateWebView(it) }
+            activeAccountId?.let { newId ->
+                webViewLifecycleManager.onAccountSwitched(previousAccountId, newId)
+                previousAccountId = newId
+            }
+        }
+
+        // Start the suspend timer for background WebView cleanup
+        LaunchedEffect(Unit) {
+            webViewLifecycleManager.startSuspendTimer(this)
         }
 
         Window(
@@ -86,6 +97,9 @@ fun main() {
                                     accounts = accounts,
                                     activeAccountId = activeId,
                                     visible = visible,
+                                    onUrlChanged = { accountId, url ->
+                                        webViewLifecycleManager.updateAccountUrl(accountId, url)
+                                    },
                                 )
                             },
                         )
