@@ -19,13 +19,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import net.brightroom.uniso.ui.sidebar.DummyAccount
+import net.brightroom.uniso.ui.sidebar.SidebarAccount
 import net.brightroom.uniso.ui.theme.AppColors
 import net.brightroom.uniso.ui.theme.Dimensions
 
 @Composable
 fun WebViewHeaderBar(
-    account: DummyAccount,
+    account: SidebarAccount,
     modifier: Modifier = Modifier,
 ) {
     val colors = AppColors.current

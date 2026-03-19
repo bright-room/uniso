@@ -21,13 +21,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import net.brightroom.uniso.ui.sidebar.DummyAccount
+import net.brightroom.uniso.ui.sidebar.SidebarAccount
 import net.brightroom.uniso.ui.theme.AppColors
 import net.brightroom.uniso.ui.theme.Dimensions
 
 @Composable
 fun ContentPlaceholder(
-    account: DummyAccount,
+    account: SidebarAccount,
     modifier: Modifier = Modifier,
 ) {
     val colors = AppColors.current
