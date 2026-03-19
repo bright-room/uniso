@@ -37,7 +37,4 @@ object Dimensions {
     // Dialogs
     val DialogMaxWidthSm: Dp = 380.dp
     val DialogMaxWidthMd: Dp = 400.dp
-
-    // Context menu
-    val ContextMenuMinWidth: Dp = 160.dp
 }
