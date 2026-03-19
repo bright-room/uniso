@@ -19,10 +19,15 @@ interface WebViewLifecycleCallback {
     fun onAccountDeleted(accountId: String)
 }
 
+fun interface ExternalBrowserCallback {
+    fun open(url: String)
+}
+
 class SidebarViewModel(
     private val accountManager: AccountManager,
     private val servicePluginRegistry: ServicePluginRegistry,
     private val webViewLifecycleCallback: WebViewLifecycleCallback? = null,
+    private val externalBrowserCallback: ExternalBrowserCallback? = null,
     private val scope: CoroutineScope,
 ) {
     private val _sidebarAccounts = MutableStateFlow<List<SidebarAccount>>(emptyList())
@@ -76,6 +81,10 @@ class SidebarViewModel(
         webViewLifecycleCallback?.onAccountDeleted(target.accountId)
         accountManager.removeAccount(target.accountId)
         _deleteTargetAccount.value = null
+    }
+
+    fun openExternalBrowser(url: String) {
+        externalBrowserCallback?.open(url)
     }
 
     fun getAvailableServices(): List<ServicePlugin> = servicePluginRegistry.getAll()

@@ -13,7 +13,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import net.brightroom.uniso.domain.link.LinkClassification
 import net.brightroom.uniso.ui.content.MainContentArea
+import net.brightroom.uniso.ui.dialogs.AccountSelectDialog
 import net.brightroom.uniso.ui.dialogs.AddAccountDialog
 import net.brightroom.uniso.ui.dialogs.DeleteAccountDialog
 import net.brightroom.uniso.ui.settings.SettingsScreen
@@ -48,6 +50,11 @@ fun MainLayout(
     val deleteTarget by viewModel.deleteTargetAccount.collectAsState()
     val settingsDeleteTarget by settingsViewModel.deleteTarget.collectAsState()
 
+    // Account selection dialog state for link handling
+    var accountSelectState by remember {
+        mutableStateOf<LinkClassification.InternalMultiAccount?>(null)
+    }
+
     var currentScreen by remember { mutableStateOf<MainScreen>(MainScreen.WebView) }
 
     // Shrink WebView to 0 when any overlay is active to avoid z-ordering issues
@@ -55,7 +62,7 @@ fun MainLayout(
     // tree so its session state is preserved (no reload).
     val overlayActive =
         showAddDialog || deleteTarget != null || settingsDeleteTarget != null ||
-            currentScreen is MainScreen.Settings
+            accountSelectState != null || currentScreen is MainScreen.Settings
 
     Box(modifier = modifier.fillMaxSize()) {
         Row(modifier = Modifier.fillMaxSize()) {
@@ -137,6 +144,28 @@ fun MainLayout(
                 onConfirm = { settingsViewModel.confirmDeleteAccount(onWebViewCleanup) },
                 onDismiss = { settingsViewModel.dismissDeleteDialog() },
             )
+        }
+
+        // Account Selection Dialog (from link handling)
+        accountSelectState?.let { classification ->
+            val selectableAccounts =
+                classification.accounts.mapNotNull { account ->
+                    accounts.find { it.accountId == account.accountId }
+                }
+            if (selectableAccounts.isNotEmpty()) {
+                AccountSelectDialog(
+                    accounts = selectableAccounts,
+                    onAccountSelected = { selected ->
+                        viewModel.onAccountClick(selected.accountId)
+                        accountSelectState = null
+                    },
+                    onOpenExternal = {
+                        viewModel.openExternalBrowser(classification.url)
+                        accountSelectState = null
+                    },
+                    onDismiss = { accountSelectState = null },
+                )
+            }
         }
     }
 }

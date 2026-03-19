@@ -13,6 +13,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import net.brightroom.uniso.di.AppDependencies
+import net.brightroom.uniso.platform.ExternalBrowserLauncher
 import net.brightroom.uniso.platform.JvmKeychainAccessor
 import net.brightroom.uniso.platform.JvmPlatformLocale
 import net.brightroom.uniso.platform.JvmPlatformPaths
@@ -20,6 +21,7 @@ import net.brightroom.uniso.ui.LocalI18n
 import net.brightroom.uniso.ui.MainLayout
 import net.brightroom.uniso.ui.dialogs.CrashRecoveryDialog
 import net.brightroom.uniso.ui.settings.SettingsViewModel
+import net.brightroom.uniso.ui.sidebar.ExternalBrowserCallback
 import net.brightroom.uniso.ui.sidebar.SidebarViewModel
 import net.brightroom.uniso.ui.sidebar.WebViewLifecycleCallback
 import net.brightroom.uniso.ui.theme.AppTheme
@@ -68,6 +70,10 @@ fun main() {
                             override fun onAccountDeleted(accountId: String) {
                                 webViewCleanup(accountId)
                             }
+                        },
+                    externalBrowserCallback =
+                        ExternalBrowserCallback { url ->
+                            ExternalBrowserLauncher.open(url)
                         },
                     scope = scope,
                 )
@@ -161,8 +167,12 @@ fun main() {
                                         accounts = accounts,
                                         activeAccountId = activeId,
                                         visible = visible,
+                                        linkRouter = dependencies.linkRouter,
                                         onUrlChanged = { accountId, url ->
                                             webViewLifecycleManager.updateAccountUrl(accountId, url)
+                                        },
+                                        onAccountSwitch = { accountId, _ ->
+                                            dependencies.accountManager.setActiveAccount(accountId)
                                         },
                                     )
                                 },
