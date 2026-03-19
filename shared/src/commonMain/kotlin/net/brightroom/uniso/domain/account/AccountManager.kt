@@ -7,6 +7,7 @@ import net.brightroom.uniso.data.model.Account
 import net.brightroom.uniso.data.repository.AccountRepository
 import net.brightroom.uniso.data.repository.SessionRepository
 import net.brightroom.uniso.domain.plan.PlanProvider
+import kotlin.time.Clock
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -14,7 +15,7 @@ class AccountManager(
     private val accountRepository: AccountRepository,
     private val sessionRepository: SessionRepository,
     private val planProvider: PlanProvider,
-    private val clock: () -> String = { currentTimestamp() },
+    private val clock: Clock = Clock.System,
 ) {
     private val _accounts = MutableStateFlow<List<Account>>(emptyList())
     val accounts: StateFlow<List<Account>> = _accounts.asStateFlow()
@@ -37,7 +38,7 @@ class AccountManager(
                 displayName = null,
                 avatarUrl = null,
                 sortOrder = currentCount,
-                createdAt = clock(),
+                createdAt = clock.now().toString(),
             )
 
         accountRepository.insert(account)
@@ -82,5 +83,3 @@ class AccountManager(
         _accounts.value = accountRepository.getAll()
     }
 }
-
-internal expect fun currentTimestamp(): String
