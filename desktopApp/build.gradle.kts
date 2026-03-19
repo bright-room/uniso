@@ -24,6 +24,8 @@ compose.desktop {
     application {
         mainClass = "net.brightroom.uniso.MainKt"
 
+        jvmArgs("--enable-native-access=ALL-UNNAMED")
+
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi)
             packageName = "Uniso"
