@@ -10,6 +10,7 @@ import net.brightroom.uniso.domain.account.AccountManager
 import net.brightroom.uniso.domain.plan.FreePlanProvider
 import net.brightroom.uniso.domain.plan.PlanProvider
 import net.brightroom.uniso.domain.plugin.ServicePluginRegistry
+import net.brightroom.uniso.domain.session.SessionManager
 import net.brightroom.uniso.domain.settings.I18nManager
 import net.brightroom.uniso.domain.settings.SettingsRepository
 import net.brightroom.uniso.platform.KeychainAccessor
@@ -56,12 +57,22 @@ class AppDependencies(
             },
         )
 
+    val sessionManager =
+        SessionManager(
+            sessionRepository = sessionRepository,
+            accountManager = accountManager,
+            webViewLifecycleManager = webViewLifecycleManager,
+        )
+
     fun initialize() {
         i18nManager.initialize()
         accountManager.loadAccounts()
     }
 
     fun close() {
+        sessionManager.stopPeriodicSave()
+        sessionManager.saveImmediate()
+        sessionManager.markCleanShutdown()
         webViewLifecycleManager.destroyAll()
         cefInitializer.dispose()
         databaseFactory.close()

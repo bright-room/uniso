@@ -18,6 +18,7 @@ import net.brightroom.uniso.platform.JvmPlatformLocale
 import net.brightroom.uniso.platform.JvmPlatformPaths
 import net.brightroom.uniso.ui.LocalI18n
 import net.brightroom.uniso.ui.MainLayout
+import net.brightroom.uniso.ui.dialogs.CrashRecoveryDialog
 import net.brightroom.uniso.ui.sidebar.SidebarViewModel
 import net.brightroom.uniso.ui.sidebar.WebViewLifecycleCallback
 import net.brightroom.uniso.ui.theme.AppTheme
@@ -34,10 +35,24 @@ fun main() {
         )
     dependencies.initialize()
 
+    // Check crash recovery state before entering composition
+    val sessionManager = dependencies.sessionManager
+    val needsCrashRecovery = !sessionManager.isCleanShutdown()
+    val restoredSession =
+        if (needsCrashRecovery) {
+            sessionManager.restoreSession()
+        } else {
+            null
+        }
+
+    // Mark startup (sets clean_shutdown = 0)
+    sessionManager.markStartup()
+
     application {
         val scope = rememberCoroutineScope()
         val cefState by dependencies.cefInitializer.initState.collectAsState()
         val webViewLifecycleManager = dependencies.webViewLifecycleManager
+        var showCrashDialog by remember { mutableStateOf(needsCrashRecovery) }
         val sidebarViewModel =
             remember {
                 SidebarViewModel(
@@ -47,6 +62,7 @@ fun main() {
                         object : WebViewLifecycleCallback {
                             override fun onAccountDeleted(accountId: String) {
                                 webViewLifecycleManager.destroyWebView(accountId)
+                                sessionManager.saveImmediate()
                             }
                         },
                     scope = scope,
@@ -57,12 +73,18 @@ fun main() {
             dependencies.cefInitializer.initialize()
         }
 
+        // Start periodic session save (30-second interval)
+        LaunchedEffect(Unit) {
+            sessionManager.startPeriodicSave(this)
+        }
+
         // Track active account switches for background queue management
         val activeAccountId by dependencies.accountManager.activeAccountId.collectAsState()
         var previousAccountId by remember { mutableStateOf<String?>(null) }
         LaunchedEffect(activeAccountId) {
             activeAccountId?.let { newId ->
                 webViewLifecycleManager.onAccountSwitched(previousAccountId, newId)
+                sessionManager.saveImmediate()
                 previousAccountId = newId
             }
         }
@@ -70,6 +92,18 @@ fun main() {
         // Start the suspend timer for background WebView cleanup
         LaunchedEffect(Unit) {
             webViewLifecycleManager.startSuspendTimer(this)
+        }
+
+        // Restore session if user chose to restore after crash
+        LaunchedEffect(Unit) {
+            if (!needsCrashRecovery && restoredSession == null) {
+                // Normal startup: restore previous session silently
+                val session = sessionManager.restoreSession()
+                val activeId = session?.activeAccountId
+                if (activeId != null) {
+                    dependencies.accountManager.setActiveAccount(activeId)
+                }
+            }
         }
 
         Window(
@@ -82,29 +116,45 @@ fun main() {
         ) {
             AppTheme {
                 CompositionLocalProvider(LocalI18n provides dependencies.i18nManager) {
-                    val webViewReady = cefState is CefInitState.Ready
-                    val sidebarAccounts by sidebarViewModel.sidebarAccounts.collectAsState()
-                    val activatedIds by webViewLifecycleManager.activatedAccountIds.collectAsState()
-                    val activatedAccounts = sidebarAccounts.filter { it.accountId in activatedIds }
-
-                    if (webViewReady) {
-                        MainLayout(
-                            viewModel = sidebarViewModel,
-                            activatedAccounts = activatedAccounts,
-                            webViewReady = true,
-                            webViewContent = { accounts, activeId, visible ->
-                                WebViewPanel(
-                                    accounts = accounts,
-                                    activeAccountId = activeId,
-                                    visible = visible,
-                                    onUrlChanged = { accountId, url ->
-                                        webViewLifecycleManager.updateAccountUrl(accountId, url)
-                                    },
-                                )
+                    // Crash recovery dialog (shown before main UI)
+                    if (showCrashDialog) {
+                        CrashRecoveryDialog(
+                            onRestore = {
+                                showCrashDialog = false
+                                val activeId = restoredSession?.activeAccountId
+                                if (activeId != null) {
+                                    dependencies.accountManager.setActiveAccount(activeId)
+                                }
+                            },
+                            onStartNew = {
+                                showCrashDialog = false
                             },
                         )
                     } else {
-                        SplashScreen(initState = cefState)
+                        val webViewReady = cefState is CefInitState.Ready
+                        val sidebarAccounts by sidebarViewModel.sidebarAccounts.collectAsState()
+                        val activatedIds by webViewLifecycleManager.activatedAccountIds.collectAsState()
+                        val activatedAccounts = sidebarAccounts.filter { it.accountId in activatedIds }
+
+                        if (webViewReady) {
+                            MainLayout(
+                                viewModel = sidebarViewModel,
+                                activatedAccounts = activatedAccounts,
+                                webViewReady = true,
+                                webViewContent = { accounts, activeId, visible ->
+                                    WebViewPanel(
+                                        accounts = accounts,
+                                        activeAccountId = activeId,
+                                        visible = visible,
+                                        onUrlChanged = { accountId, url ->
+                                            webViewLifecycleManager.updateAccountUrl(accountId, url)
+                                        },
+                                    )
+                                },
+                            )
+                        } else {
+                            SplashScreen(initState = cefState)
+                        }
                     }
                 }
             }
