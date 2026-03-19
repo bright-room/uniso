@@ -28,7 +28,7 @@ import net.brightroom.uniso.ui.theme.Dimensions
 
 @Composable
 fun AccountItem(
-    account: DummyAccount,
+    account: SidebarAccount,
     isActive: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,

@@ -8,13 +8,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import net.brightroom.uniso.ui.sidebar.DummyAccount
+import net.brightroom.uniso.ui.sidebar.SidebarAccount
 import net.brightroom.uniso.ui.theme.AppColors
 import net.brightroom.uniso.ui.theme.Dimensions
 
 @Composable
 fun MainContentArea(
-    activeAccount: DummyAccount?,
+    activeAccount: SidebarAccount?,
     modifier: Modifier = Modifier,
 ) {
     val colors = AppColors.current

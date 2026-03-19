@@ -21,9 +21,9 @@ import net.brightroom.uniso.ui.theme.Dimensions
 
 @Composable
 fun Sidebar(
-    accounts: List<DummyAccount>,
+    accounts: List<SidebarAccount>,
     activeAccountId: String,
-    onAccountClick: (DummyAccount) -> Unit,
+    onAccountClick: (SidebarAccount) -> Unit,
     onAddAccountClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -57,7 +57,7 @@ fun Sidebar(
 
                 AccountItem(
                     account = account,
-                    isActive = account.id == activeAccountId,
+                    isActive = account.accountId == activeAccountId,
                     onClick = { onAccountClick(account) },
                 )
             }
