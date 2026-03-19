@@ -1,0 +1,16 @@
+CREATE TABLE app_state (
+    id                 INTEGER NOT NULL PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+    active_account_id  TEXT REFERENCES account(account_id) ON DELETE SET NULL,
+    clean_shutdown     INTEGER NOT NULL DEFAULT 0,
+    last_saved_at      TEXT NOT NULL
+);
+
+upsertAppState:
+INSERT OR REPLACE INTO app_state (id, active_account_id, clean_shutdown, last_saved_at)
+VALUES (1, ?, ?, ?);
+
+selectAppState:
+SELECT * FROM app_state WHERE id = 1;
+
+updateCleanShutdown:
+UPDATE app_state SET clean_shutdown = ? WHERE id = 1;

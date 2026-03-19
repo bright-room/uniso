@@ -1,0 +1,10 @@
+CREATE TABLE local_user (
+    id         TEXT NOT NULL PRIMARY KEY,
+    created_at TEXT NOT NULL
+);
+
+insertLocalUser:
+INSERT INTO local_user (id, created_at) VALUES (?, ?);
+
+selectLocalUser:
+SELECT * FROM local_user LIMIT 1;
