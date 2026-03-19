@@ -2,7 +2,7 @@
 composeMultiplatform = "1.10.2"
 composeWebview = "2.0.3"
 junit = "4.13.2"
-kotlin = "2.3.0"
+kotlin = "2.3.20"
 kotlinx-coroutines = "1.10.2"
 material3 = "1.10.0-alpha05"
 spotless = "8.3.0"
