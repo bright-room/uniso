@@ -1,8 +1,11 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.sqldelight)
+    alias(libs.plugins.buildkonfig)
 }
 
 kotlin {
@@ -39,5 +42,13 @@ sqldelight {
         create("UnisoDatabase") {
             packageName.set("net.brightroom.uniso.data.db")
         }
+    }
+}
+
+buildkonfig {
+    packageName = "net.brightroom.uniso"
+
+    defaultConfigs {
+        buildConfigField(STRING, "APP_VERSION", libs.versions.app.get())
     }
 }
