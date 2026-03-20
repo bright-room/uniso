@@ -183,12 +183,14 @@ fun main() {
         ) {
             AppTheme {
                 CompositionLocalProvider(LocalI18n provides dependencies.i18nManager) {
+                    val appIcon = painterResource("icons/icon.png")
+
                     when (val currentState = initState) {
                         is InitState.Loading,
                         is InitState.CefInitializing,
                         is InitState.Error,
                         -> {
-                            SplashScreen(initState = currentState)
+                            SplashScreen(initState = currentState, appIcon = appIcon)
                         }
 
                         is InitState.CrashRecoveryPrompt -> {

@@ -124,7 +124,10 @@ fun MainLayout(
         if (showAddDialog) {
             AddAccountDialog(
                 services = viewModel.getAvailableServices(),
-                onServiceSelected = { service -> viewModel.addAccount(service.serviceId) },
+                onServiceSelected = { service ->
+                    viewModel.addAccount(service.serviceId)
+                    onScreenChange(MainScreen.WebView)
+                },
                 onDismiss = { viewModel.dismissAddAccountDialog() },
             )
         }

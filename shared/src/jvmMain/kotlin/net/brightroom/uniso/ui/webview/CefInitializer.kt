@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
+import net.brightroom.uniso.domain.settings.SettingsRepository
 import net.brightroom.uniso.platform.PlatformPaths
 import java.io.File
 
@@ -29,6 +30,7 @@ sealed class CefInitState {
 
 class CefInitializer(
     private val platformPaths: PlatformPaths,
+    private val settingsRepository: SettingsRepository? = null,
 ) {
     private val _initState = MutableStateFlow<CefInitState>(CefInitState.NotStarted)
     val initState: StateFlow<CefInitState> = _initState.asStateFlow()
@@ -56,7 +58,7 @@ class CefInitializer(
                         }
                         settings {
                             cachePath = File(platformPaths.getAppDataDir(), "cef_cache").absolutePath
-                            userAgent = UserAgentProvider.getUserAgent("default")
+                            userAgent = UserAgentProvider.getUserAgent(settingsRepository)
                             persistSessionCookies = true
                         }
                     },

@@ -67,6 +67,11 @@ enum class StringKey(
     SETTINGS_SHORTCUT_CLOSE("settings.shortcut.close"),
     SETTINGS_MOVE_UP("settings.move_up"),
     SETTINGS_MOVE_DOWN("settings.move_down"),
+    SETTINGS_ADVANCED("settings.advanced"),
+    SETTINGS_USER_AGENT("settings.user_agent"),
+    SETTINGS_USER_AGENT_DESCRIPTION("settings.user_agent.description"),
+    SETTINGS_USER_AGENT_PLACEHOLDER("settings.user_agent.placeholder"),
+    SETTINGS_RESTART_REQUIRED("settings.restart_required"),
 
     // Tutorial
     TUTORIAL_WELCOME_TITLE("tutorial.welcome.title"),
