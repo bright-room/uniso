@@ -4,6 +4,7 @@ node_modules/
 # Build output
 dist/
 out/
+*.tsbuildinfo
 
 # Environment
 .env
@@ -26,6 +27,9 @@ Thumbs.db
 *.exe
 *.msi
 *.AppImage
+
+# Storybook
+storybook-static/
 
 # AI agents
 /.claude/outputs/

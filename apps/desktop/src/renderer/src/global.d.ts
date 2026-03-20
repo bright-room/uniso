@@ -1,22 +1,4 @@
-interface AccountListItem {
-  accountId: string
-  serviceId: string
-  displayName: string | null
-  brandColor: string
-  iconResource: string
-  serviceDisplayName: string
-  isActive: boolean
-}
-
-interface ServicePlugin {
-  serviceId: string
-  displayName: string
-  domainPatterns: string[]
-  brandColor: string
-  iconResource: string
-  authType: string
-  sortOrder: number
-}
+import type { AccountListItem, ServicePlugin } from '@uniso/ui'
 
 interface Api {
   addAccount(serviceId: string): Promise<AccountListItem>
@@ -67,5 +49,3 @@ declare global {
     api: Api
   }
 }
-
-export {}

@@ -16,7 +16,8 @@
     "test:watch": "pnpm --filter @uniso/shared test:watch",
     "package": "pnpm --filter @uniso/desktop package",
     "package:mac": "pnpm --filter @uniso/desktop package:mac",
-    "package:win": "pnpm --filter @uniso/desktop package:win"
+    "package:win": "pnpm --filter @uniso/desktop package:win",
+    "storybook": "pnpm --filter @uniso/ui storybook"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

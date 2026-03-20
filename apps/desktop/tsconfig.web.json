@@ -6,7 +6,9 @@
     "jsx": "react-jsx",
     "paths": {
       "@uniso/shared": ["../../packages/shared/src"],
-      "@uniso/shared/*": ["../../packages/shared/src/*"]
+      "@uniso/shared/*": ["../../packages/shared/src/*"],
+      "@uniso/ui": ["../../packages/ui/src"],
+      "@uniso/ui/*": ["../../packages/ui/src/*"]
     }
   },
   "include": ["src/renderer/src/**/*.ts", "src/renderer/src/**/*.tsx"]
