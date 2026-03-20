@@ -41,6 +41,7 @@ enum class StringKey(
     ERROR_OPEN_IN_BROWSER("error.open_in_browser"),
     ERROR_CEF_INIT_FAILED("error.cef_init_failed"),
     ERROR_DB_ERROR("error.db_error"),
+    ERROR_SESSION_RESTORE_FAILED("error.session_restore_failed"),
 
     // Settings
     SETTINGS_TITLE("settings.title"),
