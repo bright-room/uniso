@@ -2,8 +2,8 @@
   "name": "uniso",
   "private": true,
   "engines": {
-    "node": ">=20",
-    "pnpm": ">=9"
+    "node": ">=20.20.1",
+    "pnpm": ">=9.15.9"
   },
   "scripts": {
     "dev": "pnpm --filter @uniso/desktop dev",
