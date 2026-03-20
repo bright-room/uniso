@@ -7,6 +7,7 @@ import net.brightroom.uniso.data.repository.AccountRepository
 import net.brightroom.uniso.data.repository.SessionRepository
 import net.brightroom.uniso.data.repository.SqlSettingsRepository
 import net.brightroom.uniso.domain.account.AccountManager
+import net.brightroom.uniso.domain.identity.IdentityManager
 import net.brightroom.uniso.domain.link.LinkRouter
 import net.brightroom.uniso.domain.plan.FreePlanProvider
 import net.brightroom.uniso.domain.plan.PlanProvider
@@ -39,6 +40,11 @@ class AppDependencies(
         I18nManager(
             platformLocale = platformLocale,
             settingsRepository = settingsRepository,
+        )
+
+    val identityManager =
+        IdentityManager(
+            settingsRepository = settingsRepository as SqlSettingsRepository,
         )
 
     val accountManager =

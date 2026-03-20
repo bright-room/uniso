@@ -14,6 +14,8 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import net.brightroom.uniso.di.AppDependencies
+import net.brightroom.uniso.domain.init.AppInitializer
+import net.brightroom.uniso.domain.init.InitState
 import net.brightroom.uniso.platform.ExternalBrowserLauncher
 import net.brightroom.uniso.platform.JvmKeychainAccessor
 import net.brightroom.uniso.platform.JvmPlatformLocale
@@ -23,14 +25,12 @@ import net.brightroom.uniso.ui.LocalI18n
 import net.brightroom.uniso.ui.MainLayout
 import net.brightroom.uniso.ui.MainScreen
 import net.brightroom.uniso.ui.ShortcutAction
-import net.brightroom.uniso.ui.dialogs.CefInitErrorDialog
 import net.brightroom.uniso.ui.dialogs.CrashRecoveryDialog
 import net.brightroom.uniso.ui.settings.SettingsViewModel
 import net.brightroom.uniso.ui.sidebar.ExternalBrowserCallback
 import net.brightroom.uniso.ui.sidebar.SidebarViewModel
 import net.brightroom.uniso.ui.sidebar.WebViewLifecycleCallback
 import net.brightroom.uniso.ui.theme.AppTheme
-import net.brightroom.uniso.ui.webview.CefInitState
 import net.brightroom.uniso.ui.webview.SplashScreen
 import net.brightroom.uniso.ui.webview.WebViewNavigatorRegistry
 import net.brightroom.uniso.ui.webview.WebViewPanel
@@ -42,26 +42,25 @@ fun main() {
             keychainAccessor = JvmKeychainAccessor(),
             platformLocale = JvmPlatformLocale(),
         )
-    dependencies.initialize()
+    val initializer =
+        AppInitializer(
+            accountManager = dependencies.accountManager,
+            sessionManager = dependencies.sessionManager,
+            webViewLifecycleManager = dependencies.webViewLifecycleManager,
+            identityManager = dependencies.identityManager,
+            i18nManager = dependencies.i18nManager,
+            cefInitializer = dependencies.cefInitializer,
+        )
 
-    // Check crash recovery state before entering composition
-    val sessionManager = dependencies.sessionManager
-    val needsCrashRecovery = !sessionManager.isCleanShutdown()
-    val restoredSession =
-        if (needsCrashRecovery) {
-            sessionManager.restoreSession()
-        } else {
-            null
-        }
-
-    // Mark startup (sets clean_shutdown = 0)
-    sessionManager.markStartup()
+    // Phase 1: Core initialization (DB, i18n, accounts, crash check)
+    initializer.initializeCore()
 
     application {
         val scope = rememberCoroutineScope()
-        val cefState by dependencies.cefInitializer.initState.collectAsState()
+        val initState by initializer.state.collectAsState()
         val webViewLifecycleManager = dependencies.webViewLifecycleManager
-        var showCrashDialog by remember { mutableStateOf(needsCrashRecovery) }
+        val sessionManager = dependencies.sessionManager
+
         val webViewCleanup: (String) -> Unit = { accountId ->
             webViewLifecycleManager.destroyWebView(accountId)
             sessionManager.saveImmediate()
@@ -95,39 +94,29 @@ fun main() {
                 )
             }
 
+        // Phase 2: CEF initialization (background)
         LaunchedEffect(Unit) {
-            dependencies.cefInitializer.initialize()
+            initializer.initializeCef()
         }
 
-        // Start periodic session save (30-second interval)
-        LaunchedEffect(Unit) {
-            sessionManager.startPeriodicSave(this)
+        // Start background tasks once ready
+        var backgroundTasksStarted by remember { mutableStateOf(false) }
+        LaunchedEffect(initState) {
+            if (initState is InitState.Ready && !backgroundTasksStarted) {
+                backgroundTasksStarted = true
+                initializer.startBackgroundTasks(scope)
+            }
         }
 
         // Track active account switches for background queue management
         val activeAccountId by dependencies.accountManager.activeAccountId.collectAsState()
         var previousAccountId by remember { mutableStateOf<String?>(null) }
         LaunchedEffect(activeAccountId) {
-            activeAccountId?.let { newId ->
-                webViewLifecycleManager.onAccountSwitched(previousAccountId, newId)
-                sessionManager.saveImmediate()
-                previousAccountId = newId
-            }
-        }
-
-        // Start the suspend timer for background WebView cleanup
-        LaunchedEffect(Unit) {
-            webViewLifecycleManager.startSuspendTimer(this)
-        }
-
-        // Restore session if user chose to restore after crash
-        LaunchedEffect(Unit) {
-            if (!needsCrashRecovery && restoredSession == null) {
-                // Normal startup: restore previous session silently
-                val session = sessionManager.restoreSession()
-                val activeId = session?.activeAccountId
-                if (activeId != null) {
-                    dependencies.accountManager.setActiveAccount(activeId)
+            if (initState is InitState.Ready) {
+                activeAccountId?.let { newId ->
+                    webViewLifecycleManager.onAccountSwitched(previousAccountId, newId)
+                    sessionManager.saveImmediate()
+                    previousAccountId = newId
                 }
             }
         }
@@ -136,6 +125,7 @@ fun main() {
         var currentScreen by remember { mutableStateOf<MainScreen>(MainScreen.WebView) }
 
         val handleKeyEvent: (KeyEvent) -> Boolean = handler@{ event ->
+            if (initState !is InitState.Ready) return@handler false
             val action = KeyboardShortcutHandler.resolve(event) ?: return@handler false
             when (action) {
                 ShortcutAction.NEXT_ACCOUNT -> {
@@ -186,28 +176,26 @@ fun main() {
         ) {
             AppTheme {
                 CompositionLocalProvider(LocalI18n provides dependencies.i18nManager) {
-                    // Crash recovery dialog (shown before main UI)
-                    if (showCrashDialog) {
-                        CrashRecoveryDialog(
-                            onRestore = {
-                                showCrashDialog = false
-                                val activeId = restoredSession?.activeAccountId
-                                if (activeId != null) {
-                                    dependencies.accountManager.setActiveAccount(activeId)
-                                }
-                            },
-                            onStartNew = {
-                                showCrashDialog = false
-                            },
-                        )
-                    } else {
-                        val webViewReady = cefState is CefInitState.Ready
-                        val cefError = cefState as? CefInitState.Error
-                        val sidebarAccounts by sidebarViewModel.sidebarAccounts.collectAsState()
-                        val activatedIds by webViewLifecycleManager.activatedAccountIds.collectAsState()
-                        val activatedAccounts = sidebarAccounts.filter { it.accountId in activatedIds }
+                    when (val currentState = initState) {
+                        is InitState.Loading,
+                        is InitState.CefInitializing,
+                        is InitState.Error,
+                        -> {
+                            SplashScreen(initState = currentState)
+                        }
 
-                        if (webViewReady) {
+                        is InitState.CrashRecoveryPrompt -> {
+                            CrashRecoveryDialog(
+                                onRestore = { initializer.onCrashRestore() },
+                                onStartNew = { initializer.onCrashStartNew() },
+                            )
+                        }
+
+                        is InitState.Ready -> {
+                            val sidebarAccounts by sidebarViewModel.sidebarAccounts.collectAsState()
+                            val activatedIds by webViewLifecycleManager.activatedAccountIds.collectAsState()
+                            val activatedAccounts = sidebarAccounts.filter { it.accountId in activatedIds }
+
                             MainLayout(
                                 viewModel = sidebarViewModel,
                                 settingsViewModel = settingsViewModel,
@@ -232,16 +220,6 @@ fun main() {
                                 },
                                 onWebViewCleanup = webViewCleanup,
                             )
-                        } else if (cefError != null) {
-                            CefInitErrorDialog(
-                                errorMessage = cefError.message,
-                                onDismiss = {
-                                    dependencies.close()
-                                    exitApplication()
-                                },
-                            )
-                        } else {
-                            SplashScreen(initState = cefState)
                         }
                     }
                 }
