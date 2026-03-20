@@ -191,6 +191,21 @@ async function createWindow(): Promise<void> {
       const prevId = accountManager.getPrevAccountId()
       if (prevId) webViewManager.switchTo(prevId)
     })
+    globalShortcut.register('CommandOrControl+N', () => {
+      mainWindow.webContents.send('shortcut-add-account')
+    })
+    globalShortcut.register('CommandOrControl+W', () => {
+      mainWindow.webContents.send('shortcut-delete-account')
+    })
+    globalShortcut.register('CommandOrControl+,', () => {
+      mainWindow.webContents.send('shortcut-settings')
+    })
+    globalShortcut.register('CommandOrControl+R', () => {
+      webViewManager.reloadActiveView()
+    })
+    globalShortcut.register('CommandOrControl+Shift+R', () => {
+      webViewManager.forceReloadActiveView()
+    })
   })
 
   mainWindow.on('blur', () => {
