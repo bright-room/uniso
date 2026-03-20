@@ -14,13 +14,13 @@ Uniso lets you log in to X, Instagram, Facebook, YouTube, Bluesky, and Twitch si
 - **Link routing** — internal links open in the right account; external links go to your browser
 - **Keyboard shortcuts** — fast account switching, reload, settings access
 - **i18n** — Japanese and English with OS locale detection
-- **Encrypted local storage** — SQLCipher database with OS keychain key management
-- **Auto-update** — background update checks via Sparkle / WinSparkle
+- **Encrypted local storage** — SQLite database with OS keychain key management
+- **Auto-update** — background update checks via electron-updater
 
 ## Requirements
 
 - **macOS** 12+ or **Windows** 10+
-- **JDK 25** (for building from source)
+- **Node.js** 24+ and **pnpm** 9+ (for building from source)
 
 ## Building from Source
 
@@ -29,53 +29,69 @@ Uniso lets you log in to X, Instagram, Facebook, YouTube, Bluesky, and Twitch si
 git clone https://github.com/bright-room/uniso.git
 cd uniso
 
-# Run the application
-./gradlew run
+# Install dependencies
+pnpm install
+
+# Run the application in development mode
+pnpm dev
+
+# Run linter
+pnpm lint
+
+# Run type checking
+pnpm typecheck
 
 # Run tests
-./gradlew check
+pnpm test
 
 # Package for macOS (DMG)
-./gradlew packageDmg
+pnpm package:mac
 
-# Package for Windows (MSI)
-./gradlew packageMsi
+# Package for Windows (NSIS installer)
+pnpm package:win
 ```
 
 ## Project Structure
 
 ```
 uniso/
-├── shared/                  # Kotlin Multiplatform shared module
-│   ├── commonMain/          #   Platform-independent code
-│   │   ├── data/            #     Data models, repositories, DB schema
-│   │   ├── domain/          #     Business logic (accounts, sessions, links, settings)
-│   │   └── ui/              #     Compose UI (sidebar, dialogs, settings, onboarding)
-│   ├── jvmMain/             #   JVM/Desktop specific code
-│   │   ├── domain/          #     SessionManager, AppInitializer
-│   │   └── ui/webview/      #     WebView lifecycle management
-│   ├── commonTest/          #   Platform-independent tests
-│   └── jvmTest/             #   JVM tests (unit, integration, performance)
-├── desktopApp/              # Compose Desktop entry point & packaging config
-├── gradle/                  # Version catalog & build scripts
-└── .github/workflows/       # CI/CD pipelines
+├── apps/
+│   └── desktop/              # Electron main app
+│       ├── src/main/          #   Main process (IPC, session, webview)
+│       └── src/renderer/      #   Renderer process (React)
+├── packages/
+│   ├── shared/                # Shared types and business logic
+│   │   └── src/types/         #   Account, settings, i18n types
+│   └── ui/                    # React component library
+│       └── src/               #   Sidebar, settings, theme
+├── .github/
+│   ├── workflows/             # CI/CD pipelines
+│   └── actions/               # Reusable composite actions
+├── biome.json                 # Linter & formatter config
+├── pnpm-workspace.yaml        # Monorepo workspace definition
+└── tsconfig.base.json         # Shared TypeScript config
 ```
 
 ## Tech Stack
 
-- **Kotlin** 2.3 + **Compose Multiplatform** 1.10
-- **KCEF** (compose-webview-multiplatform) for embedded browser
-- **SQLDelight** + **SQLCipher** for encrypted local persistence
-- **Sparkle** / **WinSparkle** for auto-updates
+- **Electron** 41 — desktop runtime
+- **React** 19 — UI framework
+- **TypeScript** 5.9 — language
+- **Vite** 8 + **electron-vite** — build tooling
+- **sql.js** — SQLite in the renderer process
+- **Biome** — linter and formatter
+- **Storybook** 10 — UI component development
+- **electron-builder** — native packaging (DMG, NSIS)
+- **electron-updater** — auto-update
 
 ## Contributing
 
-We welcome contributions! Please read our [Contributing Guide](CONTRIBUTING.md)
+We welcome contributions! Please read our [Contributing Guide](.github/CONTRIBUTING.md)
 to get started.
 
 ## Code of Conduct
 
-This project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md).
+This project follows the [Contributor Covenant Code of Conduct](.github/CODE_OF_CONDUCT.md).
 By participating, you are expected to uphold this code.
 
 ## License
