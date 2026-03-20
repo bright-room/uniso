@@ -1,5 +1,6 @@
 package net.brightroom.uniso.ui.onboarding
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.hoverable
@@ -30,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -45,6 +47,7 @@ import net.brightroom.uniso.ui.theme.Dimensions
 fun TutorialScreen(
     services: List<ServicePlugin>,
     onComplete: () -> Unit,
+    appIcon: Painter? = null,
     modifier: Modifier = Modifier,
 ) {
     val colors = AppColors.current
@@ -67,10 +70,18 @@ fun TutorialScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             // Step icon
-            Text(
-                text = currentStep.icon,
-                style = TextStyle(fontSize = 48.sp),
-            )
+            if (currentStep == TutorialStep.WELCOME && appIcon != null) {
+                Image(
+                    painter = appIcon,
+                    contentDescription = "Uniso",
+                    modifier = Modifier.size(64.dp),
+                )
+            } else {
+                Text(
+                    text = currentStep.icon,
+                    style = TextStyle(fontSize = 48.sp),
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 

@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.input.key.KeyEvent
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
@@ -176,6 +177,7 @@ fun main() {
                 exitApplication()
             },
             title = "${Constants.APP_NAME} — ${getPlatformName()}",
+            icon = painterResource("icons/icon.png"),
             state = rememberWindowState(width = 1280.dp, height = 800.dp),
             onKeyEvent = handleKeyEvent,
         ) {
@@ -200,6 +202,7 @@ fun main() {
                             TutorialScreen(
                                 services = dependencies.servicePluginRegistry.getAll(),
                                 onComplete = { initializer.onTutorialComplete() },
+                                appIcon = painterResource("icons/icon.png"),
                             )
                         }
 
