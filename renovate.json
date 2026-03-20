@@ -6,11 +6,43 @@
   "labels": ["dependencies", "renovate"],
   "prConcurrentLimit": 0,
   "prHourlyLimit": 0,
-  "separateMinorPatch": true,
   "minimumReleaseAge": "3 days",
+  "rangeStrategy": "bump",
+  "postUpdateOptions": ["pnpmDedupe"],
   "automerge": true,
   "major": {
     "minimumReleaseAge": "7 days",
     "automerge": false
-  }
+  },
+  "packageRules": [
+    {
+      "description": "Group all non-major updates into a single PR",
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "minor-and-patch"
+    },
+    {
+      "description": "Auto-merge all GitHub Actions updates (including major)",
+      "matchManagers": ["github-actions"],
+      "automerge": true,
+      "major": {
+        "automerge": true
+      }
+    },
+    {
+      "description": "Group Electron updates separately",
+      "matchPackageNames": ["electron", "electron-builder", "@electron-forge/**", "electron-*"],
+      "groupName": "electron"
+    },
+    {
+      "description": "Group TypeScript and type definitions",
+      "matchPackageNames": ["typescript"],
+      "matchPackagePrefixes": ["@types/"],
+      "groupName": "typescript-and-types"
+    },
+    {
+      "description": "Lock file maintenance on schedule",
+      "matchUpdateTypes": ["lockFileMaintenance"],
+      "automerge": true
+    }
+  ]
 }
