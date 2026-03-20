@@ -1,23 +1,21 @@
-name: release
+name: on-tag-push
 
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 permissions:
   contents: write
 
-env:
-  VERSION: ${{ github.ref_name }}
-
 jobs:
   build-macos:
+    name: Build macOS (DMG)
     runs-on: macos-latest
     timeout-minutes: 30
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v6
 
       - name: Import Code Signing Certificate
@@ -59,11 +57,12 @@ jobs:
           retention-days: 5
 
   build-windows:
+    name: Build Windows (MSI)
     runs-on: windows-latest
     timeout-minutes: 30
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v6
 
       - name: Package MSI
@@ -97,12 +96,13 @@ jobs:
           retention-days: 5
 
   release:
+    name: GitHub Release
     needs: [build-macos, build-windows]
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v6
 
       - name: Download All Artifacts
@@ -113,16 +113,16 @@ jobs:
       - name: Generate Appcast XML
         run: |
           chmod +x scripts/generate-appcast.sh
-          ./scripts/generate-appcast.sh "${{ env.VERSION }}"
+          ./scripts/generate-appcast.sh "${GITHUB_REF_NAME}"
 
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          VERSION_NAME="${VERSION#v}"
+          VERSION_NAME="${GITHUB_REF_NAME#v}"
 
-          gh release create "${{ env.VERSION }}" \
-            --title "Uniso $VERSION_NAME" \
+          gh release create "${GITHUB_REF_NAME}" \
+            --title "Uniso ${VERSION_NAME}" \
             --generate-notes \
             artifacts/dmg-artifact/*.dmg \
             artifacts/msi-artifact/*.msi \
