@@ -108,6 +108,12 @@ fun SplashScreen(
                         style = TextStyle(fontSize = 12.sp),
                         color = colors.textDanger,
                     )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Please restart the application.",
+                        style = TextStyle(fontSize = 12.sp),
+                        color = colors.textSecondary,
+                    )
                 }
 
                 is CefInitState.RestartRequired -> {

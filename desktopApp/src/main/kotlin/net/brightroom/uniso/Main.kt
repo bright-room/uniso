@@ -23,6 +23,7 @@ import net.brightroom.uniso.ui.LocalI18n
 import net.brightroom.uniso.ui.MainLayout
 import net.brightroom.uniso.ui.MainScreen
 import net.brightroom.uniso.ui.ShortcutAction
+import net.brightroom.uniso.ui.dialogs.CefInitErrorDialog
 import net.brightroom.uniso.ui.dialogs.CrashRecoveryDialog
 import net.brightroom.uniso.ui.settings.SettingsViewModel
 import net.brightroom.uniso.ui.sidebar.ExternalBrowserCallback
@@ -201,6 +202,7 @@ fun main() {
                         )
                     } else {
                         val webViewReady = cefState is CefInitState.Ready
+                        val cefError = cefState as? CefInitState.Error
                         val sidebarAccounts by sidebarViewModel.sidebarAccounts.collectAsState()
                         val activatedIds by webViewLifecycleManager.activatedAccountIds.collectAsState()
                         val activatedAccounts = sidebarAccounts.filter { it.accountId in activatedIds }
@@ -229,6 +231,14 @@ fun main() {
                                     )
                                 },
                                 onWebViewCleanup = webViewCleanup,
+                            )
+                        } else if (cefError != null) {
+                            CefInitErrorDialog(
+                                errorMessage = cefError.message,
+                                onDismiss = {
+                                    dependencies.close()
+                                    exitApplication()
+                                },
                             )
                         } else {
                             SplashScreen(initState = cefState)
