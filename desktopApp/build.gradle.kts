@@ -56,17 +56,6 @@ compose.desktop {
                 runtimeEntitlementsFile.set(project.file("src/main/resources/macOS/runtime-entitlements.plist"))
                 dmgPackageVersion = libs.versions.app.get()
                 dmgPackageBuildVersion = "1"
-
-                signing {
-                    sign.set(System.getenv("MACOS_SIGN_ENABLED")?.toBoolean() ?: false)
-                    identity.set(System.getenv("MACOS_SIGNING_IDENTITY") ?: "")
-                }
-
-                notarization {
-                    appleID.set(System.getenv("MACOS_NOTARIZATION_APPLE_ID") ?: "")
-                    password.set(System.getenv("MACOS_NOTARIZATION_PASSWORD") ?: "")
-                    teamID.set(System.getenv("MACOS_NOTARIZATION_TEAM_ID") ?: "")
-                }
             }
 
             windows {
