@@ -37,10 +37,6 @@ compose.desktop {
         jvmArgs("--add-opens", "java.desktop/sun.awt=ALL-UNNAMED")
         jvmArgs("--add-opens", "java.desktop/java.awt.peer=ALL-UNNAMED")
 
-        // Required on macOS for proper rendering of CEF WebView (AWT heavyweight)
-        // within Compose Desktop (Skia lightweight) rendering pipeline
-        jvmArgs("-Dcompose.interop.blending=true")
-
         buildTypes.release.proguard {
             configurationFiles.from("compose-desktop.pro")
         }
