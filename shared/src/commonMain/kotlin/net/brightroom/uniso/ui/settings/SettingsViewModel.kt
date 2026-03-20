@@ -39,6 +39,9 @@ class SettingsViewModel(
     private val _telemetryEnabled = MutableStateFlow(false)
     val telemetryEnabled: StateFlow<Boolean> = _telemetryEnabled.asStateFlow()
 
+    private val _customUserAgent = MutableStateFlow("")
+    val customUserAgent: StateFlow<String> = _customUserAgent.asStateFlow()
+
     private val _deleteTarget = MutableStateFlow<SettingsAccount?>(null)
     val deleteTarget: StateFlow<SettingsAccount?> = _deleteTarget.asStateFlow()
 
@@ -46,6 +49,7 @@ class SettingsViewModel(
 
     init {
         _telemetryEnabled.value = settingsRepository.getBoolean(TELEMETRY_KEY) ?: false
+        _customUserAgent.value = settingsRepository.getString(CUSTOM_USER_AGENT_KEY) ?: ""
 
         scope.launch {
             accountManager.accounts.collect { accounts ->
@@ -61,6 +65,11 @@ class SettingsViewModel(
     fun setTelemetryEnabled(enabled: Boolean) {
         settingsRepository.setBoolean(TELEMETRY_KEY, enabled)
         _telemetryEnabled.value = enabled
+    }
+
+    fun setCustomUserAgent(userAgent: String) {
+        settingsRepository.setString(CUSTOM_USER_AGENT_KEY, userAgent)
+        _customUserAgent.value = userAgent
     }
 
     fun updateDisplayName(
@@ -135,5 +144,6 @@ class SettingsViewModel(
     companion object {
         private const val TELEMETRY_KEY = "telemetry_enabled"
         private const val TUTORIAL_COMPLETED_KEY = "tutorial_completed"
+        private const val CUSTOM_USER_AGENT_KEY = "custom_user_agent"
     }
 }

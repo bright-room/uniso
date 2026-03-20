@@ -63,6 +63,7 @@ fun SettingsScreen(
     val currentLocale by viewModel.currentLocale.collectAsState()
     val telemetryEnabled by viewModel.telemetryEnabled.collectAsState()
     val isCheckingUpdate by viewModel.isCheckingUpdate.collectAsState()
+    val customUserAgent by viewModel.customUserAgent.collectAsState()
 
     Column(
         modifier =
@@ -111,6 +112,12 @@ fun SettingsScreen(
             PrivacySection(
                 telemetryEnabled = telemetryEnabled,
                 onTelemetryChange = { viewModel.setTelemetryEnabled(it) },
+            )
+
+            // Advanced Section
+            AdvancedSection(
+                customUserAgent = customUserAgent,
+                onUserAgentChange = { viewModel.setCustomUserAgent(it) },
             )
 
             // Keyboard Shortcuts Section
@@ -446,6 +453,85 @@ private fun PrivacySection(
                     uncheckedBorderColor = colors.borderSecondary,
                 ),
         )
+    }
+}
+
+// ── Section: Advanced ──────────────────────────────────────────────────
+
+@Composable
+private fun AdvancedSection(
+    customUserAgent: String,
+    onUserAgentChange: (String) -> Unit,
+) {
+    val colors = AppColors.current
+    var editingValue by remember(customUserAgent) { mutableStateOf(customUserAgent) }
+    var isFocused by remember { mutableStateOf(false) }
+
+    SectionHeader(stringResource(StringKey.SETTINGS_ADVANCED))
+
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Text(
+            text = stringResource(StringKey.SETTINGS_USER_AGENT),
+            style = MaterialTheme.typography.bodyMedium,
+            color = colors.textPrimary,
+        )
+        Text(
+            text = stringResource(StringKey.SETTINGS_USER_AGENT_DESCRIPTION),
+            style = MaterialTheme.typography.bodySmall,
+            color = colors.textTertiary,
+        )
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        BasicTextField(
+            value = editingValue,
+            onValueChange = { editingValue = it },
+            singleLine = true,
+            textStyle =
+                TextStyle(
+                    fontSize = 13.sp,
+                    color = colors.textPrimary,
+                ),
+            cursorBrush = SolidColor(colors.textPrimary),
+            decorationBox = { innerTextField ->
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .border(
+                                width = Dimensions.BorderWidthThin,
+                                color = if (isFocused) colors.textTertiary else colors.borderTertiary,
+                                shape = RoundedCornerShape(Dimensions.BorderRadiusSm),
+                            ).padding(horizontal = 12.dp, vertical = 8.dp),
+                ) {
+                    if (editingValue.isEmpty()) {
+                        Text(
+                            text = stringResource(StringKey.SETTINGS_USER_AGENT_PLACEHOLDER),
+                            style = TextStyle(fontSize = 13.sp),
+                            color = colors.textTertiary.copy(alpha = 0.5f),
+                        )
+                    }
+                    innerTextField()
+                }
+            },
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .onFocusChanged { focusState ->
+                        if (isFocused && !focusState.isFocused && editingValue != customUserAgent) {
+                            onUserAgentChange(editingValue)
+                        }
+                        isFocused = focusState.isFocused
+                    },
+        )
+
+        if (editingValue != customUserAgent || customUserAgent.isNotEmpty()) {
+            Text(
+                text = stringResource(StringKey.SETTINGS_RESTART_REQUIRED),
+                style = MaterialTheme.typography.bodySmall,
+                color = colors.textTertiary,
+            )
+        }
     }
 }
 

@@ -120,9 +120,10 @@ class FullLifecycleIntegrationTest {
         val instaAccount = accountManager.addAccount("instagram").getOrThrow()
 
         assertEquals(2, accountManager.accounts.value.size)
-        assertEquals(xAccount.accountId, accountManager.activeAccountId.value)
+        assertEquals(instaAccount.accountId, accountManager.activeAccountId.value)
 
         // === Phase 3: Activate WebViews and browse ===
+        accountManager.setActiveAccount(xAccount.accountId)
         webViewLifecycleManager.activateWebView(xAccount.accountId)
         webViewLifecycleManager.updateAccountUrl(xAccount.accountId, "https://x.com/home")
 

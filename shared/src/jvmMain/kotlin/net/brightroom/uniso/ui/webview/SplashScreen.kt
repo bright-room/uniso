@@ -1,5 +1,6 @@
 package net.brightroom.uniso.ui.webview
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,7 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -28,6 +29,7 @@ import net.brightroom.uniso.ui.theme.AppColors
 @Composable
 fun SplashScreen(
     initState: InitState,
+    appIcon: Painter? = null,
     modifier: Modifier = Modifier,
 ) {
     val colors = AppColors.current
@@ -43,23 +45,14 @@ fun SplashScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            // App icon placeholder
-            Box(
-                modifier =
-                    Modifier
-                        .size(80.dp)
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(colors.textInfo),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = "U",
-                    style =
-                        TextStyle(
-                            fontSize = 36.sp,
-                            fontWeight = FontWeight.Bold,
-                        ),
-                    color = Color.White,
+            if (appIcon != null) {
+                Image(
+                    painter = appIcon,
+                    contentDescription = Constants.APP_NAME,
+                    modifier =
+                        Modifier
+                            .size(80.dp)
+                            .clip(RoundedCornerShape(20.dp)),
                 )
             }
 

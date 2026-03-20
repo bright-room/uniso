@@ -58,7 +58,7 @@ class AppDependencies(
             accountManager = accountManager,
         )
 
-    val cefInitializer = CefInitializer(platformPaths)
+    val cefInitializer = CefInitializer(platformPaths, settingsRepository)
 
     val webViewLifecycleManager =
         WebViewLifecycleManager(

@@ -37,9 +37,7 @@ class AccountManager(
         accountRepository.insert(account)
         _accounts.value = accountRepository.getAll()
 
-        if (_activeAccountId.value == null) {
-            _activeAccountId.value = account.accountId
-        }
+        _activeAccountId.value = account.accountId
 
         return Result.success(account)
     }
