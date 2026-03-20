@@ -11,7 +11,10 @@ let app: ElectronApplication
 let page: Page
 
 test.beforeAll(async () => {
+  const electronPath = require('electron') as unknown as string
+
   app = await electron.launch({
+    executablePath: electronPath,
     args: [path.join(__dirname, '../out/main/index.js')],
     env: {
       ...process.env,
@@ -25,7 +28,7 @@ test.beforeAll(async () => {
 })
 
 test.afterAll(async () => {
-  await app.close()
+  await app?.close()
 })
 
 test.describe('Initial launch flow', () => {
