@@ -1,3 +1,5 @@
+import fs from 'node:fs'
+import os from 'node:os'
 import path from 'node:path'
 import {
   type ElectronApplication,
@@ -7,28 +9,39 @@ import {
   test,
 } from '@playwright/test'
 
+const isMac = process.platform === 'darwin'
+const modifier = isMac ? 'Meta' : 'Control'
+
 let app: ElectronApplication
 let page: Page
+let userDataDir: string
 
 test.beforeAll(async () => {
-  const electronPath = require('electron') as unknown as string
+  // Use a fresh temp directory so the app always starts in first-run state
+  userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'uniso-e2e-'))
 
   app = await electron.launch({
-    executablePath: electronPath,
-    args: [path.join(__dirname, '../out/main/index.js')],
+    args: [
+      '--no-sandbox',
+      path.join(__dirname, '../out/main/index.js'),
+      `--user-data-dir=${userDataDir}`,
+    ],
     env: {
       ...process.env,
       NODE_ENV: 'test',
     },
   })
 
-  // The sidebar view is the first window (renderer)
   page = await app.firstWindow()
   await page.waitForLoadState('domcontentloaded')
 })
 
 test.afterAll(async () => {
   await app?.close()
+  // Clean up temp directory
+  if (userDataDir) {
+    fs.rmSync(userDataDir, { recursive: true, force: true })
+  }
 })
 
 test.describe('Initial launch flow', () => {
@@ -86,8 +99,8 @@ test.describe('Main screen', () => {
       await expect(page.locator(`text=${name}`)).toBeVisible()
     }
 
-    // Close dialog
-    await page.keyboard.press('Escape')
+    // Close dialog by clicking overlay background
+    await page.mouse.click(1, 1)
     await expect(page.locator('text=Add Account')).not.toBeVisible({ timeout: 3_000 })
   })
 })
@@ -204,18 +217,18 @@ test.describe('Internationalization', () => {
 
 test.describe('Keyboard shortcuts', () => {
   test('Ctrl+N opens add account dialog', async () => {
-    await page.keyboard.press('Control+n')
+    await page.keyboard.press(`${modifier}+n`)
 
     await expect(page.locator('text=Add Account')).toBeVisible({ timeout: 5_000 })
     await expect(page.locator('text=Select a service')).toBeVisible()
 
-    // Close
-    await page.keyboard.press('Escape')
+    // Close dialog by clicking overlay background
+    await page.mouse.click(1, 1)
     await expect(page.locator('text=Select a service')).not.toBeVisible({ timeout: 3_000 })
   })
 
   test('Ctrl+, opens settings', async () => {
-    await page.keyboard.press('Control+,')
+    await page.keyboard.press(`${modifier}+,`)
 
     await expect(page.locator('h1', { hasText: 'Settings' })).toBeVisible({ timeout: 5_000 })
 
