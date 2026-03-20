@@ -37,6 +37,17 @@ jobs:
             exit 1
           fi
 
+      - name: Check version matches libs.versions.toml
+        run: |
+          INPUT_VERSION="${{ inputs.version }}"
+          INPUT_VERSION="${INPUT_VERSION#v}"
+          CATALOG_VERSION=$(grep '^app\s*=' gradle/libs.versions.toml | sed 's/.*"\(.*\)"/\1/')
+
+          if [ "$INPUT_VERSION" != "$CATALOG_VERSION" ]; then
+            echo "::error::Version mismatch: input=${INPUT_VERSION}, libs.versions.toml=${CATALOG_VERSION}"
+            exit 1
+          fi
+
   push-tag:
     name: Push Tag
     needs: validate
