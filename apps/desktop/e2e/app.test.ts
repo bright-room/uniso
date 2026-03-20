@@ -9,9 +9,6 @@ import {
   test,
 } from '@playwright/test'
 
-const isMac = process.platform === 'darwin'
-const modifier = isMac ? 'Meta' : 'Control'
-
 let app: ElectronApplication
 let page: Page
 let userDataDir: string
@@ -216,8 +213,15 @@ test.describe('Internationalization', () => {
 })
 
 test.describe('Keyboard shortcuts', () => {
+  // Electron globalShortcut is OS-level and cannot be triggered by
+  // Playwright keyboard events. Send the IPC message directly instead.
+
   test('Ctrl+N opens add account dialog', async () => {
-    await page.keyboard.press(`${modifier}+n`)
+    await app.evaluate(({ webContents }) => {
+      for (const wc of webContents.getAllWebContents()) {
+        wc.send('shortcut-add-account')
+      }
+    })
 
     await expect(page.locator('text=Add Account')).toBeVisible({ timeout: 5_000 })
     await expect(page.locator('text=Select a service')).toBeVisible()
@@ -228,7 +232,11 @@ test.describe('Keyboard shortcuts', () => {
   })
 
   test('Ctrl+, opens settings', async () => {
-    await page.keyboard.press(`${modifier}+,`)
+    await app.evaluate(({ webContents }) => {
+      for (const wc of webContents.getAllWebContents()) {
+        wc.send('shortcut-settings')
+      }
+    })
 
     await expect(page.locator('h1', { hasText: 'Settings' })).toBeVisible({ timeout: 5_000 })
 
