@@ -67,7 +67,9 @@ export function TutorialScreen({ onComplete, t }: TutorialScreenProps) {
           {step === 2 && t('tutorial.switch_account.title')}
           {step === 3 && t('tutorial.complete.title')}
         </h2>
-        <p style={{ fontSize: 14, color: '#aaaaaa', margin: 0, textAlign: 'center', maxWidth: 360 }}>
+        <p
+          style={{ fontSize: 14, color: '#aaaaaa', margin: 0, textAlign: 'center', maxWidth: 360 }}
+        >
           {step === 0 && t('tutorial.welcome.description')}
           {step === 1 && t('tutorial.add_account.description')}
           {step === 2 && t('tutorial.switch_account.description')}
@@ -248,9 +250,5 @@ function SwitchAccountStep() {
 }
 
 function CompleteStep() {
-  return (
-    <div style={{ fontSize: 48, marginBottom: 8 }}>
-      🎉
-    </div>
-  )
+  return <div style={{ fontSize: 48, marginBottom: 8 }}>🎉</div>
 }

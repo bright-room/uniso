@@ -1,11 +1,11 @@
-import { ipcMain, Menu, BrowserWindow } from 'electron'
 import type {
   AccountManager,
-  SessionManager,
-  ServicePluginRegistry,
   I18nManager,
+  ServicePluginRegistry,
+  SessionManager,
   SettingsRepository,
 } from '@uniso/shared'
+import { BrowserWindow, ipcMain, Menu } from 'electron'
 import type { WebViewManager } from './webview-manager'
 
 export function registerIpcHandlers(
@@ -14,7 +14,7 @@ export function registerIpcHandlers(
   registry: ServicePluginRegistry,
   i18nManager: I18nManager,
   webViewManager: WebViewManager,
-  settingsRepo: SettingsRepository
+  settingsRepo: SettingsRepository,
 ): void {
   ipcMain.handle('add-account', (_event, serviceId: string) => {
     const account = accountManager.addAccount(serviceId)
@@ -138,6 +138,6 @@ export function registerIpcHandlers(
         },
       ])
       menu.popup({ window: win })
-    }
+    },
   )
 }

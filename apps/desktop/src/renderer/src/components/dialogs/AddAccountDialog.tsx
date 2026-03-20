@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
-import { DialogOverlay } from './DialogOverlay'
+import { useEffect, useState } from 'react'
 import { serviceIcons } from '../../theme/tokens'
+import { DialogOverlay } from './DialogOverlay'
 
 interface AddAccountDialogProps {
   onClose: () => void

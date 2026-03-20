@@ -12,7 +12,7 @@ export class AccountRepository {
               service_plugin.brand_color, service_plugin.icon_resource
        FROM account
        JOIN service_plugin ON account.service_id = service_plugin.service_id
-       ORDER BY service_plugin.sort_order, account.sort_order`
+       ORDER BY service_plugin.sort_order, account.sort_order`,
     )
     const results: AccountWithService[] = []
     while (stmt.step()) {
@@ -53,9 +53,7 @@ export class AccountRepository {
   }
 
   getByServiceId(serviceId: string): Account[] {
-    const stmt = this.db.prepare(
-      'SELECT * FROM account WHERE service_id = ? ORDER BY sort_order'
-    )
+    const stmt = this.db.prepare('SELECT * FROM account WHERE service_id = ? ORDER BY sort_order')
     stmt.bind([serviceId])
     const results: Account[] = []
     while (stmt.step()) {
@@ -82,9 +80,7 @@ export class AccountRepository {
   }
 
   getCountByServiceId(serviceId: string): number {
-    const stmt = this.db.prepare(
-      'SELECT COUNT(*) AS count FROM account WHERE service_id = ?'
-    )
+    const stmt = this.db.prepare('SELECT COUNT(*) AS count FROM account WHERE service_id = ?')
     stmt.bind([serviceId])
     stmt.step()
     const count = stmt.getAsObject().count as number
@@ -94,7 +90,7 @@ export class AccountRepository {
 
   getNextSortOrder(serviceId: string): number {
     const stmt = this.db.prepare(
-      'SELECT COALESCE(MAX(sort_order), -1) + 1 AS next FROM account WHERE service_id = ?'
+      'SELECT COALESCE(MAX(sort_order), -1) + 1 AS next FROM account WHERE service_id = ?',
     )
     stmt.bind([serviceId])
     stmt.step()
@@ -114,15 +110,16 @@ export class AccountRepository {
         account.avatarUrl,
         account.sortOrder,
         account.createdAt,
-      ]
+      ],
     )
   }
 
   updateProfile(accountId: string, displayName: string | null, avatarUrl: string | null): void {
-    this.db.run(
-      'UPDATE account SET display_name = ?, avatar_url = ? WHERE account_id = ?',
-      [displayName, avatarUrl, accountId]
-    )
+    this.db.run('UPDATE account SET display_name = ?, avatar_url = ? WHERE account_id = ?', [
+      displayName,
+      avatarUrl,
+      accountId,
+    ])
   }
 
   updateSortOrder(accountId: string, sortOrder: number): void {

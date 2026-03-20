@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import type { Database as SqlJsDatabase } from 'sql.js'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { AccountRepository } from '../data/account-repository'
 import { ServicePluginRepository } from '../data/service-plugin-repository'
-import { ServicePluginRegistry } from '../domain/service-plugin-registry'
 import { LinkRouter } from '../domain/link-router'
+import { ServicePluginRegistry } from '../domain/service-plugin-registry'
 import { createTestDatabase } from './test-database'
 
 describe('LinkRouter', () => {

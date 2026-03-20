@@ -36,7 +36,9 @@ interface Api {
   checkForUpdates(): Promise<unknown>
   downloadUpdate(): Promise<void>
   installUpdate(): Promise<void>
-  onUpdateAvailable(callback: (data: { version: string; releaseNotes: unknown }) => void): () => void
+  onUpdateAvailable(
+    callback: (data: { version: string; releaseNotes: unknown }) => void,
+  ): () => void
   onUpdateNotAvailable(callback: () => void): () => void
   onUpdateDownloaded(callback: () => void): () => void
   reloadActive(): Promise<void>
@@ -46,17 +48,17 @@ interface Api {
   showContextMenu(
     accountId: string,
     serviceDisplayName: string,
-    displayName: string | null
+    displayName: string | null,
   ): Promise<void>
   onContextMenuDelete(callback: (accountId: string) => void): () => void
   onAccountsChanged(callback: (accounts: AccountListItem[]) => void): () => void
   onUrlChanged(callback: (data: { accountId: string; url: string }) => void): () => void
   onLocaleChanged(
-    callback: (data: { locale: string; strings: Record<string, string> }) => void
+    callback: (data: { locale: string; strings: Record<string, string> }) => void,
   ): () => void
   onShowCrashRecovery(callback: () => void): () => void
   onShowAccountSelect(
-    callback: (data: { url: string; serviceId: string; accountIds: string[] }) => void
+    callback: (data: { url: string; serviceId: string; accountIds: string[] }) => void,
   ): () => void
 }
 

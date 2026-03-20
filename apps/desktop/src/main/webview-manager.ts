@@ -1,15 +1,13 @@
-import { BrowserWindow, WebContentsView, shell } from 'electron'
-import {
+import type {
   AccountManager,
-  SessionManager,
-  ServicePluginRegistry,
-  LinkRouter,
-  SessionRepository,
   I18nManager,
-  type AccountState,
-  type WebViewStateSaver,
+  LinkRouter,
+  ServicePluginRegistry,
+  SessionRepository,
+  WebViewStateSaver,
 } from '@uniso/shared'
-import { getOrCreateSession, getMaskElectronJs } from './session-setup'
+import { BrowserWindow, shell, WebContentsView } from 'electron'
+import { getMaskElectronJs, getOrCreateSession } from './session-setup'
 
 const SIDEBAR_WIDTH = 72
 const HEADER_HEIGHT = 40
@@ -34,7 +32,7 @@ export class WebViewManager implements WebViewStateSaver {
     private accountManager: AccountManager,
     private sessionRepo: SessionRepository,
     private registry: ServicePluginRegistry,
-    private linkRouter: LinkRouter
+    private linkRouter: LinkRouter,
   ) {}
 
   setI18nManager(manager: I18nManager): void {
@@ -71,9 +69,7 @@ export class WebViewManager implements WebViewStateSaver {
     const existing = this.views.get(accountId)
     if (existing) return existing.view
 
-    const account = this.accountManager
-      .getAccounts()
-      .find((a) => a.accountId === accountId)
+    const account = this.accountManager.getAccounts().find((a) => a.accountId === accountId)
     if (!account) throw new Error(`Account ${accountId} not found`)
 
     const ses = getOrCreateSession(accountId)
@@ -87,9 +83,7 @@ export class WebViewManager implements WebViewStateSaver {
 
     // Inject fingerprint masking as early as possible (before page scripts run)
     view.webContents.on('did-start-navigation', () => {
-      view.webContents
-        .executeJavaScript(getMaskElectronJs())
-        .catch(() => {})
+      view.webContents.executeJavaScript(getMaskElectronJs()).catch(() => {})
     })
     // Re-inject on dom-ready as a safety net (some SPAs reset properties)
     view.webContents.on('dom-ready', () => {
@@ -101,7 +95,8 @@ export class WebViewManager implements WebViewStateSaver {
     if (account.serviceId === 'x') {
       const injectXLoginHint = (url: string): void => {
         if (!url.includes('/login') && !url.includes('/i/flow/login')) return
-        const hintText = this.i18nManager?.getString('error.x_login_hint') ??
+        const hintText =
+          this.i18nManager?.getString('error.x_login_hint') ??
           'X does not support email/password login in this app. Please use "Sign in with Google" or "Sign in with Apple" instead.'
         const safeText = JSON.stringify(hintText)
         view.webContents
@@ -118,7 +113,7 @@ export class WebViewManager implements WebViewStateSaver {
               close.onclick = function() { banner.remove(); };
               banner.appendChild(close);
               document.body.prepend(banner);
-            })()`
+            })()`,
           )
           .catch(() => {})
       }
@@ -286,12 +281,10 @@ export class WebViewManager implements WebViewStateSaver {
 </script>
 </body></html>`
 
-      view.webContents.loadURL(
-        `data:text/html;charset=utf-8,${encodeURIComponent(errorHtml)}`
-      )
+      view.webContents.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(errorHtml)}`)
     })
 
-    this.mainWindow!.contentView.addChildView(view)
+    this.mainWindow?.contentView.addChildView(view)
 
     // Load URL - either restored or default
     const state = this.sessionRepo.getAccountState(accountId)
@@ -452,10 +445,7 @@ export class WebViewManager implements WebViewStateSaver {
     // When the OAuth flow completes, the popup will redirect back to the service.
     // Detect when the popup navigates away from Google and close it.
     popup.webContents.on('will-navigate', (_event, navUrl) => {
-      if (
-        !navUrl.includes('accounts.google.com') &&
-        !navUrl.includes('myaccount.google.com')
-      ) {
+      if (!navUrl.includes('accounts.google.com') && !navUrl.includes('myaccount.google.com')) {
         popup.close()
         const managed = this.views.get(accountId)
         if (managed) {

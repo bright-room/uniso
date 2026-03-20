@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import type { Database as SqlJsDatabase } from 'sql.js'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { SessionRepository } from '../data/session-repository'
 import { SessionManager, type WebViewStateSaver } from '../domain/session-manager'
 import { createTestDatabase } from './test-database'

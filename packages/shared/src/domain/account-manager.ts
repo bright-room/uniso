@@ -1,5 +1,5 @@
-import { AccountRepository } from '../data/account-repository'
-import { SessionRepository } from '../data/session-repository'
+import type { AccountRepository } from '../data/account-repository'
+import type { SessionRepository } from '../data/session-repository'
 import type { Account, AccountWithService } from '../types'
 
 type Listener = () => void
@@ -11,7 +11,7 @@ export class AccountManager {
 
   constructor(
     private accountRepo: AccountRepository,
-    private sessionRepo: SessionRepository
+    private sessionRepo: SessionRepository,
   ) {}
 
   loadAccounts(): void {

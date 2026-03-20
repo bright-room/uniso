@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import type { Database as SqlJsDatabase } from 'sql.js'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { AccountRepository } from '../data/account-repository'
 import { SessionRepository } from '../data/session-repository'
 import { createTestDatabase } from './test-database'
@@ -78,9 +78,9 @@ describe('SessionRepository', () => {
 
       const state = repo.getAccountState('acc-1')
       expect(state).toBeDefined()
-      expect(state!.lastUrl).toBe('https://x.com/home')
-      expect(state!.scrollPositionY).toBe(100)
-      expect(state!.webviewStatus).toBe('active')
+      expect(state?.lastUrl).toBe('https://x.com/home')
+      expect(state?.scrollPositionY).toBe(100)
+      expect(state?.webviewStatus).toBe('active')
     })
 
     it('upsert updates existing state', () => {
@@ -101,8 +101,8 @@ describe('SessionRepository', () => {
       })
 
       const state = repo.getAccountState('acc-1')
-      expect(state!.lastUrl).toBe('https://x.com/notifications')
-      expect(state!.webviewStatus).toBe('background')
+      expect(state?.lastUrl).toBe('https://x.com/notifications')
+      expect(state?.webviewStatus).toBe('background')
     })
 
     it('updates webview status', () => {
@@ -116,7 +116,7 @@ describe('SessionRepository', () => {
       })
 
       repo.updateWebViewStatus('acc-1', 'background', '2026-01-01T13:00:00Z')
-      expect(repo.getAccountState('acc-1')!.webviewStatus).toBe('background')
+      expect(repo.getAccountState('acc-1')?.webviewStatus).toBe('background')
     })
 
     it('updates last URL and scroll position', () => {
@@ -131,8 +131,8 @@ describe('SessionRepository', () => {
 
       repo.updateLastUrl('acc-1', 'https://x.com/explore', 500)
       const state = repo.getAccountState('acc-1')
-      expect(state!.lastUrl).toBe('https://x.com/explore')
-      expect(state!.scrollPositionY).toBe(500)
+      expect(state?.lastUrl).toBe('https://x.com/explore')
+      expect(state?.scrollPositionY).toBe(500)
     })
 
     it('marks all as destroyed', () => {
@@ -154,8 +154,8 @@ describe('SessionRepository', () => {
       })
 
       repo.markAllAsDestroyed()
-      expect(repo.getAccountState('acc-1')!.webviewStatus).toBe('destroyed')
-      expect(repo.getAccountState('acc-2')!.webviewStatus).toBe('destroyed')
+      expect(repo.getAccountState('acc-1')?.webviewStatus).toBe('destroyed')
+      expect(repo.getAccountState('acc-2')?.webviewStatus).toBe('destroyed')
     })
 
     it('gets background webviews ordered by last accessed', () => {
@@ -202,7 +202,7 @@ describe('SessionRepository', () => {
       })
 
       const oldest = repo.getOldestBackground()
-      expect(oldest!.accountId).toBe('acc-2')
+      expect(oldest?.accountId).toBe('acc-2')
     })
 
     it('gets expired background webviews', () => {

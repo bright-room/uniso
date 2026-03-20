@@ -1,17 +1,17 @@
-import { useState, useEffect, useCallback } from 'react'
-import { Sidebar } from './components/sidebar/Sidebar'
-import { WebViewHeaderBar } from './components/header/WebViewHeaderBar'
-import { AddAccountDialog } from './components/dialogs/AddAccountDialog'
-import { DeleteAccountDialog } from './components/dialogs/DeleteAccountDialog'
-import { CrashRecoveryDialog } from './components/dialogs/CrashRecoveryDialog'
-import { AccountSelectDialog } from './components/dialogs/AccountSelectDialog'
-import { SettingsScreen } from './components/settings/SettingsScreen'
-import { TutorialScreen } from './components/onboarding/TutorialScreen'
-import { TelemetryConsentDialog } from './components/dialogs/TelemetryConsentDialog'
+import { useCallback, useEffect, useState } from 'react'
 import { ContentPlaceholder } from './components/content/ContentPlaceholder'
+import { AccountSelectDialog } from './components/dialogs/AccountSelectDialog'
+import { AddAccountDialog } from './components/dialogs/AddAccountDialog'
+import { CrashRecoveryDialog } from './components/dialogs/CrashRecoveryDialog'
+import { DeleteAccountDialog } from './components/dialogs/DeleteAccountDialog'
+import { TelemetryConsentDialog } from './components/dialogs/TelemetryConsentDialog'
+import { WebViewHeaderBar } from './components/header/WebViewHeaderBar'
+import { TutorialScreen } from './components/onboarding/TutorialScreen'
+import { SettingsScreen } from './components/settings/SettingsScreen'
+import { Sidebar } from './components/sidebar/Sidebar'
 import { useAccounts } from './hooks/useAccounts'
-import { useI18n } from './hooks/useI18n'
 import { useCurrentUrl } from './hooks/useCurrentUrl'
+import { useI18n } from './hooks/useI18n'
 
 type DialogState =
   | { type: 'none' }
@@ -34,14 +34,17 @@ export function App() {
 
   // First-run check: show telemetry consent if tutorial not completed
   useEffect(() => {
-    window.api.getSetting('tutorial_completed').then((val) => {
-      console.log('[first-run] tutorial_completed =', JSON.stringify(val))
-      if (val !== 'true') {
-        setDialog({ type: 'telemetry' })
-      }
-    }).catch((err) => {
-      console.error('[first-run] getSetting failed:', err)
-    })
+    window.api
+      .getSetting('tutorial_completed')
+      .then((val) => {
+        console.log('[first-run] tutorial_completed =', JSON.stringify(val))
+        if (val !== 'true') {
+          setDialog({ type: 'telemetry' })
+        }
+      })
+      .catch((err) => {
+        console.error('[first-run] getSetting failed:', err)
+      })
   }, [])
 
   // Listen for crash recovery signal from main
@@ -78,7 +81,7 @@ export function App() {
         setDialog({ type: 'delete-account', account })
       }
     },
-    [accounts]
+    [accounts],
   )
 
   const confirmDelete = useCallback(() => {
@@ -188,23 +191,12 @@ export function App() {
       )}
 
       {dialog.type === 'telemetry' && (
-        <TelemetryConsentDialog
-          onAllow={handleTelemetryAllow}
-          onDeny={handleTelemetryDeny}
-          t={t}
-        />
+        <TelemetryConsentDialog onAllow={handleTelemetryAllow} onDeny={handleTelemetryDeny} t={t} />
       )}
 
-      {dialog.type === 'tutorial' && (
-        <TutorialScreen
-          onComplete={handleTutorialComplete}
-          t={t}
-        />
-      )}
+      {dialog.type === 'tutorial' && <TutorialScreen onComplete={handleTutorialComplete} t={t} />}
 
-      {accounts.length === 0 && !isDialogOpen && (
-        <ContentPlaceholder account={null} t={t} />
-      )}
+      {accounts.length === 0 && !isDialogOpen && <ContentPlaceholder account={null} t={t} />}
     </div>
   )
 }

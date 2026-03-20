@@ -1,4 +1,4 @@
-import { ServicePluginRepository } from '../data/service-plugin-repository'
+import type { ServicePluginRepository } from '../data/service-plugin-repository'
 import type { ServicePlugin } from '../types'
 
 export class ServicePluginRegistry {

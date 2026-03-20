@@ -1,6 +1,6 @@
-import { autoUpdater, type UpdateInfo } from 'electron-updater'
-import { BrowserWindow, ipcMain } from 'electron'
+import { ipcMain } from 'electron'
 import log from 'electron-log'
+import { autoUpdater, type UpdateInfo } from 'electron-updater'
 
 autoUpdater.logger = log
 autoUpdater.autoDownload = false

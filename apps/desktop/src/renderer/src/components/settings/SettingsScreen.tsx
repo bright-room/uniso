@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 interface SettingsScreenProps {
   locale: string
@@ -8,7 +8,13 @@ interface SettingsScreenProps {
   t: (key: string) => string
 }
 
-export function SettingsScreen({ locale, onLocaleChange, onClose, onShowTutorial, t }: SettingsScreenProps) {
+export function SettingsScreen({
+  locale,
+  onLocaleChange,
+  onClose,
+  onShowTutorial,
+  t,
+}: SettingsScreenProps) {
   const [telemetryEnabled, setTelemetryEnabled] = useState(false)
 
   useEffect(() => {
@@ -200,7 +206,13 @@ function ShortcutRow({ label, shortcut }: { label: string; shortcut: string }) {
   )
 }
 
-function ToggleSwitch({ checked, onChange }: { checked: boolean; onChange: (checked: boolean) => void }) {
+function ToggleSwitch({
+  checked,
+  onChange,
+}: {
+  checked: boolean
+  onChange: (checked: boolean) => void
+}) {
   return (
     <button
       role="switch"

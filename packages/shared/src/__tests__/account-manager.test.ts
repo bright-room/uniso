@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import type { Database as SqlJsDatabase } from 'sql.js'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AccountRepository } from '../data/account-repository'
 import { SessionRepository } from '../data/session-repository'
 import { AccountManager } from '../domain/account-manager'

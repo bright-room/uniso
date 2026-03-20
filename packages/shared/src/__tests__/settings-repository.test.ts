@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import type { Database as SqlJsDatabase } from 'sql.js'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { SettingsRepository } from '../data/settings-repository'
 import { createTestDatabase } from './test-database'
 
@@ -65,7 +65,7 @@ describe('SettingsRepository', () => {
     repo.insertLocalUser('user-1', '2026-01-01T00:00:00Z')
     const user = repo.getLocalUser()
     expect(user).toBeDefined()
-    expect(user!.id).toBe('user-1')
-    expect(user!.createdAt).toBe('2026-01-01T00:00:00Z')
+    expect(user?.id).toBe('user-1')
+    expect(user?.createdAt).toBe('2026-01-01T00:00:00Z')
   })
 })

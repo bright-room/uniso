@@ -1,6 +1,6 @@
 import type { Database as SqlJsDatabase } from 'sql.js'
-import type { SettingsEntry } from '../types/settings'
 import type { LocalUser } from '../types/local-user'
+import type { SettingsEntry } from '../types/settings'
 
 export class SettingsRepository {
   constructor(private db: SqlJsDatabase) {}
@@ -20,7 +20,7 @@ export class SettingsRepository {
   setString(key: string, value: string): void {
     this.db.run(
       'INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value',
-      [key, value]
+      [key, value],
     )
   }
 

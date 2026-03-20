@@ -1,4 +1,4 @@
-import { SessionRepository } from '../data/session-repository'
+import type { SessionRepository } from '../data/session-repository'
 
 export interface WebViewStateSaver {
   saveCurrentState(): void
@@ -9,7 +9,7 @@ export class SessionManager {
 
   constructor(
     private sessionRepo: SessionRepository,
-    private stateSaver?: WebViewStateSaver
+    private stateSaver?: WebViewStateSaver,
   ) {}
 
   isCleanShutdown(): boolean {

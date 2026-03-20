@@ -1,7 +1,7 @@
-import { SettingsRepository } from '../data'
-import type { Locale } from '../types'
+import type { SettingsRepository } from '../data'
 import en from '../i18n/en.json'
 import ja from '../i18n/ja.json'
+import type { Locale } from '../types'
 
 type Listener = (locale: Locale) => void
 
@@ -35,11 +35,11 @@ export class I18nManager {
   }
 
   getString(key: string): string {
-    return RESOURCES[this.currentLocale][key] ?? RESOURCES['en'][key] ?? key
+    return RESOURCES[this.currentLocale][key] ?? RESOURCES.en[key] ?? key
   }
 
   getAllStrings(): Record<string, string> {
-    return { ...RESOURCES['en'], ...RESOURCES[this.currentLocale] }
+    return { ...RESOURCES.en, ...RESOURCES[this.currentLocale] }
   }
 
   onLocaleChange(listener: Listener): () => void {

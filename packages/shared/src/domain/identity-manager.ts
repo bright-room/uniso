@@ -1,4 +1,4 @@
-import { SettingsRepository } from '../data/settings-repository'
+import type { SettingsRepository } from '../data/settings-repository'
 
 export class IdentityManager {
   constructor(private settingsRepo: SettingsRepository) {}

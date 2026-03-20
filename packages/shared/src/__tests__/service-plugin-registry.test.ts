@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import type { Database as SqlJsDatabase } from 'sql.js'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { ServicePluginRepository } from '../data/service-plugin-repository'
 import { ServicePluginRegistry } from '../domain/service-plugin-registry'
 import { createTestDatabase } from './test-database'
@@ -35,8 +35,8 @@ describe('ServicePluginRegistry', () => {
   it('gets plugin by id', () => {
     const plugin = registry.getById('x')
     expect(plugin).toBeDefined()
-    expect(plugin!.displayName).toBe('X (旧Twitter)')
-    expect(plugin!.domainPatterns).toEqual(['x.com', 'twitter.com'])
+    expect(plugin?.displayName).toBe('X (旧Twitter)')
+    expect(plugin?.domainPatterns).toEqual(['x.com', 'twitter.com'])
   })
 
   it('returns undefined for non-existent id', () => {

@@ -9,9 +9,5 @@
       "@uniso/shared/*": ["../../packages/shared/src/*"]
     }
   },
-  "include": [
-    "src/main/**/*.ts",
-    "src/preload/**/*.ts",
-    "electron.vite.config.ts"
-  ]
+  "include": ["src/main/**/*.ts", "src/preload/**/*.ts", "electron.vite.config.ts"]
 }

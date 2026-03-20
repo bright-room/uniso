@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import type { Database as SqlJsDatabase } from 'sql.js'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { SettingsRepository } from '../data/settings-repository'
 import { I18nManager } from '../domain/i18n-manager'
 import { createTestDatabase } from './test-database'

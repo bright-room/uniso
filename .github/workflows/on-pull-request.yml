@@ -12,6 +12,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v6
 
+      - name: Lint (Biome)
+        uses: ./.github/actions/pnpm-action
+        with:
+          command: lint
+
       - name: Typecheck
         uses: ./.github/actions/pnpm-action
         with:

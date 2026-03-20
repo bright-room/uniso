@@ -98,8 +98,7 @@ function setupSession(ses: Electron.Session): void {
   ses.webRequest.onBeforeSendHeaders((details, callback) => {
     const headers = { ...details.requestHeaders }
     if (headers['Sec-CH-UA'] || headers['sec-ch-ua']) {
-      const chromeUA =
-        '"Chromium";v="146", "Google Chrome";v="146", "Not?A_Brand";v="99"'
+      const chromeUA = '"Chromium";v="146", "Google Chrome";v="146", "Not?A_Brand";v="99"'
       headers['Sec-CH-UA'] = chromeUA
       headers['sec-ch-ua'] = chromeUA
     }

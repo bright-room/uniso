@@ -1,5 +1,5 @@
-import { DialogOverlay } from './DialogOverlay'
 import { serviceIcons } from '../../theme/tokens'
+import { DialogOverlay } from './DialogOverlay'
 
 interface AccountSelectDialogProps {
   accounts: AccountListItem[]
@@ -11,7 +11,7 @@ interface AccountSelectDialogProps {
 
 export function AccountSelectDialog({
   accounts,
-  url,
+  url: _url,
   onSelect,
   onClose,
   t,

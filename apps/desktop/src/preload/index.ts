@@ -56,8 +56,10 @@ const api = {
   downloadUpdate: () => ipcRenderer.invoke('download-update'),
   installUpdate: () => ipcRenderer.invoke('install-update'),
   onUpdateAvailable: (callback: (data: { version: string; releaseNotes: unknown }) => void) => {
-    const handler = (_event: Electron.IpcRendererEvent, data: { version: string; releaseNotes: unknown }) =>
-      callback(data)
+    const handler = (
+      _event: Electron.IpcRendererEvent,
+      data: { version: string; releaseNotes: unknown },
+    ) => callback(data)
     ipcRenderer.on('update-available', handler)
     return () => ipcRenderer.removeListener('update-available', handler)
   },
@@ -89,19 +91,17 @@ const api = {
     return () => ipcRenderer.removeListener('accounts-changed', handler)
   },
   onUrlChanged: (callback: (data: { accountId: string; url: string }) => void) => {
-    const handler = (
-      _event: Electron.IpcRendererEvent,
-      data: { accountId: string; url: string }
-    ) => callback(data)
+    const handler = (_event: Electron.IpcRendererEvent, data: { accountId: string; url: string }) =>
+      callback(data)
     ipcRenderer.on('url-changed', handler)
     return () => ipcRenderer.removeListener('url-changed', handler)
   },
   onLocaleChanged: (
-    callback: (data: { locale: string; strings: Record<string, string> }) => void
+    callback: (data: { locale: string; strings: Record<string, string> }) => void,
   ) => {
     const handler = (
       _event: Electron.IpcRendererEvent,
-      data: { locale: string; strings: Record<string, string> }
+      data: { locale: string; strings: Record<string, string> },
     ) => callback(data)
     ipcRenderer.on('locale-changed', handler)
     return () => ipcRenderer.removeListener('locale-changed', handler)
@@ -112,11 +112,11 @@ const api = {
     return () => ipcRenderer.removeListener('show-crash-recovery', handler)
   },
   onShowAccountSelect: (
-    callback: (data: { url: string; serviceId: string; accountIds: string[] }) => void
+    callback: (data: { url: string; serviceId: string; accountIds: string[] }) => void,
   ) => {
     const handler = (
       _event: Electron.IpcRendererEvent,
-      data: { url: string; serviceId: string; accountIds: string[] }
+      data: { url: string; serviceId: string; accountIds: string[] },
     ) => callback(data)
     ipcRenderer.on('show-account-select', handler)
     return () => ipcRenderer.removeListener('show-account-select', handler)

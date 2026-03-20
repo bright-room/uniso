@@ -1,26 +1,28 @@
-import { app, BrowserWindow, WebContentsView, globalShortcut } from 'electron'
-import path from 'path'
+import path from 'node:path'
+import { app, BrowserWindow, globalShortcut, WebContentsView } from 'electron'
 
 // Remove Chromium automation indicators before any BrowserWindow is created.
 // This disables navigator.webdriver and the cdc_ DOM properties at the engine level,
 // which JS-level masking cannot reliably achieve.
 app.commandLine.appendSwitch('disable-blink-features', 'AutomationControlled')
+
 import {
-  AppDatabase,
+  AccountManager,
   AccountRepository,
+  AppDatabase,
+  I18nManager,
+  IdentityManager,
+  LinkRouter,
+  ServicePluginRegistry,
+  ServicePluginRepository,
+  SessionManager,
   SessionRepository,
   SettingsRepository,
-  ServicePluginRepository,
-  AccountManager,
-  SessionManager,
-  ServicePluginRegistry,
-  LinkRouter,
-  IdentityManager,
-  I18nManager,
 } from '@uniso/shared'
-import { WebViewManager } from './webview-manager'
+import { checkForUpdatesInBackground, initAutoUpdater } from './auto-updater'
 import { registerIpcHandlers } from './ipc-handlers'
-import { initAutoUpdater, checkForUpdatesInBackground } from './auto-updater'
+import { WebViewManager } from './webview-manager'
+
 let mainWindow: BrowserWindow
 let database: AppDatabase
 let sessionManager: SessionManager
@@ -108,7 +110,14 @@ async function createWindow(): Promise<void> {
   }
 
   // Register IPC handlers
-  registerIpcHandlers(accountManager, sessionManager, registry, i18nManager, webViewManager, settingsRepo)
+  registerIpcHandlers(
+    accountManager,
+    sessionManager,
+    registry,
+    i18nManager,
+    webViewManager,
+    settingsRepo,
+  )
 
   // Initialize auto-updater
   initAutoUpdater(sidebarView.webContents)
@@ -130,7 +139,7 @@ async function createWindow(): Promise<void> {
         iconResource: a.iconResource,
         serviceDisplayName: a.serviceDisplayName,
         isActive: a.accountId === activeId,
-      }))
+      })),
     )
   })
 

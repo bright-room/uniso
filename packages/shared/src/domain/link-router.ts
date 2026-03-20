@@ -1,11 +1,11 @@
-import { AccountRepository } from '../data/account-repository'
-import { ServicePluginRegistry } from './service-plugin-registry'
+import type { AccountRepository } from '../data/account-repository'
 import type { LinkClassification } from '../types'
+import type { ServicePluginRegistry } from './service-plugin-registry'
 
 export class LinkRouter {
   constructor(
     private registry: ServicePluginRegistry,
-    private accountRepo: AccountRepository
+    private accountRepo: AccountRepository,
   ) {}
 
   classifyLink(url: string, currentServiceId: string): LinkClassification {

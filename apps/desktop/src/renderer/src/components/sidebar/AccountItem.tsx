@@ -1,4 +1,4 @@
-import { useState, type MouseEvent } from 'react'
+import { type MouseEvent, useState } from 'react'
 import { serviceIcons } from '../../theme/tokens'
 
 interface AccountItemProps {
@@ -10,9 +10,7 @@ interface AccountItemProps {
 export function AccountItem({ account, onSwitch, onContextMenu }: AccountItemProps) {
   const [hovered, setHovered] = useState(false)
   const icon = serviceIcons[account.serviceId] ?? '?'
-  const initials = (account.displayName ?? account.serviceDisplayName)
-    .substring(0, 2)
-    .toUpperCase()
+  const initials = (account.displayName ?? account.serviceDisplayName).substring(0, 2).toUpperCase()
 
   const handleContextMenu = (e: MouseEvent) => {
     e.preventDefault()

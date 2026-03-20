@@ -1,6 +1,6 @@
-import initSqlJs, { type Database as SqlJsDatabase } from 'sql.js'
 import fs from 'node:fs'
 import path from 'node:path'
+import initSqlJs, { type Database as SqlJsDatabase } from 'sql.js'
 
 const DDL = `
 CREATE TABLE IF NOT EXISTS local_user (

@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import type { Database as SqlJsDatabase } from 'sql.js'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { AccountRepository } from '../data/account-repository'
 import { createTestDatabase } from './test-database'
 
@@ -33,9 +33,9 @@ describe('AccountRepository', () => {
 
     const account = repo.getById('acc-1')
     expect(account).toBeDefined()
-    expect(account!.accountId).toBe('acc-1')
-    expect(account!.serviceId).toBe('x')
-    expect(account!.displayName).toBe('My X')
+    expect(account?.accountId).toBe('acc-1')
+    expect(account?.serviceId).toBe('x')
+    expect(account?.displayName).toBe('My X')
     expect(repo.getCount()).toBe(1)
   })
 
@@ -125,8 +125,8 @@ describe('AccountRepository', () => {
 
     repo.updateProfile('acc-1', 'Updated Name', 'https://example.com/avatar.png')
     const account = repo.getById('acc-1')
-    expect(account!.displayName).toBe('Updated Name')
-    expect(account!.avatarUrl).toBe('https://example.com/avatar.png')
+    expect(account?.displayName).toBe('Updated Name')
+    expect(account?.avatarUrl).toBe('https://example.com/avatar.png')
   })
 
   it('updates sort order', () => {
@@ -140,7 +140,7 @@ describe('AccountRepository', () => {
     })
 
     repo.updateSortOrder('acc-1', 5)
-    expect(repo.getById('acc-1')!.sortOrder).toBe(5)
+    expect(repo.getById('acc-1')?.sortOrder).toBe(5)
   })
 
   it('deletes an account', () => {
