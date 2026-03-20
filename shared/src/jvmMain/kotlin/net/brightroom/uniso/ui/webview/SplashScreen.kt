@@ -22,11 +22,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import net.brightroom.uniso.Constants
+import net.brightroom.uniso.domain.init.InitState
 import net.brightroom.uniso.ui.theme.AppColors
 
 @Composable
 fun SplashScreen(
-    initState: CefInitState,
+    initState: InitState,
     modifier: Modifier = Modifier,
 ) {
     val colors = AppColors.current
@@ -77,34 +78,51 @@ fun SplashScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             when (initState) {
-                is CefInitState.Downloading -> {
-                    LinearProgressIndicator(
-                        progress = { initState.progress / 100f },
-                        modifier = Modifier.width(200.dp),
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Downloading browser engine... ${initState.progress.toInt()}%",
-                        style = TextStyle(fontSize = 12.sp),
-                        color = colors.textSecondary,
-                    )
-                }
-
-                is CefInitState.Initializing, is CefInitState.NotStarted -> {
+                is InitState.Loading -> {
                     LinearProgressIndicator(
                         modifier = Modifier.width(200.dp),
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Initializing...",
+                        text = "Loading...",
                         style = TextStyle(fontSize = 12.sp),
                         color = colors.textSecondary,
                     )
                 }
 
-                is CefInitState.Error -> {
+                is InitState.CefInitializing -> {
+                    val cefState = initState.cefState
+                    when (cefState) {
+                        is CefInitState.Downloading -> {
+                            LinearProgressIndicator(
+                                progress = { cefState.progress / 100f },
+                                modifier = Modifier.width(200.dp),
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "Downloading browser engine... ${cefState.progress.toInt()}%",
+                                style = TextStyle(fontSize = 12.sp),
+                                color = colors.textSecondary,
+                            )
+                        }
+
+                        else -> {
+                            LinearProgressIndicator(
+                                modifier = Modifier.width(200.dp),
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "Initializing...",
+                                style = TextStyle(fontSize = 12.sp),
+                                color = colors.textSecondary,
+                            )
+                        }
+                    }
+                }
+
+                is InitState.Error -> {
                     Text(
-                        text = initState.message,
+                        text = initState.error.message ?: "Unknown error",
                         style = TextStyle(fontSize = 12.sp),
                         color = colors.textDanger,
                     )
@@ -116,15 +134,10 @@ fun SplashScreen(
                     )
                 }
 
-                is CefInitState.RestartRequired -> {
-                    Text(
-                        text = "Application restart required.",
-                        style = TextStyle(fontSize = 12.sp),
-                        color = colors.textWarning,
-                    )
-                }
-
-                is CefInitState.Ready -> {}
+                // Ready and CrashRecoveryPrompt are handled by Main.kt
+                is InitState.Ready,
+                is InitState.CrashRecoveryPrompt,
+                -> {}
             }
         }
     }
