@@ -20,15 +20,6 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v6
 
-      - name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'corretto'
-          java-version: 25
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
-
       - name: Import Code Signing Certificate
         if: env.MACOS_CERTIFICATE_BASE64 != ''
         env:
@@ -50,13 +41,15 @@ jobs:
           security list-keychain -d user -s "$KEYCHAIN_PATH"
 
       - name: Package DMG
+        uses: ./.github/actions/gradle-action
+        with:
+          command: packageDmg
         env:
           MACOS_SIGN_ENABLED: ${{ secrets.MACOS_SIGNING_IDENTITY != '' }}
           MACOS_SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
           MACOS_NOTARIZATION_APPLE_ID: ${{ secrets.MACOS_NOTARIZATION_APPLE_ID }}
           MACOS_NOTARIZATION_PASSWORD: ${{ secrets.MACOS_NOTARIZATION_PASSWORD }}
           MACOS_NOTARIZATION_TEAM_ID: ${{ secrets.MACOS_NOTARIZATION_TEAM_ID }}
-        run: chmod +x gradlew && ./gradlew packageDmg
 
       - name: Upload DMG Artifact
         uses: actions/upload-artifact@v4
@@ -73,17 +66,10 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v6
 
-      - name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'corretto'
-          java-version: 25
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
-
       - name: Package MSI
-        run: ./gradlew packageMsi
+        uses: ./.github/actions/gradle-action
+        with:
+          command: packageMsi
 
       - name: Sign MSI
         if: env.WINDOWS_CERTIFICATE_BASE64 != ''
