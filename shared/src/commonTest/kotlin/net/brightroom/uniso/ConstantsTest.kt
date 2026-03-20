@@ -14,7 +14,7 @@ class ConstantsTest {
     fun appVersionIsCorrect() {
         assertTrue(
             Regex("""\d+\.\d+\.\d+""").matches(Constants.APP_VERSION),
-            "APP_VERSION should follow semantic versioning (x.y.z), but was: ${Constants.APP_VERSION}"
+            "APP_VERSION should follow semantic versioning (x.y.z), but was: ${Constants.APP_VERSION}",
         )
     }
 }
