@@ -47,9 +47,25 @@ jobs:
         with:
           token: ${{ secrets.AUTH_TOKEN }}
 
-      - name: Create and push tag
+      - name: Update version in package.json
+        run: |
+          VERSION="${{ inputs.version }}"
+          VERSION="${VERSION#v}"
+          node -e "
+            const fs = require('fs');
+            for (const p of ['apps/desktop/package.json', 'packages/shared/package.json', 'packages/ui/package.json']) {
+              const pkg = JSON.parse(fs.readFileSync(p, 'utf8'));
+              pkg.version = '${VERSION}';
+              fs.writeFileSync(p, JSON.stringify(pkg, null, 2) + '\n');
+            }
+          "
+
+      - name: Commit version bump and push tag
         run: |
           git config user.name "${{ secrets.BR_GITHUB_MANAGER_NAME }}"
           git config user.email "${{ secrets.BR_GITHUB_MANAGER_EMAIL }}"
+          git add apps/desktop/package.json packages/shared/package.json packages/ui/package.json
+          git commit -m "chore: bump version to ${{ inputs.version }}"
+          git push origin HEAD
           git tag -a "${{ inputs.version }}" -m "Release ${{ inputs.version }}"
           git push origin "${{ inputs.version }}"
