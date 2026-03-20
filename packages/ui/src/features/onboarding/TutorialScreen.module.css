@@ -1,0 +1,154 @@
+.screen {
+  position: fixed;
+  inset: 0;
+  background: var(--color-bg-primary);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.stepContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.stepTitle {
+  font-size: var(--font-xxl);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.stepDescription {
+  font-size: var(--font-lg);
+  color: var(--color-text-secondary);
+  margin: 0;
+  text-align: center;
+  max-width: 360px;
+}
+
+.dots {
+  display: flex;
+  gap: 6px;
+  margin-top: 32px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-border-primary);
+}
+
+.dot.active {
+  background: var(--color-text-primary);
+}
+
+.nav {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.navButton {
+  padding: 8px 20px;
+  border-radius: var(--radius-md);
+  font-size: var(--font-md);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  background: var(--color-border-primary);
+  border: 0.5px solid var(--color-border-primary);
+  cursor: pointer;
+}
+
+.navButtonBack {
+  composes: navButton;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-tertiary);
+}
+
+/* Welcome step */
+.serviceBrands {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.brandIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--color-text-primary);
+}
+
+/* Add account step */
+.addAccountDemo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.addCircle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px dashed var(--color-border-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: var(--color-text-tertiary);
+}
+
+.addLabel {
+  padding: 4px 12px;
+  border-radius: var(--radius-xl);
+  background: var(--color-bg-tertiary);
+  font-size: var(--font-sm);
+  color: var(--color-text-secondary);
+}
+
+/* Switch account step */
+.switchDemo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 8px;
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  border: 0.5px solid var(--color-border-secondary);
+  margin-bottom: 8px;
+}
+
+.switchItem {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--color-text-primary);
+}
+
+.switchItem.activeItem {
+  background: var(--color-text-primary);
+  color: #000000;
+}
+
+/* Complete step */
+.celebration {
+  font-size: 48px;
+  margin-bottom: 8px;
+}

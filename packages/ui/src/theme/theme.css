@@ -1,0 +1,63 @@
+/* ─── Theme CSS Custom Properties ─────────────────────────────────────────── */
+
+:root,
+[data-theme='dark'] {
+  --color-bg-primary: #1a1a2e;
+  --color-bg-secondary: #16162a;
+  --color-bg-tertiary: #2a2a4a;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #aaaaaa;
+  --color-text-tertiary: #666666;
+  --color-border-primary: #3a3a5a;
+  --color-border-secondary: #2a2a4a;
+  --color-danger: #ff4444;
+  --color-accent: #0085ff;
+  --color-success: #1d9e75;
+  --color-overlay: rgba(0, 0, 0, 0.5);
+  --color-hover: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme='light'] {
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f5f5f7;
+  --color-bg-tertiary: #e8e8ed;
+  --color-text-primary: #1d1d1f;
+  --color-text-secondary: #86868b;
+  --color-text-tertiary: #aeaeb2;
+  --color-border-primary: #d2d2d7;
+  --color-border-secondary: #e5e5ea;
+  --color-danger: #ff3b30;
+  --color-accent: #0085ff;
+  --color-success: #34c759;
+  --color-overlay: rgba(0, 0, 0, 0.3);
+  --color-hover: rgba(0, 0, 0, 0.04);
+}
+
+/* ─── Dimension Custom Properties ─────────────────────────────────────────── */
+
+:root {
+  --sidebar-width: 80px;
+  --sidebar-titlebar-height: 48px;
+  --header-height: 40px;
+  --account-item-size: 48px;
+  --service-icon-size: 24px;
+  --service-icon-radius: 6px;
+  --avatar-size: 14px;
+  --add-button-size: 40px;
+  --active-indicator-width: 3px;
+  --dialog-width: 320px;
+  --dialog-width-wide: 380px;
+  --dialog-border-radius: 12px;
+  --dialog-padding: 24px;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --font-xs: 7px;
+  --font-sm: 12px;
+  --font-md: 13px;
+  --font-lg: 14px;
+  --font-xl: 16px;
+  --font-xxl: 20px;
+}

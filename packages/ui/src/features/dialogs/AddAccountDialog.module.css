@@ -1,0 +1,36 @@
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+.serviceButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  transition: background 0.15s;
+}
+
+.serviceButton:hover {
+  background: var(--color-bg-tertiary);
+}
+
+.serviceIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-xl);
+  color: var(--color-text-primary);
+}
+
+.serviceName {
+  font-size: var(--font-sm);
+  color: var(--color-text-secondary);
+}

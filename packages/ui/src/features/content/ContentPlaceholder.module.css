@@ -1,0 +1,41 @@
+.container {
+  position: fixed;
+  top: var(--header-height);
+  left: var(--sidebar-width);
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+}
+
+.serviceIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: var(--color-text-primary);
+  margin-bottom: 12px;
+}
+
+.serviceName {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.displayName {
+  font-size: var(--font-md);
+  color: var(--color-text-secondary);
+}
+
+.emptyText {
+  font-size: var(--font-md);
+  color: var(--color-text-tertiary);
+}

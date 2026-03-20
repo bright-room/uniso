@@ -1,4 +1,4 @@
-import { type ReactNode, createContext, useContext, useState } from 'react'
+import { type ReactNode, createContext, useContext, useEffect, useState } from 'react'
 import { colors } from './tokens'
 
 export type ThemeMode = 'light' | 'dark'
@@ -20,6 +20,10 @@ interface ThemeProviderProps {
 
 export function ThemeProvider({ initialMode = 'dark', children }: ThemeProviderProps) {
   const [mode, setMode] = useState<ThemeMode>(initialMode)
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', mode)
+  }, [mode])
 
   const value: ThemeContextValue = {
     mode,

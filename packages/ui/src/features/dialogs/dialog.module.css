@@ -1,0 +1,82 @@
+.dialog {
+  background: var(--color-bg-primary);
+  border-radius: var(--dialog-border-radius);
+  padding: var(--dialog-padding);
+  width: var(--dialog-width);
+  border: 0.5px solid var(--color-border-secondary);
+}
+
+.dialogWide {
+  composes: dialog;
+  width: var(--dialog-width-wide);
+}
+
+.title {
+  font-size: var(--font-xl);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.subtitle {
+  font-size: var(--font-md);
+  color: var(--color-text-tertiary);
+}
+
+.description {
+  font-size: var(--font-md);
+  color: var(--color-text-secondary);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.btnSecondary {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-md);
+  color: var(--color-text-secondary);
+  background: var(--color-bg-tertiary);
+}
+
+.btnSecondary:hover {
+  opacity: 0.85;
+}
+
+.btnPrimary {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-md);
+  color: var(--color-text-primary);
+  background: var(--color-accent);
+}
+
+.btnPrimary:hover {
+  opacity: 0.85;
+}
+
+.btnDanger {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-md);
+  color: var(--color-text-primary);
+  background: var(--color-danger);
+}
+
+.btnDanger:hover {
+  opacity: 0.85;
+}
+
+.btnSubtle {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-md);
+  color: var(--color-text-primary);
+  background: var(--color-border-primary);
+}
+
+.btnSubtle:hover {
+  opacity: 0.85;
+}

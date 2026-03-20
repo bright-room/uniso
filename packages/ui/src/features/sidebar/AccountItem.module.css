@@ -1,0 +1,65 @@
+.item {
+  width: var(--account-item-size);
+  height: var(--account-item-size);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  position: relative;
+  background: transparent;
+  transition: background 0.15s;
+  padding: 0;
+}
+
+.item:hover {
+  background: var(--color-hover);
+}
+
+.item.active {
+  background: var(--color-text-primary);
+}
+
+.item.active:hover {
+  background: var(--color-text-primary);
+}
+
+.activeIndicator {
+  position: absolute;
+  left: -12px;
+  top: 12px;
+  bottom: 12px;
+  width: var(--active-indicator-width);
+  border-radius: 0 2px 2px 0;
+  background: #1d1d1f;
+}
+
+.serviceIcon {
+  width: var(--service-icon-size);
+  height: var(--service-icon-size);
+  border-radius: var(--service-icon-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-sm);
+  color: var(--color-text-primary);
+  line-height: 1;
+}
+
+.initials {
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-xs);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  line-height: 1;
+}
+
+.item.active .initials {
+  color: #86868b;
+}
