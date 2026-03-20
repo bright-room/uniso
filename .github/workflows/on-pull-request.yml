@@ -30,3 +30,31 @@ jobs:
         uses: ./.github/actions/gradle-action
         with:
           command: check -x spotlessCheck
+
+  package-macos:
+    needs: check
+    runs-on: macos-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+
+      - name: Package DMG (unsigned)
+        uses: ./.github/actions/gradle-action
+        with:
+          command: packageDmg
+
+  package-windows:
+    needs: check
+    runs-on: windows-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+
+      - name: Package MSI (unsigned)
+        uses: ./.github/actions/gradle-action
+        with:
+          command: packageMsi

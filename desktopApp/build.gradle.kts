@@ -47,15 +47,34 @@ compose.desktop {
             packageVersion = "1.0.0"
             description = "A unified desktop client for managing multiple SNS accounts in one place."
             vendor = "Bright Room"
+            licenseFile.set(rootProject.file("LICENSE"))
 
             macOS {
                 bundleID = "net.brightroom.uniso"
                 iconFile.set(project.file("src/main/resources/icons/icon.icns"))
+                entitlementsFile.set(project.file("src/main/resources/macOS/entitlements.plist"))
+                runtimeEntitlementsFile.set(project.file("src/main/resources/macOS/runtime-entitlements.plist"))
+                dmgPackageVersion = "1.0.0"
+                dmgPackageBuildVersion = "1"
+
+                signing {
+                    sign.set(System.getenv("MACOS_SIGN_ENABLED")?.toBoolean() ?: false)
+                    identity.set(System.getenv("MACOS_SIGNING_IDENTITY") ?: "")
+                }
+
+                notarization {
+                    appleID.set(System.getenv("MACOS_NOTARIZATION_APPLE_ID") ?: "")
+                    password.set(System.getenv("MACOS_NOTARIZATION_PASSWORD") ?: "")
+                    teamID.set(System.getenv("MACOS_NOTARIZATION_TEAM_ID") ?: "")
+                }
             }
 
             windows {
                 iconFile.set(project.file("src/main/resources/icons/icon.ico"))
                 menuGroup = "Uniso"
+                perUserInstall = true
+                msiPackageVersion = "1.0.0"
+                upgradeUuid = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
             }
         }
     }
