@@ -1,18 +1,18 @@
-import { useCallback, useEffect, useState } from 'react'
 import {
   type AccountListItem,
-  type ServicePlugin,
   AccountSelectDialog,
   AddAccountDialog,
   ContentPlaceholder,
   CrashRecoveryDialog,
   DeleteAccountDialog,
+  type ServicePlugin,
   SettingsScreen,
   Sidebar,
   TelemetryConsentDialog,
   TutorialScreen,
   WebViewHeaderBar,
 } from '@uniso/ui'
+import { useCallback, useEffect, useState } from 'react'
 import { useAccounts } from './hooks/useAccounts'
 import { useCurrentUrl } from './hooks/useCurrentUrl'
 import { useI18n } from './hooks/useI18n'
