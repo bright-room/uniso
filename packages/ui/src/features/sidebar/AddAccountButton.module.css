@@ -1,0 +1,20 @@
+.button {
+  width: var(--add-button-size);
+  height: var(--add-button-size);
+  border-radius: 50%;
+  border: 1.5px dashed var(--color-border-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--color-text-tertiary);
+  background: transparent;
+  transition: all 0.15s;
+  margin-top: 8px;
+  flex-shrink: 0;
+}
+
+.button:hover {
+  border-color: var(--color-text-secondary);
+  color: var(--color-text-secondary);
+}

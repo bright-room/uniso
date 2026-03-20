@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { fn } from 'storybook/test'
-import { useTheme } from '../../theme/ThemeContext'
-import { d } from '../../theme/tokens'
+import { useTheme } from '../theme/ThemeContext'
+import { d } from '../theme/tokens'
 import { DialogOverlay } from './DialogOverlay'
 
 function SampleDialogContent() {

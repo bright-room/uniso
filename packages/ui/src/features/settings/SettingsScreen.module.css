@@ -1,0 +1,109 @@
+.screen {
+  position: fixed;
+  top: 0;
+  left: var(--sidebar-width);
+  right: 0;
+  bottom: 0;
+  background: var(--color-bg-primary);
+  z-index: 500;
+  overflow: auto;
+  padding: 40px 32px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.headerTitle {
+  font-size: var(--font-xxl);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.closeButton {
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-md);
+  color: var(--color-text-secondary);
+  background: var(--color-bg-tertiary);
+}
+
+.closeButton:hover {
+  opacity: 0.85;
+}
+
+.section {
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  font-size: var(--font-md);
+  font-weight: 600;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.sectionContent {
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--color-border-secondary);
+  overflow: hidden;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  border-bottom: 0.5px solid var(--color-border-secondary);
+}
+
+.rowLabel {
+  font-size: var(--font-md);
+  color: var(--color-text-primary);
+}
+
+.select {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  border: 0.5px solid var(--color-border-primary);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  font-size: var(--font-md);
+}
+
+.showTutorialButton {
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-md);
+  color: var(--color-text-primary);
+  background: var(--color-border-primary);
+}
+
+.showTutorialButton:hover {
+  opacity: 0.85;
+}
+
+.telemetryDescription {
+  padding: 6px 16px 10px;
+  font-size: var(--font-sm);
+  color: var(--color-text-tertiary);
+}
+
+.kbd {
+  font-size: var(--font-sm);
+  color: var(--color-text-secondary);
+  background: var(--color-bg-tertiary);
+  padding: 2px 8px;
+  border-radius: var(--radius-xs);
+}
+
+.versionText {
+  font-size: var(--font-md);
+  color: var(--color-text-secondary);
+}

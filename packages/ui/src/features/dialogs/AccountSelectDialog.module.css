@@ -1,0 +1,52 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.accountButton {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  transition: background 0.15s;
+  width: 100%;
+  text-align: left;
+}
+
+.accountButton:hover {
+  background: var(--color-bg-tertiary);
+}
+
+.serviceIcon {
+  width: var(--service-icon-size);
+  height: var(--service-icon-size);
+  border-radius: var(--service-icon-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-sm);
+  color: var(--color-text-primary);
+}
+
+.accountName {
+  font-size: var(--font-md);
+  color: var(--color-text-primary);
+}
+
+.externalButton {
+  width: 100%;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-md);
+  color: var(--color-text-secondary);
+  background: var(--color-bg-tertiary);
+  text-align: center;
+}
+
+.externalButton:hover {
+  opacity: 0.85;
+}
