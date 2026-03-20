@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import type { AccountListItem } from '@uniso/ui'
 
 export function useAccounts() {
   const [accounts, setAccounts] = useState<AccountListItem[]>([])

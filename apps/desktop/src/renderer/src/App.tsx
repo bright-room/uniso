@@ -1,14 +1,18 @@
 import { useCallback, useEffect, useState } from 'react'
-import { ContentPlaceholder } from './components/content/ContentPlaceholder'
-import { AccountSelectDialog } from './components/dialogs/AccountSelectDialog'
-import { AddAccountDialog } from './components/dialogs/AddAccountDialog'
-import { CrashRecoveryDialog } from './components/dialogs/CrashRecoveryDialog'
-import { DeleteAccountDialog } from './components/dialogs/DeleteAccountDialog'
-import { TelemetryConsentDialog } from './components/dialogs/TelemetryConsentDialog'
-import { WebViewHeaderBar } from './components/header/WebViewHeaderBar'
-import { TutorialScreen } from './components/onboarding/TutorialScreen'
-import { SettingsScreen } from './components/settings/SettingsScreen'
-import { Sidebar } from './components/sidebar/Sidebar'
+import {
+  type AccountListItem,
+  type ServicePlugin,
+  AccountSelectDialog,
+  AddAccountDialog,
+  ContentPlaceholder,
+  CrashRecoveryDialog,
+  DeleteAccountDialog,
+  SettingsScreen,
+  Sidebar,
+  TelemetryConsentDialog,
+  TutorialScreen,
+  WebViewHeaderBar,
+} from '@uniso/ui'
 import { useAccounts } from './hooks/useAccounts'
 import { useCurrentUrl } from './hooks/useCurrentUrl'
 import { useI18n } from './hooks/useI18n'
@@ -28,9 +32,16 @@ export function App() {
   const { t, locale, setLocale } = useI18n()
   const currentUrl = useCurrentUrl()
   const [dialog, setDialog] = useState<DialogState>({ type: 'none' })
+  const [services, setServices] = useState<ServicePlugin[]>([])
+  const [telemetryEnabled, setTelemetryEnabled] = useState(false)
 
   const activeAccount = accounts.find((a) => a.isActive) ?? null
   const isDialogOpen = dialog.type !== 'none'
+
+  // Fetch service plugins once
+  useEffect(() => {
+    window.api.getServicePlugins().then(setServices)
+  }, [])
 
   // First-run check: show telemetry consent if tutorial not completed
   useEffect(() => {
@@ -46,6 +57,23 @@ export function App() {
         console.error('[first-run] getSetting failed:', err)
       })
   }, [])
+
+  // Fetch telemetry setting
+  useEffect(() => {
+    window.api.getSetting('telemetry_enabled').then((val) => {
+      setTelemetryEnabled(val === 'true')
+    })
+  }, [])
+
+  // Listen for context menu delete action from native menu
+  useEffect(() => {
+    return window.api.onContextMenuDelete((accountId) => {
+      const account = accounts.find((a) => a.accountId === accountId)
+      if (account) {
+        setDialog({ type: 'delete-account', account })
+      }
+    })
+  }, [accounts])
 
   // Listen for crash recovery signal from main
   useEffect(() => {
@@ -74,15 +102,9 @@ export function App() {
     window.api.addAccount(serviceId)
   }, [])
 
-  const handleDelete = useCallback(
-    (accountId: string) => {
-      const account = accounts.find((a) => a.accountId === accountId)
-      if (account) {
-        setDialog({ type: 'delete-account', account })
-      }
-    },
-    [accounts],
-  )
+  const handleContextMenu = useCallback((account: AccountListItem) => {
+    window.api.showContextMenu(account.accountId, account.serviceDisplayName, account.displayName)
+  }, [])
 
   const confirmDelete = useCallback(() => {
     if (dialog.type === 'delete-account') {
@@ -97,12 +119,19 @@ export function App() {
 
   const handleTelemetryAllow = useCallback(() => {
     window.api.setSetting('telemetry_enabled', 'true')
+    setTelemetryEnabled(true)
     setDialog({ type: 'tutorial' })
   }, [])
 
   const handleTelemetryDeny = useCallback(() => {
     window.api.setSetting('telemetry_enabled', 'false')
+    setTelemetryEnabled(false)
     setDialog({ type: 'tutorial' })
+  }, [])
+
+  const handleTelemetryChange = useCallback((enabled: boolean) => {
+    setTelemetryEnabled(enabled)
+    window.api.setSetting('telemetry_enabled', String(enabled))
   }, [])
 
   const handleTutorialComplete = useCallback(() => {
@@ -131,7 +160,7 @@ export function App() {
         accounts={accounts}
         onSwitch={handleSwitch}
         onAddClick={() => setDialog({ type: 'add-account' })}
-        onDelete={handleDelete}
+        onContextMenu={handleContextMenu}
         onSettingsClick={() => setDialog({ type: 'settings' })}
         t={t}
       />
@@ -141,7 +170,7 @@ export function App() {
 
       {/* Dialogs render as full-window overlays */}
       {dialog.type === 'add-account' && (
-        <AddAccountDialog onClose={closeDialog} onAdd={handleAdd} t={t} />
+        <AddAccountDialog services={services} onClose={closeDialog} onAdd={handleAdd} t={t} />
       )}
 
       {dialog.type === 'delete-account' && (
@@ -183,7 +212,9 @@ export function App() {
       {dialog.type === 'settings' && (
         <SettingsScreen
           locale={locale}
+          telemetryEnabled={telemetryEnabled}
           onLocaleChange={setLocale}
+          onTelemetryChange={handleTelemetryChange}
           onClose={closeDialog}
           onShowTutorial={handleShowTutorial}
           t={t}

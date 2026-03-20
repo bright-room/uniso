@@ -19,6 +19,8 @@ export default defineConfig({
     resolve: {
       alias: {
         '@uniso/shared': resolve(__dirname, '../../packages/shared/src/index.ts'),
+        '@uniso/ui/global.css': resolve(__dirname, '../../packages/ui/src/theme/global.css'),
+        '@uniso/ui': resolve(__dirname, '../../packages/ui/src/index.ts'),
       },
     },
   },
