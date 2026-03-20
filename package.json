@@ -17,16 +17,24 @@
     "package": "pnpm --filter @uniso/desktop package",
     "package:mac": "pnpm --filter @uniso/desktop package:mac",
     "package:win": "pnpm --filter @uniso/desktop package:win",
-    "storybook": "pnpm --filter @uniso/ui storybook"
+    "storybook": "pnpm --filter @uniso/ui storybook",
+    "test:e2e": "pnpm --filter @uniso/desktop build && pnpm --filter @uniso/desktop test:e2e",
+    "security:audit": "pnpm audit --prod",
+    "security:glassworm": "anti-trojan-source --files='{apps/*/src,packages/*/src,.github}/**/*.{ts,tsx,js,json,css,html,yml,yaml}'",
+    "security:check": "pnpm security:audit; pnpm security:glassworm"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
       "better-sqlite3",
       "electron",
       "esbuild"
-    ]
+    ],
+    "patchedDependencies": {
+      "anti-trojan-source@1.8.1": "patches/anti-trojan-source@1.8.1.patch"
+    }
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.8"
+    "@biomejs/biome": "^2.4.8",
+    "anti-trojan-source": "^1.8.1"
   }
 }

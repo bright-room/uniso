@@ -1,0 +1,23 @@
+diff --git a/bin/anti-trojan-source.js b/bin/anti-trojan-source.js
+index 48570340adda84e65837f6c661a4ae348f306869..b9b4e447f2d8cf3960fb05b579380dcd4475304d 100755
+--- a/bin/anti-trojan-source.js
++++ b/bin/anti-trojan-source.js
+@@ -49,7 +49,8 @@ const rl = readline.createInterface({
+ 
+ if (cli.input?.length > 0 || (cli.flags.hasOwnProperty('files') && cli.flags.files !== '')) {
+   handleCliFlags({ filesList: cli.input, flags: cli.flags })
+-  process.stdin.unref()
++  if (typeof process.stdin.unref === 'function') process.stdin.unref()
++  else rl.close()
+ } else {
+   // this should be a debug() use case: console.log('[waiting to process input from STDIN...]')
+   handleStdin()
+@@ -134,6 +135,7 @@ function handleStdin() {
+         }
+       }
+     }
+-    process.stdin.unref()
++    if (typeof process.stdin.unref === 'function') process.stdin.unref()
++  else rl.close()
+   })
+ }
