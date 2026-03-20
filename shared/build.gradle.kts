@@ -49,6 +49,7 @@ buildkonfig {
     packageName = "net.brightroom.uniso"
 
     defaultConfigs {
-        buildConfigField(STRING, "APP_VERSION", libs.versions.app.get())
+        val appVersion = providers.gradleProperty("appVersion").getOrElse(libs.versions.app.get())
+        buildConfigField(STRING, "APP_VERSION", appVersion)
     }
 }

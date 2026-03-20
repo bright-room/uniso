@@ -41,10 +41,12 @@ compose.desktop {
             configurationFiles.from("compose-desktop.pro")
         }
 
+        val appVersion = providers.gradleProperty("appVersion").getOrElse(libs.versions.app.get())
+
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi)
             packageName = "Uniso"
-            packageVersion = libs.versions.app.get()
+            packageVersion = appVersion
             description = "A unified desktop client for managing multiple SNS accounts in one place."
             vendor = "Bright Room"
             licenseFile.set(rootProject.file("LICENSE"))
@@ -54,7 +56,7 @@ compose.desktop {
                 iconFile.set(project.file("src/main/resources/icons/icon.icns"))
                 entitlementsFile.set(project.file("src/main/resources/macOS/entitlements.plist"))
                 runtimeEntitlementsFile.set(project.file("src/main/resources/macOS/runtime-entitlements.plist"))
-                dmgPackageVersion = libs.versions.app.get()
+                dmgPackageVersion = appVersion
                 dmgPackageBuildVersion = "1"
             }
 
@@ -62,7 +64,7 @@ compose.desktop {
                 iconFile.set(project.file("src/main/resources/icons/icon.ico"))
                 menuGroup = "Uniso"
                 perUserInstall = true
-                msiPackageVersion = libs.versions.app.get()
+                msiPackageVersion = appVersion
                 upgradeUuid = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
             }
         }

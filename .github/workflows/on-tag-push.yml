@@ -21,7 +21,7 @@ jobs:
       - name: Package DMG
         uses: ./.github/actions/gradle-action
         with:
-          command: packageDmg
+          command: packageDmg -PappVersion=${GITHUB_REF_NAME#v}
 
       - name: Upload DMG Artifact
         uses: actions/upload-artifact@v7
@@ -42,7 +42,7 @@ jobs:
       - name: Package MSI
         uses: ./.github/actions/gradle-action
         with:
-          command: packageMsi
+          command: packageMsi -PappVersion=${GITHUB_REF_NAME#v}
 
       - name: Upload MSI Artifact
         uses: actions/upload-artifact@v7
