@@ -37,7 +37,6 @@ compose.desktop {
         jvmArgs("--add-opens", "java.desktop/sun.awt=ALL-UNNAMED")
         jvmArgs("--add-opens", "java.desktop/java.awt.peer=ALL-UNNAMED")
 
-
         buildTypes.release.proguard {
             configurationFiles.from("compose-desktop.pro")
         }
