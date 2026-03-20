@@ -95,6 +95,6 @@ class AppDependencies(
     }
 
     companion object {
-        const val APPCAST_URL = "https://updates.brightroom.net/uniso/appcast.xml"
+        const val APPCAST_URL = "https://github.com/bright-room/uniso/releases/latest/download/appcast.xml"
     }
 }

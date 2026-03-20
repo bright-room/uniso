@@ -18,36 +18,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Import Code Signing Certificate
-        if: env.MACOS_CERTIFICATE_BASE64 != ''
-        env:
-          MACOS_CERTIFICATE_BASE64: ${{ secrets.MACOS_CERTIFICATE_BASE64 }}
-          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
-        run: |
-          CERTIFICATE_PATH=$RUNNER_TEMP/certificate.p12
-          KEYCHAIN_PATH=$RUNNER_TEMP/signing.keychain-db
-
-          echo "$MACOS_CERTIFICATE_BASE64" | base64 --decode -o "$CERTIFICATE_PATH"
-
-          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-
-          security import "$CERTIFICATE_PATH" -P "$MACOS_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
-          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-          security list-keychain -d user -s "$KEYCHAIN_PATH"
-
       - name: Package DMG
         uses: ./.github/actions/gradle-action
         with:
           command: packageDmg
-        env:
-          MACOS_SIGN_ENABLED: ${{ secrets.MACOS_SIGNING_IDENTITY != '' }}
-          MACOS_SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
-          MACOS_NOTARIZATION_APPLE_ID: ${{ secrets.MACOS_NOTARIZATION_APPLE_ID }}
-          MACOS_NOTARIZATION_PASSWORD: ${{ secrets.MACOS_NOTARIZATION_PASSWORD }}
-          MACOS_NOTARIZATION_TEAM_ID: ${{ secrets.MACOS_NOTARIZATION_TEAM_ID }}
 
       - name: Upload DMG Artifact
         uses: actions/upload-artifact@v7
@@ -69,24 +43,6 @@ jobs:
         uses: ./.github/actions/gradle-action
         with:
           command: packageMsi
-
-      - name: Sign MSI
-        if: env.WINDOWS_CERTIFICATE_BASE64 != ''
-        env:
-          WINDOWS_CERTIFICATE_BASE64: ${{ secrets.WINDOWS_CERTIFICATE_BASE64 }}
-          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
-        shell: pwsh
-        run: |
-          $certBytes = [Convert]::FromBase64String($env:WINDOWS_CERTIFICATE_BASE64)
-          $certPath = Join-Path $env:RUNNER_TEMP "certificate.pfx"
-          [IO.File]::WriteAllBytes($certPath, $certBytes)
-
-          $msiFiles = Get-ChildItem -Path "desktopApp/build/compose/binaries/main/msi" -Filter "*.msi"
-          foreach ($msi in $msiFiles) {
-            & signtool sign /f $certPath /p $env:WINDOWS_CERTIFICATE_PASSWORD /tr http://timestamp.digicert.com /td sha256 /fd sha256 $msi.FullName
-          }
-
-          Remove-Item $certPath
 
       - name: Upload MSI Artifact
         uses: actions/upload-artifact@v7
@@ -127,3 +83,26 @@ jobs:
             artifacts/dmg-artifact/*.dmg \
             artifacts/msi-artifact/*.msi \
             appcast.xml
+
+          INSTALL_NOTES=$(cat <<'EOF'
+
+          ---
+
+          ## Installation
+
+          ### macOS
+          1. Download the `.dmg` file and open it
+          2. Drag `Uniso.app` to the Applications folder
+          3. Since this app is not signed with an Apple Developer certificate, macOS will block it on first launch. To open it:
+             - **macOS Sonoma (14) or later**: Go to **System Settings → Privacy & Security**, find the message *"Uniso" was blocked*, and click **Open Anyway**
+             - **macOS Ventura (13) or earlier**: Right-click the app → **Open** → click **Open**
+             - **If the above doesn't work**: Run `xattr -cr /Applications/Uniso.app` in Terminal, then open the app
+
+          ### Windows
+          1. Download the `.msi` file and run it
+          2. Follow the installer instructions
+          EOF
+          )
+
+          CURRENT_BODY=$(gh release view "${GITHUB_REF_NAME}" --json body -q '.body')
+          gh release edit "${GITHUB_REF_NAME}" --notes "${CURRENT_BODY}${INSTALL_NOTES}"
