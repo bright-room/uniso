@@ -1,0 +1,26 @@
+{
+  "name": "uniso",
+  "private": true,
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @uniso/desktop dev",
+    "build": "pnpm -r build",
+    "lint": "eslint .",
+    "typecheck": "pnpm -r typecheck",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "package": "pnpm --filter @uniso/desktop package",
+    "package:mac": "pnpm --filter @uniso/desktop package:mac",
+    "package:win": "pnpm --filter @uniso/desktop package:win"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "better-sqlite3",
+      "electron",
+      "esbuild"
+    ]
+  }
+}
