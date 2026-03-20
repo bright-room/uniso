@@ -13,6 +13,7 @@ import net.brightroom.uniso.domain.plugin.ServicePluginRegistry
 import net.brightroom.uniso.domain.settings.AppLocale
 import net.brightroom.uniso.domain.settings.I18nManager
 import net.brightroom.uniso.domain.settings.SettingsRepository
+import net.brightroom.uniso.domain.updater.AutoUpdater
 
 data class SettingsAccount(
     val accountId: String,
@@ -27,6 +28,7 @@ class SettingsViewModel(
     private val servicePluginRegistry: ServicePluginRegistry,
     private val i18nManager: I18nManager,
     private val settingsRepository: SettingsRepository,
+    private val autoUpdater: AutoUpdater? = null,
     private val scope: CoroutineScope,
 ) {
     private val _accounts = MutableStateFlow<List<SettingsAccount>>(emptyList())
@@ -115,6 +117,15 @@ class SettingsViewModel(
             accountName = displayName ?: plugin?.displayName ?: serviceId,
             brandColor = plugin?.let { Color(it.brandColor) } ?: Color.Gray,
         )
+    }
+
+    val isCheckingUpdate: StateFlow<Boolean>
+        get() = autoUpdater?.isChecking ?: MutableStateFlow(false)
+
+    fun checkForUpdates() {
+        scope.launch {
+            autoUpdater?.checkForUpdates()
+        }
     }
 
     fun resetTutorial() {

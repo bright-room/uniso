@@ -55,12 +55,14 @@ fun SettingsScreen(
     onClose: () -> Unit,
     onWebViewCleanup: (String) -> Unit,
     onShowTutorial: () -> Unit = {},
+    onCheckForUpdates: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val colors = AppColors.current
     val accounts by viewModel.accounts.collectAsState()
     val currentLocale by viewModel.currentLocale.collectAsState()
     val telemetryEnabled by viewModel.telemetryEnabled.collectAsState()
+    val isCheckingUpdate by viewModel.isCheckingUpdate.collectAsState()
 
     Column(
         modifier =
@@ -117,6 +119,8 @@ fun SettingsScreen(
             // Application Info Section
             ApplicationInfoSection(
                 onShowTutorial = onShowTutorial,
+                onCheckForUpdates = onCheckForUpdates,
+                isCheckingUpdate = isCheckingUpdate,
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -504,7 +508,11 @@ private fun ShortcutRow(
 // ── Section: Application Info ───────────────────────────────────────────
 
 @Composable
-private fun ApplicationInfoSection(onShowTutorial: () -> Unit = {}) {
+private fun ApplicationInfoSection(
+    onShowTutorial: () -> Unit = {},
+    onCheckForUpdates: () -> Unit = {},
+    isCheckingUpdate: Boolean = false,
+) {
     val colors = AppColors.current
 
     SectionHeader(stringResource(StringKey.SETTINGS_APP_INFO))
@@ -528,25 +536,54 @@ private fun ApplicationInfoSection(onShowTutorial: () -> Unit = {}) {
 
     Spacer(modifier = Modifier.height(12.dp))
 
-    // Show Tutorial Again button
-    val interactionSource = remember { MutableInteractionSource() }
-    val isHovered by interactionSource.collectIsHoveredAsState()
-    val bgColor = if (isHovered) colors.backgroundTertiary else colors.backgroundSecondary
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        // Check for Updates button
+        val updateInteraction = remember { MutableInteractionSource() }
+        val updateHovered by updateInteraction.collectIsHoveredAsState()
+        val updateBg = if (updateHovered && !isCheckingUpdate) colors.backgroundTertiary else colors.backgroundSecondary
 
-    Box(
-        modifier =
-            Modifier
-                .clip(RoundedCornerShape(Dimensions.BorderRadiusSm))
-                .background(bgColor)
-                .hoverable(interactionSource)
-                .clickable(onClick = onShowTutorial)
-                .padding(horizontal = 12.dp, vertical = 6.dp),
-    ) {
-        Text(
-            text = stringResource(StringKey.SETTINGS_SHOW_TUTORIAL),
-            style = MaterialTheme.typography.bodyMedium,
-            color = colors.textSecondary,
-        )
+        Box(
+            modifier =
+                Modifier
+                    .clip(RoundedCornerShape(Dimensions.BorderRadiusSm))
+                    .background(updateBg)
+                    .hoverable(updateInteraction)
+                    .then(
+                        if (isCheckingUpdate) Modifier else Modifier.clickable(onClick = onCheckForUpdates),
+                    ).padding(horizontal = 12.dp, vertical = 6.dp),
+        ) {
+            Text(
+                text =
+                    if (isCheckingUpdate) {
+                        stringResource(StringKey.SETTINGS_CHECKING_UPDATE)
+                    } else {
+                        stringResource(StringKey.SETTINGS_CHECK_UPDATE)
+                    },
+                style = MaterialTheme.typography.bodyMedium,
+                color = if (isCheckingUpdate) colors.textTertiary else colors.textSecondary,
+            )
+        }
+
+        // Show Tutorial Again button
+        val tutorialInteraction = remember { MutableInteractionSource() }
+        val tutorialHovered by tutorialInteraction.collectIsHoveredAsState()
+        val tutorialBg = if (tutorialHovered) colors.backgroundTertiary else colors.backgroundSecondary
+
+        Box(
+            modifier =
+                Modifier
+                    .clip(RoundedCornerShape(Dimensions.BorderRadiusSm))
+                    .background(tutorialBg)
+                    .hoverable(tutorialInteraction)
+                    .clickable(onClick = onShowTutorial)
+                    .padding(horizontal = 12.dp, vertical = 6.dp),
+        ) {
+            Text(
+                text = stringResource(StringKey.SETTINGS_SHOW_TUTORIAL),
+                style = MaterialTheme.typography.bodyMedium,
+                color = colors.textSecondary,
+            )
+        }
     }
 }
 

@@ -50,6 +50,7 @@ enum class StringKey(
     SETTINGS_TELEMETRY_DESCRIPTION("settings.telemetry.description"),
     SETTINGS_VERSION("settings.version"),
     SETTINGS_CHECK_UPDATE("settings.check_update"),
+    SETTINGS_CHECKING_UPDATE("settings.checking_update"),
     SETTINGS_ACCOUNT_MANAGEMENT("settings.account_management"),
     SETTINGS_ACCOUNT_MANAGEMENT_EMPTY("settings.account_management.empty"),
     SETTINGS_GENERAL("settings.general"),
