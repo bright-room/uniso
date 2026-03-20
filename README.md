@@ -68,6 +68,17 @@ uniso/
 - **SQLDelight** + **SQLCipher** for encrypted local persistence
 - **Sparkle** / **WinSparkle** for auto-updates
 
+## Contributing
+
+We welcome contributions! Please read our [Contributing Guide](CONTRIBUTING.md)
+to get started.
+
+## Code of Conduct
+
+This project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md).
+By participating, you are expected to uphold this code.
+
 ## License
 
-See the [LICENSE](LICENSE) file for details.
+This project is licensed under the **GNU General Public License v3.0**. See the
+[LICENSE](LICENSE) file for details.
