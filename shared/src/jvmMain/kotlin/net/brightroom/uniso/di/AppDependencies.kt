@@ -9,8 +9,6 @@ import net.brightroom.uniso.data.repository.SqlSettingsRepository
 import net.brightroom.uniso.domain.account.AccountManager
 import net.brightroom.uniso.domain.identity.IdentityManager
 import net.brightroom.uniso.domain.link.LinkRouter
-import net.brightroom.uniso.domain.plan.FreePlanProvider
-import net.brightroom.uniso.domain.plan.PlanProvider
 import net.brightroom.uniso.domain.plugin.ServicePluginRegistry
 import net.brightroom.uniso.domain.session.SessionManager
 import net.brightroom.uniso.domain.settings.I18nManager
@@ -35,7 +33,6 @@ class AppDependencies(
     val sessionRepository = SessionRepository(database)
     val settingsRepository: SettingsRepository = SqlSettingsRepository(database)
 
-    val planProvider: PlanProvider = FreePlanProvider()
     val servicePluginRegistry = ServicePluginRegistry(database)
 
     val i18nManager =
@@ -53,7 +50,6 @@ class AppDependencies(
         AccountManager(
             accountRepository = accountRepository,
             sessionRepository = sessionRepository,
-            planProvider = planProvider,
         )
 
     val linkRouter =

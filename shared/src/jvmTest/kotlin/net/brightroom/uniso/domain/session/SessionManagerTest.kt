@@ -9,7 +9,6 @@ import net.brightroom.uniso.data.repository.AccountRepository
 import net.brightroom.uniso.data.repository.SessionRepository
 import net.brightroom.uniso.data.repository.createTestDatabase
 import net.brightroom.uniso.domain.account.AccountManager
-import net.brightroom.uniso.domain.plan.FreePlanProvider
 import net.brightroom.uniso.platform.PlatformPaths
 import net.brightroom.uniso.ui.webview.WebViewLifecycleManager
 import java.io.File
@@ -49,7 +48,6 @@ class SessionManagerTest {
             AccountManager(
                 accountRepository = accountRepository,
                 sessionRepository = sessionRepository,
-                planProvider = FreePlanProvider(),
             )
 
         webViewLifecycleManager =

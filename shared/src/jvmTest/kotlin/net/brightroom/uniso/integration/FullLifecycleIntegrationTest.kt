@@ -12,7 +12,6 @@ import net.brightroom.uniso.domain.account.AccountManager
 import net.brightroom.uniso.domain.identity.IdentityManager
 import net.brightroom.uniso.domain.init.AppInitializer
 import net.brightroom.uniso.domain.init.InitState
-import net.brightroom.uniso.domain.plan.FreePlanProvider
 import net.brightroom.uniso.domain.session.SessionManager
 import net.brightroom.uniso.domain.settings.AppLocale
 import net.brightroom.uniso.domain.settings.I18nManager
@@ -72,7 +71,6 @@ class FullLifecycleIntegrationTest {
             AccountManager(
                 accountRepository = accountRepository,
                 sessionRepository = sessionRepository,
-                planProvider = FreePlanProvider(),
             )
         webViewLifecycleManager =
             WebViewLifecycleManager(
@@ -163,7 +161,6 @@ class FullLifecycleIntegrationTest {
             AccountManager(
                 accountRepository = accountRepository,
                 sessionRepository = sessionRepository,
-                planProvider = FreePlanProvider(),
             )
         val newWebViewManager =
             WebViewLifecycleManager(
@@ -234,7 +231,6 @@ class FullLifecycleIntegrationTest {
             AccountManager(
                 accountRepository = accountRepository,
                 sessionRepository = sessionRepository,
-                planProvider = FreePlanProvider(),
             )
         val newWebViewManager =
             WebViewLifecycleManager(
@@ -489,7 +485,6 @@ class FullLifecycleIntegrationTest {
             AccountManager(
                 accountRepository = accountRepository,
                 sessionRepository = sessionRepository,
-                planProvider = FreePlanProvider(),
             )
         newManager.loadAccounts()
 

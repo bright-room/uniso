@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import net.brightroom.uniso.data.model.Account
 import net.brightroom.uniso.data.repository.AccountRepository
 import net.brightroom.uniso.data.repository.SessionRepository
-import net.brightroom.uniso.domain.plan.PlanProvider
 import kotlin.time.Clock
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -14,7 +13,6 @@ import kotlin.uuid.Uuid
 class AccountManager(
     private val accountRepository: AccountRepository,
     private val sessionRepository: SessionRepository,
-    private val planProvider: PlanProvider,
     private val clock: Clock = Clock.System,
 ) {
     private val _accounts = MutableStateFlow<List<Account>>(emptyList())
@@ -26,11 +24,6 @@ class AccountManager(
     @OptIn(ExperimentalUuidApi::class)
     fun addAccount(serviceId: String): Result<Account> {
         val currentCount = accountRepository.getCount()
-        if (!planProvider.checkAccountLimit(currentCount)) {
-            planProvider.onLimitReached()
-            return Result.failure(AccountLimitReachedException(planProvider.getCurrentPlan()))
-        }
-
         val account =
             Account(
                 accountId = Uuid.random().toString(),
