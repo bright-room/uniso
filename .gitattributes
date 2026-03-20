@@ -1,1 +1,11 @@
 * text eol=lf
+
+# Binary files
+*.ico binary
+*.icns binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.jar binary
