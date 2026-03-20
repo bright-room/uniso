@@ -1,5 +1,5 @@
 [versions]
-app = "1.0.0"
+app = "1.0.1"
 composeMultiplatform = "1.10.3"
 composeWebview = "2.0.3"
 junit = "4.13.2"
