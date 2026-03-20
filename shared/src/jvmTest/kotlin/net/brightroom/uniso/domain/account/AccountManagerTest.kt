@@ -1,12 +1,8 @@
 package net.brightroom.uniso.domain.account
 
-import net.brightroom.uniso.data.model.Account
 import net.brightroom.uniso.data.repository.AccountRepository
 import net.brightroom.uniso.data.repository.SessionRepository
 import net.brightroom.uniso.data.repository.createTestDatabase
-import net.brightroom.uniso.domain.plan.FreePlanProvider
-import net.brightroom.uniso.domain.plan.PlanInfo
-import net.brightroom.uniso.domain.plan.PlanProvider
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -28,7 +24,6 @@ class AccountManagerTest {
             AccountManager(
                 accountRepository = accountRepository,
                 sessionRepository = sessionRepository,
-                planProvider = FreePlanProvider(),
             )
     }
 
@@ -45,41 +40,14 @@ class AccountManagerTest {
         assertEquals(1, accountRepository.getCount())
     }
 
-    // AM-002: アカウント追加_PlanProvider許可
+    // AM-002: 複数アカウント追加
     @Test
-    fun addAccountWithFreePlanProviderAlwaysSucceeds() {
+    fun addMultipleAccountsSucceeds() {
         repeat(5) {
             val result = accountManager.addAccount("x")
             assertTrue(result.isSuccess)
         }
         assertEquals(5, accountManager.accounts.value.size)
-    }
-
-    // AM-002 variant: PlanProvider拒否
-    @Test
-    fun addAccountFailsWhenPlanLimitReached() {
-        val limitedPlan =
-            object : PlanProvider {
-                override fun checkAccountLimit(currentCount: Int): Boolean = currentCount < 2
-
-                override fun getCurrentPlan(): PlanInfo = PlanInfo("limited", "Limited", false)
-
-                override fun onLimitReached() {}
-            }
-
-        val database = createTestDatabase()
-        val manager =
-            AccountManager(
-                accountRepository = AccountRepository(database),
-                sessionRepository = SessionRepository(database),
-                planProvider = limitedPlan,
-            )
-
-        assertTrue(manager.addAccount("x").isSuccess)
-        assertTrue(manager.addAccount("x").isSuccess)
-        val result = manager.addAccount("x")
-        assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AccountLimitReachedException)
     }
 
     // AM-003: アカウント削除_正常系
@@ -165,7 +133,6 @@ class AccountManagerTest {
             AccountManager(
                 accountRepository = accountRepository,
                 sessionRepository = sessionRepository,
-                planProvider = FreePlanProvider(),
             )
         assertTrue(newManager.accounts.value.isEmpty())
 

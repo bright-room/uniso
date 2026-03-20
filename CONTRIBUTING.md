@@ -99,20 +99,10 @@ cd uniso
 | Refactor   | `refactor/short-description` | `refactor/webview-lifecycle`   |
 | Docs       | `docs/short-description`     | `docs/update-readme`           |
 
-## Contributor License Agreement (CLA)
-
-First-time contributors will be asked to sign our
-[Contributor License Agreement](CLA.md) when opening a pull request. The CLA
-bot will post a comment with instructions — simply reply with the required
-phrase to sign. This is a one-time process.
-
-The CLA ensures that Bright Room can maintain and relicense the project as
-needed while your contributions remain credited to you.
-
 ## License
 
 By contributing to Uniso, you agree that your contributions will be licensed
-under the [GNU General Public License v3.0](LICENSE).
+under the [MIT License](LICENSE).
 
 ## Code of Conduct
 

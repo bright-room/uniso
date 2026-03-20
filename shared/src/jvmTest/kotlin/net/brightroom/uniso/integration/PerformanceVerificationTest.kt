@@ -7,7 +7,6 @@ import net.brightroom.uniso.data.repository.createTestDatabase
 import net.brightroom.uniso.domain.account.AccountManager
 import net.brightroom.uniso.domain.identity.IdentityManager
 import net.brightroom.uniso.domain.init.AppInitializer
-import net.brightroom.uniso.domain.plan.FreePlanProvider
 import net.brightroom.uniso.domain.session.SessionManager
 import net.brightroom.uniso.domain.settings.AppLocale
 import net.brightroom.uniso.domain.settings.I18nManager
@@ -61,7 +60,6 @@ class PerformanceVerificationTest {
             AccountManager(
                 accountRepository = accountRepository,
                 sessionRepository = sessionRepository,
-                planProvider = FreePlanProvider(),
             )
         val platformPaths =
             object : PlatformPaths {
@@ -119,7 +117,6 @@ class PerformanceVerificationTest {
             AccountManager(
                 accountRepository = AccountRepository(database),
                 sessionRepository = SessionRepository(database),
-                planProvider = FreePlanProvider(),
             )
 
         val startMs = System.currentTimeMillis()
@@ -145,7 +142,6 @@ class PerformanceVerificationTest {
             AccountManager(
                 accountRepository = AccountRepository(database),
                 sessionRepository = SessionRepository(database),
-                planProvider = FreePlanProvider(),
             )
 
         // Setup: add accounts
@@ -221,7 +217,6 @@ class PerformanceVerificationTest {
             AccountManager(
                 accountRepository = accountRepository,
                 sessionRepository = sessionRepository,
-                planProvider = FreePlanProvider(),
             )
         val webViewLifecycleManager =
             WebViewLifecycleManager(
@@ -269,7 +264,6 @@ class PerformanceVerificationTest {
             AccountManager(
                 accountRepository = accountRepository,
                 sessionRepository = sessionRepository,
-                planProvider = FreePlanProvider(),
             )
         val webViewLifecycleManager =
             WebViewLifecycleManager(
@@ -316,7 +310,6 @@ class PerformanceVerificationTest {
             AccountManager(
                 accountRepository = AccountRepository(database),
                 sessionRepository = SessionRepository(database),
-                planProvider = FreePlanProvider(),
             )
 
         repeat(10) { i ->

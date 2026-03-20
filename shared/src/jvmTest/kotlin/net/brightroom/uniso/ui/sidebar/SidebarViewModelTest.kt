@@ -8,7 +8,6 @@ import net.brightroom.uniso.data.repository.AccountRepository
 import net.brightroom.uniso.data.repository.SessionRepository
 import net.brightroom.uniso.data.repository.createTestDatabase
 import net.brightroom.uniso.domain.account.AccountManager
-import net.brightroom.uniso.domain.plan.FreePlanProvider
 import net.brightroom.uniso.domain.plugin.ServicePluginRegistry
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -30,7 +29,6 @@ class SidebarViewModelTest {
             AccountManager(
                 accountRepository = AccountRepository(database),
                 sessionRepository = SessionRepository(database),
-                planProvider = FreePlanProvider(),
             )
         servicePluginRegistry = ServicePluginRegistry(database)
     }

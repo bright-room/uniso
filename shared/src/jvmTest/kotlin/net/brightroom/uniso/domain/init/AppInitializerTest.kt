@@ -12,7 +12,6 @@ import net.brightroom.uniso.data.repository.SqlSettingsRepository
 import net.brightroom.uniso.data.repository.createTestDatabase
 import net.brightroom.uniso.domain.account.AccountManager
 import net.brightroom.uniso.domain.identity.IdentityManager
-import net.brightroom.uniso.domain.plan.FreePlanProvider
 import net.brightroom.uniso.domain.session.SessionManager
 import net.brightroom.uniso.domain.settings.AppLocale
 import net.brightroom.uniso.domain.settings.I18nManager
@@ -55,7 +54,6 @@ class AppInitializerTest {
             AccountManager(
                 accountRepository = accountRepository,
                 sessionRepository = sessionRepository,
-                planProvider = FreePlanProvider(),
             )
         val platformPaths =
             object : PlatformPaths {
