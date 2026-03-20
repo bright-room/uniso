@@ -7,7 +7,8 @@ get started.
 
 ### Prerequisites
 
-- **JDK 25** (Amazon Corretto recommended)
+- **Node.js 24+** (recommended via [mise](https://mise.jdx.dev/))
+- **pnpm 9+**
 - **macOS 12+** or **Windows 10+**
 - **Git**
 
@@ -18,11 +19,36 @@ get started.
 git clone https://github.com/<your-username>/uniso.git
 cd uniso
 
-# Run the application
-./gradlew run
+# Install dependencies
+pnpm install
+
+# Run the application in development mode
+pnpm dev
+
+# Run linter
+pnpm lint
+
+# Run type checking
+pnpm typecheck
 
 # Run tests
-./gradlew check
+pnpm test
+```
+
+### Useful Commands
+
+```bash
+pnpm dev           # Start Electron in development mode
+pnpm build         # Build all packages
+pnpm lint          # Run Biome linter
+pnpm lint:fix      # Auto-fix lint issues
+pnpm format        # Format code with Biome
+pnpm typecheck     # Type check all packages
+pnpm test          # Run all tests
+pnpm test:watch    # Run tests in watch mode
+pnpm storybook     # Start Storybook for UI development
+pnpm package:mac   # Package macOS DMG
+pnpm package:win   # Package Windows installer
 ```
 
 ## How to Contribute
@@ -53,10 +79,10 @@ cd uniso
 
 3. **Write tests** for new functionality or bug fixes.
 
-4. **Run tests** to make sure everything passes:
+4. **Run checks** to make sure everything passes:
 
    ```bash
-   ./gradlew check
+   pnpm lint && pnpm typecheck && pnpm test
    ```
 
 5. **Commit** with a clear, descriptive message:
@@ -77,18 +103,16 @@ cd uniso
 
 ## Coding Conventions
 
-- **Language:** Kotlin
-- **Formatting:** Follow the project's existing code style. Use the default
-  Kotlin coding conventions.
+- **Language:** TypeScript (strict mode)
+- **Formatting:** Biome handles formatting and linting. Run `pnpm lint:fix` before committing.
 - **Naming:**
-  - Classes: `PascalCase`
-  - Functions/variables: `camelCase`
+  - Components / Types / Interfaces: `PascalCase`
+  - Functions / variables: `camelCase`
   - Constants: `UPPER_SNAKE_CASE`
-- **Architecture:** Follow the existing 3-layer architecture (UI, Domain, Data).
-  See `shared/` module structure.
+- **Styling:** CSS Modules (`.module.css`)
 - **i18n:** All user-facing strings must go through the i18n system. Do not
   hardcode display text.
-- **Tests:** Add unit tests for domain logic. Use JUnit 5 + Kotlin Test.
+- **Tests:** Add tests for shared logic. Use Vitest.
 
 ## Branch Naming
 
@@ -102,7 +126,7 @@ cd uniso
 ## License
 
 By contributing to Uniso, you agree that your contributions will be licensed
-under the [MIT License](LICENSE).
+under the [MIT License](../LICENSE).
 
 ## Code of Conduct
 
