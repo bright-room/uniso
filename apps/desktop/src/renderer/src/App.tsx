@@ -94,6 +94,28 @@ export function App() {
     })
   }, [])
 
+  // Keyboard shortcut handlers from main process
+  useEffect(() => {
+    return window.api.onShortcutAddAccount(() => {
+      setDialog({ type: 'add-account' })
+    })
+  }, [])
+
+  useEffect(() => {
+    return window.api.onShortcutDeleteAccount(() => {
+      const active = accounts.find((a) => a.isActive)
+      if (active) {
+        setDialog({ type: 'delete-account', account: active })
+      }
+    })
+  }, [accounts])
+
+  useEffect(() => {
+    return window.api.onShortcutSettings(() => {
+      setDialog({ type: 'settings' })
+    })
+  }, [])
+
   const handleSwitch = useCallback((accountId: string) => {
     window.api.switchAccount(accountId)
   }, [])

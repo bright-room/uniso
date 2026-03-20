@@ -121,6 +121,23 @@ const api = {
     ipcRenderer.on('show-account-select', handler)
     return () => ipcRenderer.removeListener('show-account-select', handler)
   },
+
+  // Keyboard shortcut events (main -> renderer)
+  onShortcutAddAccount: (callback: () => void) => {
+    const handler = () => callback()
+    ipcRenderer.on('shortcut-add-account', handler)
+    return () => ipcRenderer.removeListener('shortcut-add-account', handler)
+  },
+  onShortcutDeleteAccount: (callback: () => void) => {
+    const handler = () => callback()
+    ipcRenderer.on('shortcut-delete-account', handler)
+    return () => ipcRenderer.removeListener('shortcut-delete-account', handler)
+  },
+  onShortcutSettings: (callback: () => void) => {
+    const handler = () => callback()
+    ipcRenderer.on('shortcut-settings', handler)
+    return () => ipcRenderer.removeListener('shortcut-settings', handler)
+  },
 }
 
 contextBridge.exposeInMainWorld('api', api)
