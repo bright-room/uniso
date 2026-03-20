@@ -44,6 +44,7 @@ compose.desktop {
         val appVersion = providers.gradleProperty("appVersion").getOrElse(libs.versions.app.get())
 
         nativeDistributions {
+            modules("java.instrument", "java.management", "java.prefs", "java.sql", "jdk.unsupported")
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi)
             packageName = "Uniso"
             packageVersion = appVersion
