@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import net.brightroom.uniso.domain.account.AccountManager
 import net.brightroom.uniso.domain.error.AppError
 import net.brightroom.uniso.domain.identity.IdentityManager
@@ -11,6 +12,7 @@ import net.brightroom.uniso.domain.session.SessionManager
 import net.brightroom.uniso.domain.session.SessionState
 import net.brightroom.uniso.domain.settings.I18nManager
 import net.brightroom.uniso.domain.settings.SettingsRepository
+import net.brightroom.uniso.domain.updater.AutoUpdater
 import net.brightroom.uniso.ui.webview.CefInitState
 import net.brightroom.uniso.ui.webview.CefInitializer
 import net.brightroom.uniso.ui.webview.WebViewLifecycleManager
@@ -64,6 +66,7 @@ class AppInitializer(
     private val i18nManager: I18nManager,
     private val settingsRepository: SettingsRepository? = null,
     private val cefInitializer: CefInitializer? = null,
+    private val autoUpdater: AutoUpdater? = null,
 ) {
     private val _state = MutableStateFlow<InitState>(InitState.Loading)
     val state: StateFlow<InitState> = _state.asStateFlow()
@@ -200,6 +203,9 @@ class AppInitializer(
     fun startBackgroundTasks(scope: CoroutineScope) {
         sessionManager.startPeriodicSave(scope)
         webViewLifecycleManager.startSuspendTimer(scope)
+        scope.launch {
+            autoUpdater?.checkForUpdatesInBackground()
+        }
     }
 
     private fun restoreNormalSession() {

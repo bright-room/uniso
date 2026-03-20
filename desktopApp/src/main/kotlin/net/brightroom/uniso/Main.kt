@@ -26,6 +26,7 @@ import net.brightroom.uniso.ui.MainLayout
 import net.brightroom.uniso.ui.MainScreen
 import net.brightroom.uniso.ui.ShortcutAction
 import net.brightroom.uniso.ui.dialogs.CrashRecoveryDialog
+import net.brightroom.uniso.ui.dialogs.UpdateDialog
 import net.brightroom.uniso.ui.onboarding.TutorialScreen
 import net.brightroom.uniso.ui.settings.SettingsViewModel
 import net.brightroom.uniso.ui.sidebar.ExternalBrowserCallback
@@ -52,6 +53,7 @@ fun main() {
             i18nManager = dependencies.i18nManager,
             settingsRepository = dependencies.settingsRepository,
             cefInitializer = dependencies.cefInitializer,
+            autoUpdater = dependencies.autoUpdater,
         )
 
     // Phase 1: Core initialization (DB, i18n, accounts, crash check)
@@ -92,6 +94,7 @@ fun main() {
                     servicePluginRegistry = dependencies.servicePluginRegistry,
                     i18nManager = dependencies.i18nManager,
                     settingsRepository = dependencies.settingsRepository,
+                    autoUpdater = dependencies.autoUpdater,
                     scope = scope,
                 )
             }
@@ -204,6 +207,20 @@ fun main() {
                             val sidebarAccounts by sidebarViewModel.sidebarAccounts.collectAsState()
                             val activatedIds by webViewLifecycleManager.activatedAccountIds.collectAsState()
                             val activatedAccounts = sidebarAccounts.filter { it.accountId in activatedIds }
+                            val pendingUpdate by dependencies.autoUpdater.updateInfo.collectAsState()
+
+                            pendingUpdate?.let { info ->
+                                UpdateDialog(
+                                    version = info.version,
+                                    onUpdate = {
+                                        dependencies.autoUpdater.dismissUpdate()
+                                        ExternalBrowserLauncher.open(info.downloadUrl)
+                                    },
+                                    onDismiss = {
+                                        dependencies.autoUpdater.dismissUpdate()
+                                    },
+                                )
+                            }
 
                             MainLayout(
                                 viewModel = sidebarViewModel,
@@ -215,6 +232,9 @@ fun main() {
                                 onShowTutorial = {
                                     settingsViewModel.resetTutorial()
                                     initializer.showTutorial()
+                                },
+                                onCheckForUpdates = {
+                                    settingsViewModel.checkForUpdates()
                                 },
                                 webViewContent = { accounts, activeId, visible ->
                                     WebViewPanel(

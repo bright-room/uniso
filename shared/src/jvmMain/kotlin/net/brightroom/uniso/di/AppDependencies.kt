@@ -15,6 +15,8 @@ import net.brightroom.uniso.domain.plugin.ServicePluginRegistry
 import net.brightroom.uniso.domain.session.SessionManager
 import net.brightroom.uniso.domain.settings.I18nManager
 import net.brightroom.uniso.domain.settings.SettingsRepository
+import net.brightroom.uniso.domain.updater.AutoUpdater
+import net.brightroom.uniso.domain.updater.JvmAutoUpdater
 import net.brightroom.uniso.platform.KeychainAccessor
 import net.brightroom.uniso.platform.PlatformLocale
 import net.brightroom.uniso.platform.PlatformPaths
@@ -77,6 +79,11 @@ class AppDependencies(
             webViewLifecycleManager = webViewLifecycleManager,
         )
 
+    val autoUpdater: AutoUpdater =
+        JvmAutoUpdater(
+            appcastUrl = APPCAST_URL,
+        )
+
     fun initialize() {
         i18nManager.initialize()
         accountManager.loadAccounts()
@@ -89,5 +96,9 @@ class AppDependencies(
         webViewLifecycleManager.destroyAll()
         cefInitializer.dispose()
         databaseFactory.close()
+    }
+
+    companion object {
+        const val APPCAST_URL = "https://updates.brightroom.net/uniso/appcast.xml"
     }
 }
