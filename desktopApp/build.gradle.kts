@@ -44,7 +44,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi)
             packageName = "Uniso"
-            packageVersion = "1.0.0"
+            packageVersion = libs.versions.app.get()
             description = "A unified desktop client for managing multiple SNS accounts in one place."
             vendor = "Bright Room"
             licenseFile.set(rootProject.file("LICENSE"))
@@ -54,7 +54,7 @@ compose.desktop {
                 iconFile.set(project.file("src/main/resources/icons/icon.icns"))
                 entitlementsFile.set(project.file("src/main/resources/macOS/entitlements.plist"))
                 runtimeEntitlementsFile.set(project.file("src/main/resources/macOS/runtime-entitlements.plist"))
-                dmgPackageVersion = "1.0.0"
+                dmgPackageVersion = libs.versions.app.get()
                 dmgPackageBuildVersion = "1"
 
                 signing {
@@ -73,7 +73,7 @@ compose.desktop {
                 iconFile.set(project.file("src/main/resources/icons/icon.ico"))
                 menuGroup = "Uniso"
                 perUserInstall = true
-                msiPackageVersion = "1.0.0"
+                msiPackageVersion = libs.versions.app.get()
                 upgradeUuid = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
             }
         }
