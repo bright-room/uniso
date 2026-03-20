@@ -1,29 +1,11 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.sqldelight)
-}
-
-val generateBuildConfig by tasks.registering {
-    val outputDir = layout.buildDirectory.dir("generated/buildconfig")
-    val appVersion = libs.versions.app
-
-    outputs.dir(outputDir)
-
-    doLast {
-        val dir = outputDir.get().asFile.resolve("net/brightroom/uniso")
-        dir.mkdirs()
-        dir.resolve("BuildConfig.kt").writeText(
-            """
-            |package net.brightroom.uniso
-            |
-            |object BuildConfig {
-            |    const val APP_VERSION = "${appVersion.get()}"
-            |}
-            """.trimMargin(),
-        )
-    }
+    alias(libs.plugins.buildkonfig)
 }
 
 kotlin {
@@ -32,9 +14,6 @@ kotlin {
     jvmToolchain(25)
 
     sourceSets {
-        commonMain {
-            kotlin.srcDir(generateBuildConfig)
-        }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
@@ -63,5 +42,13 @@ sqldelight {
         create("UnisoDatabase") {
             packageName.set("net.brightroom.uniso.data.db")
         }
+    }
+}
+
+buildkonfig {
+    packageName = "net.brightroom.uniso"
+
+    defaultConfigs {
+        buildConfigField(STRING, "APP_VERSION", libs.versions.app.get())
     }
 }
