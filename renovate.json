@@ -7,6 +7,8 @@
   "prConcurrentLimit": 0,
   "prHourlyLimit": 0,
   "minimumReleaseAge": "3 days",
+  "rangeStrategy": "bump",
+  "postUpdateOptions": ["pnpmDedupe"],
   "automerge": true,
   "major": {
     "minimumReleaseAge": "7 days",
@@ -19,8 +21,27 @@
       "groupName": "minor-and-patch"
     },
     {
-      "description": "Auto-merge GitHub Actions updates",
+      "description": "Auto-merge all GitHub Actions updates (including major)",
       "matchManagers": ["github-actions"],
+      "automerge": true,
+      "major": {
+        "automerge": true
+      }
+    },
+    {
+      "description": "Group Electron updates separately",
+      "matchPackageNames": ["electron", "electron-builder", "@electron-forge/**", "electron-*"],
+      "groupName": "electron"
+    },
+    {
+      "description": "Group TypeScript and type definitions",
+      "matchPackageNames": ["typescript"],
+      "matchPackagePrefixes": ["@types/"],
+      "groupName": "typescript-and-types"
+    },
+    {
+      "description": "Lock file maintenance on schedule",
+      "matchUpdateTypes": ["lockFileMaintenance"],
       "automerge": true
     }
   ]
