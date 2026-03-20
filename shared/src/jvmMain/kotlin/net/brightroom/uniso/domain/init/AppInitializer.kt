@@ -127,6 +127,10 @@ class AppInitializer(
         cefStateFlow.collect { cefState ->
             when (cefState) {
                 is CefInitState.Ready -> {
+                    // Enable AWT/Compose blending after CEF init to prevent
+                    // a visible browser window flash during initialization
+                    System.setProperty("compose.interop.blending", "true")
+
                     if (needsCrashRecovery) {
                         _state.value = InitState.CrashRecoveryPrompt(restoredSession)
                     } else if (needsTutorial) {
