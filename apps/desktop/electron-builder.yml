@@ -1,0 +1,63 @@
+appId: net.brightroom.uniso
+productName: Uniso
+copyright: Copyright © 2026 Bright Room
+
+directories:
+  buildResources: build
+  output: dist
+
+files:
+  - out/**/*
+  - "!out/**/*.map"
+  - package.json
+
+extraMetadata:
+  main: ./out/main/index.js
+
+mac:
+  category: public.app-category.social-networking
+  icon: build/icon.icns
+  target:
+    - target: dmg
+      arch:
+        - x64
+        - arm64
+    - target: zip
+      arch:
+        - x64
+        - arm64
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.plist
+  notarize: false
+
+dmg:
+  artifactName: "${productName}-${version}-${arch}.dmg"
+
+win:
+  icon: build/icon.ico
+  target:
+    - target: nsis
+      arch:
+        - x64
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  artifactName: "${productName}-${version}-setup.exe"
+
+linux:
+  icon: build/icons
+  target:
+    - target: AppImage
+      arch:
+        - x64
+  category: Network
+
+publish:
+  provider: github
+  owner: bright-room
+  repo: uniso
+  releaseType: release

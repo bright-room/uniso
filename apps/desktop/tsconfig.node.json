@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist-node",
+    "lib": ["ES2022"],
+    "types": ["node"],
+    "paths": {
+      "@uniso/shared": ["../../packages/shared/src"],
+      "@uniso/shared/*": ["../../packages/shared/src/*"]
+    }
+  },
+  "include": ["src/main/**/*.ts", "src/preload/**/*.ts", "electron.vite.config.ts"]
+}

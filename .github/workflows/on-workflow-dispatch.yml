@@ -37,7 +37,6 @@ jobs:
             exit 1
           fi
 
-
   push-tag:
     name: Push Tag
     needs: validate
