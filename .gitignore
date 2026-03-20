@@ -28,6 +28,10 @@ Thumbs.db
 *.msi
 *.AppImage
 
+# Test
+test-results/
+playwright-report/
+
 # Storybook
 storybook-static/
 
