@@ -164,6 +164,7 @@ class AppInitializerTest {
     fun initializeCefTransitionsToReadyOnCleanShutdown() =
         runTest {
             sessionManager.markCleanShutdown()
+            settingsRepository.setBoolean("tutorial_completed", true)
 
             val initializer = createInitializer()
             initializer.initializeCore()
@@ -275,6 +276,108 @@ class AppInitializerTest {
             parentJob.cancel()
         }
 
+    @Test
+    fun initializeCefShowsTutorialOnFirstLaunch() =
+        runTest {
+            sessionManager.markCleanShutdown()
+
+            val initializer = createInitializer()
+            initializer.initializeCore()
+
+            val fakeCefState = MutableStateFlow<CefInitState>(CefInitState.NotStarted)
+            val job =
+                launch {
+                    initializer.initializeCefWithState(fakeCefState)
+                }
+
+            fakeCefState.value = CefInitState.Ready
+            advanceUntilIdle()
+            assertIs<InitState.TutorialRequired>(initializer.state.value)
+
+            job.cancel()
+        }
+
+    @Test
+    fun onTutorialCompleteTransitionsToReady() =
+        runTest {
+            sessionManager.markCleanShutdown()
+
+            val initializer = createInitializer()
+            initializer.initializeCore()
+
+            val fakeCefState = MutableStateFlow<CefInitState>(CefInitState.NotStarted)
+            val job =
+                launch {
+                    initializer.initializeCefWithState(fakeCefState)
+                }
+
+            fakeCefState.value = CefInitState.Ready
+            advanceUntilIdle()
+            assertIs<InitState.TutorialRequired>(initializer.state.value)
+
+            initializer.onTutorialComplete()
+            assertIs<InitState.Ready>(initializer.state.value)
+
+            // Verify tutorial_completed is persisted
+            assertEquals(true, settingsRepository.getBoolean("tutorial_completed"))
+
+            job.cancel()
+        }
+
+    @Test
+    fun skipsTutorialWhenAlreadyCompleted() =
+        runTest {
+            sessionManager.markCleanShutdown()
+            settingsRepository.setBoolean("tutorial_completed", true)
+
+            val initializer = createInitializer()
+            initializer.initializeCore()
+
+            val fakeCefState = MutableStateFlow<CefInitState>(CefInitState.NotStarted)
+            val job =
+                launch {
+                    initializer.initializeCefWithState(fakeCefState)
+                }
+
+            fakeCefState.value = CefInitState.Ready
+            advanceUntilIdle()
+            assertIs<InitState.Ready>(initializer.state.value)
+
+            job.cancel()
+        }
+
+    @Test
+    fun showTutorialTransitionsToTutorialRequired() {
+        val initializer = createInitializer()
+        initializer.initializeCore()
+        initializer.showTutorial()
+
+        assertIs<InitState.TutorialRequired>(initializer.state.value)
+    }
+
+    @Test
+    fun crashRecoveryTakesPriorityOverTutorial() =
+        runTest {
+            // Simulate crash (startup without clean shutdown)
+            sessionManager.markStartup()
+
+            val initializer = createInitializer()
+            initializer.initializeCore()
+
+            val fakeCefState = MutableStateFlow<CefInitState>(CefInitState.NotStarted)
+            val job =
+                launch {
+                    initializer.initializeCefWithState(fakeCefState)
+                }
+
+            fakeCefState.value = CefInitState.Ready
+            advanceUntilIdle()
+            // Crash recovery should take priority over tutorial
+            assertIs<InitState.CrashRecoveryPrompt>(initializer.state.value)
+
+            job.cancel()
+        }
+
     private fun createInitializer(): AppInitializer =
         AppInitializer(
             accountManager = accountManager,
@@ -282,5 +385,6 @@ class AppInitializerTest {
             webViewLifecycleManager = webViewLifecycleManager,
             identityManager = identityManager,
             i18nManager = i18nManager,
+            settingsRepository = settingsRepository,
         )
 }

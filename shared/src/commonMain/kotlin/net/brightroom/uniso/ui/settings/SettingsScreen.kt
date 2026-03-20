@@ -54,6 +54,7 @@ fun SettingsScreen(
     viewModel: SettingsViewModel,
     onClose: () -> Unit,
     onWebViewCleanup: (String) -> Unit,
+    onShowTutorial: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val colors = AppColors.current
@@ -114,7 +115,9 @@ fun SettingsScreen(
             KeyboardShortcutsSection()
 
             // Application Info Section
-            ApplicationInfoSection()
+            ApplicationInfoSection(
+                onShowTutorial = onShowTutorial,
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -501,7 +504,7 @@ private fun ShortcutRow(
 // ── Section: Application Info ───────────────────────────────────────────
 
 @Composable
-private fun ApplicationInfoSection() {
+private fun ApplicationInfoSection(onShowTutorial: () -> Unit = {}) {
     val colors = AppColors.current
 
     SectionHeader(stringResource(StringKey.SETTINGS_APP_INFO))
@@ -520,6 +523,29 @@ private fun ApplicationInfoSection() {
             text = Constants.APP_VERSION,
             style = MaterialTheme.typography.bodyMedium,
             color = colors.textTertiary,
+        )
+    }
+
+    Spacer(modifier = Modifier.height(12.dp))
+
+    // Show Tutorial Again button
+    val interactionSource = remember { MutableInteractionSource() }
+    val isHovered by interactionSource.collectIsHoveredAsState()
+    val bgColor = if (isHovered) colors.backgroundTertiary else colors.backgroundSecondary
+
+    Box(
+        modifier =
+            Modifier
+                .clip(RoundedCornerShape(Dimensions.BorderRadiusSm))
+                .background(bgColor)
+                .hoverable(interactionSource)
+                .clickable(onClick = onShowTutorial)
+                .padding(horizontal = 12.dp, vertical = 6.dp),
+    ) {
+        Text(
+            text = stringResource(StringKey.SETTINGS_SHOW_TUTORIAL),
+            style = MaterialTheme.typography.bodyMedium,
+            color = colors.textSecondary,
         )
     }
 }

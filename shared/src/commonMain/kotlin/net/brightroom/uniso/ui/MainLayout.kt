@@ -42,6 +42,7 @@ fun MainLayout(
     webViewReady: Boolean = false,
     webViewContent: @Composable (accounts: List<SidebarAccount>, activeAccountId: String?, visible: Boolean) -> Unit = { _, _, _ -> },
     onWebViewCleanup: (String) -> Unit = {},
+    onShowTutorial: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val colors = AppColors.current
@@ -101,6 +102,7 @@ fun MainLayout(
                         viewModel = settingsViewModel,
                         onClose = { onScreenChange(MainScreen.WebView) },
                         onWebViewCleanup = onWebViewCleanup,
+                        onShowTutorial = onShowTutorial,
                     )
                 }
 
