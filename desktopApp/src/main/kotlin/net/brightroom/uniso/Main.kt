@@ -26,6 +26,7 @@ import net.brightroom.uniso.ui.MainLayout
 import net.brightroom.uniso.ui.MainScreen
 import net.brightroom.uniso.ui.ShortcutAction
 import net.brightroom.uniso.ui.dialogs.CrashRecoveryDialog
+import net.brightroom.uniso.ui.onboarding.TutorialScreen
 import net.brightroom.uniso.ui.settings.SettingsViewModel
 import net.brightroom.uniso.ui.sidebar.ExternalBrowserCallback
 import net.brightroom.uniso.ui.sidebar.SidebarViewModel
@@ -49,6 +50,7 @@ fun main() {
             webViewLifecycleManager = dependencies.webViewLifecycleManager,
             identityManager = dependencies.identityManager,
             i18nManager = dependencies.i18nManager,
+            settingsRepository = dependencies.settingsRepository,
             cefInitializer = dependencies.cefInitializer,
         )
 
@@ -191,6 +193,13 @@ fun main() {
                             )
                         }
 
+                        is InitState.TutorialRequired -> {
+                            TutorialScreen(
+                                services = dependencies.servicePluginRegistry.getAll(),
+                                onComplete = { initializer.onTutorialComplete() },
+                            )
+                        }
+
                         is InitState.Ready -> {
                             val sidebarAccounts by sidebarViewModel.sidebarAccounts.collectAsState()
                             val activatedIds by webViewLifecycleManager.activatedAccountIds.collectAsState()
@@ -203,6 +212,10 @@ fun main() {
                                 currentScreen = currentScreen,
                                 onScreenChange = { currentScreen = it },
                                 webViewReady = true,
+                                onShowTutorial = {
+                                    settingsViewModel.resetTutorial()
+                                    initializer.showTutorial()
+                                },
                                 webViewContent = { accounts, activeId, visible ->
                                     WebViewPanel(
                                         accounts = accounts,

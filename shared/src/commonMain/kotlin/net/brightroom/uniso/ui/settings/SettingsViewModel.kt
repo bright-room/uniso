@@ -117,7 +117,12 @@ class SettingsViewModel(
         )
     }
 
+    fun resetTutorial() {
+        settingsRepository.setBoolean(TUTORIAL_COMPLETED_KEY, false)
+    }
+
     companion object {
         private const val TELEMETRY_KEY = "telemetry_enabled"
+        private const val TUTORIAL_COMPLETED_KEY = "tutorial_completed"
     }
 }

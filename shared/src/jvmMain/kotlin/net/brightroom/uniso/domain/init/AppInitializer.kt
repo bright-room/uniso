@@ -10,13 +10,14 @@ import net.brightroom.uniso.domain.identity.IdentityManager
 import net.brightroom.uniso.domain.session.SessionManager
 import net.brightroom.uniso.domain.session.SessionState
 import net.brightroom.uniso.domain.settings.I18nManager
+import net.brightroom.uniso.domain.settings.SettingsRepository
 import net.brightroom.uniso.ui.webview.CefInitState
 import net.brightroom.uniso.ui.webview.CefInitializer
 import net.brightroom.uniso.ui.webview.WebViewLifecycleManager
 
 /**
  * Represents the application initialization state machine.
- * Transitions: Loading → CefInitializing → CrashRecoveryPrompt / Ready / Error
+ * Transitions: Loading → CefInitializing → CrashRecoveryPrompt / TutorialRequired / Ready / Error
  */
 sealed class InitState {
     /** DB, i18n, accounts being loaded */
@@ -31,6 +32,9 @@ sealed class InitState {
     data class CrashRecoveryPrompt(
         val restoredSession: SessionState?,
     ) : InitState()
+
+    /** First launch — tutorial should be shown */
+    data object TutorialRequired : InitState()
 
     /** All initialization complete, app is ready */
     data object Ready : InitState()
@@ -58,6 +62,7 @@ class AppInitializer(
     private val webViewLifecycleManager: WebViewLifecycleManager,
     private val identityManager: IdentityManager,
     private val i18nManager: I18nManager,
+    private val settingsRepository: SettingsRepository? = null,
     private val cefInitializer: CefInitializer? = null,
 ) {
     private val _state = MutableStateFlow<InitState>(InitState.Loading)
@@ -65,6 +70,7 @@ class AppInitializer(
 
     private var restoredSession: SessionState? = null
     private var needsCrashRecovery = false
+    private var needsTutorial = false
 
     /**
      * Phase 1: Initialize core services (identity, i18n, accounts).
@@ -80,6 +86,9 @@ class AppInitializer(
 
             // Account loading
             accountManager.loadAccounts()
+
+            // Check tutorial state
+            needsTutorial = settingsRepository?.getBoolean(TUTORIAL_COMPLETED_KEY) != true
 
             // Check crash recovery state
             needsCrashRecovery = !sessionManager.isCleanShutdown()
@@ -117,6 +126,8 @@ class AppInitializer(
                 is CefInitState.Ready -> {
                     if (needsCrashRecovery) {
                         _state.value = InitState.CrashRecoveryPrompt(restoredSession)
+                    } else if (needsTutorial) {
+                        _state.value = InitState.TutorialRequired
                     } else {
                         restoreNormalSession()
                         _state.value = InitState.Ready
@@ -166,6 +177,23 @@ class AppInitializer(
     }
 
     /**
+     * Called from settings to re-show the tutorial.
+     */
+    fun showTutorial() {
+        _state.value = InitState.TutorialRequired
+    }
+
+    /**
+     * Called when user completes or skips the tutorial.
+     */
+    fun onTutorialComplete() {
+        settingsRepository?.setBoolean(TUTORIAL_COMPLETED_KEY, true)
+        needsTutorial = false
+        restoreNormalSession()
+        _state.value = InitState.Ready
+    }
+
+    /**
      * Start periodic session save and suspend timer.
      * Called once the app reaches Ready state.
      */
@@ -180,5 +208,9 @@ class AppInitializer(
         if (activeId != null) {
             accountManager.setActiveAccount(activeId)
         }
+    }
+
+    companion object {
+        const val TUTORIAL_COMPLETED_KEY = "tutorial_completed"
     }
 }

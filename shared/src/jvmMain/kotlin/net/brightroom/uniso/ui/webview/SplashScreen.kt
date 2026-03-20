@@ -134,9 +134,10 @@ fun SplashScreen(
                     )
                 }
 
-                // Ready and CrashRecoveryPrompt are handled by Main.kt
+                // Ready, CrashRecoveryPrompt, and TutorialRequired are handled by Main.kt
                 is InitState.Ready,
                 is InitState.CrashRecoveryPrompt,
+                is InitState.TutorialRequired,
                 -> {}
             }
         }

@@ -68,12 +68,18 @@ enum class StringKey(
     SETTINGS_MOVE_DOWN("settings.move_down"),
 
     // Tutorial
-    TUTORIAL_WELCOME("tutorial.welcome"),
-    TUTORIAL_STEP1("tutorial.step1"),
-    TUTORIAL_STEP2("tutorial.step2"),
+    TUTORIAL_WELCOME_TITLE("tutorial.welcome.title"),
+    TUTORIAL_WELCOME_DESCRIPTION("tutorial.welcome.description"),
+    TUTORIAL_ADD_ACCOUNT_TITLE("tutorial.add_account.title"),
+    TUTORIAL_ADD_ACCOUNT_DESCRIPTION("tutorial.add_account.description"),
+    TUTORIAL_SWITCH_ACCOUNT_TITLE("tutorial.switch_account.title"),
+    TUTORIAL_SWITCH_ACCOUNT_DESCRIPTION("tutorial.switch_account.description"),
+    TUTORIAL_COMPLETE_TITLE("tutorial.complete.title"),
+    TUTORIAL_COMPLETE_DESCRIPTION("tutorial.complete.description"),
     TUTORIAL_SKIP("tutorial.skip"),
     TUTORIAL_NEXT("tutorial.next"),
-    TUTORIAL_DONE("tutorial.done"),
+    TUTORIAL_BACK("tutorial.back"),
+    TUTORIAL_START("tutorial.start"),
 
     // Common buttons
     BUTTON_CANCEL("button.cancel"),
