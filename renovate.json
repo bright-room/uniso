@@ -6,11 +6,22 @@
   "labels": ["dependencies", "renovate"],
   "prConcurrentLimit": 0,
   "prHourlyLimit": 0,
-  "separateMinorPatch": true,
   "minimumReleaseAge": "3 days",
   "automerge": true,
   "major": {
     "minimumReleaseAge": "7 days",
     "automerge": false
-  }
+  },
+  "packageRules": [
+    {
+      "description": "Group all non-major updates into a single PR",
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "minor-and-patch"
+    },
+    {
+      "description": "Auto-merge GitHub Actions updates",
+      "matchManagers": ["github-actions"],
+      "automerge": true
+    }
+  ]
 }
