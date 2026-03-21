@@ -12,20 +12,8 @@ jobs:
     timeout-minutes: 5
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v6
-
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10.32.1
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24.14.0
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-node-pnpm
 
       - name: Dependency vulnerability audit
         run: pnpm audit --prod
@@ -39,20 +27,8 @@ jobs:
     timeout-minutes: 5
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v6
-
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10.32.1
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24.14.0
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-node-pnpm
 
       - name: Detect invisible Unicode characters (Glassworm)
         run: pnpm security:glassworm
@@ -62,20 +38,9 @@ jobs:
     timeout-minutes: 5
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
 
       - name: Install Aikido Safe Chain
         run: curl -fsSL https://github.com/AikidoSec/safe-chain/releases/latest/download/install-safe-chain.sh | sh -s -- --ci
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10.32.1
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24.14.0
-          cache: pnpm
-
-      - name: Install dependencies (with Safe Chain protection)
-        run: pnpm install --frozen-lockfile
+      - uses: ./.github/actions/setup-node-pnpm
