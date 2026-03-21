@@ -19,17 +19,6 @@
   background: var(--color-bg-tertiary);
 }
 
-.serviceIcon {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-lg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--font-xl);
-  color: var(--color-text-primary);
-}
-
 .serviceName {
   font-size: var(--font-sm);
   color: var(--color-text-secondary);

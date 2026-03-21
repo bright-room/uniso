@@ -21,9 +21,10 @@ export { ContextMenu } from './features/sidebar/ContextMenu'
 export { Sidebar } from './features/sidebar/Sidebar'
 // Primitives
 export { DialogOverlay } from './primitives/DialogOverlay'
+export { ServiceIcon } from './primitives/ServiceIcon'
 export { ToggleSwitch } from './primitives/ToggleSwitch'
 export type { ThemeColors, ThemeMode } from './theme/ThemeContext'
 export { ThemeProvider, useTheme } from './theme/ThemeContext'
-export { colors, d, dimensions, serviceIcons } from './theme/tokens'
+export { colors, d, dimensions, serviceIconBackgrounds, serviceIconFiles } from './theme/tokens'
 // Types
 export type { AccountListItem, ServicePlugin } from './types'

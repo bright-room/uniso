@@ -1,5 +1,6 @@
 import type { AccountListItem } from '../../types'
-import { serviceIcons } from '../../theme/tokens'
+import { ServiceIcon } from '../../primitives/ServiceIcon'
+import { serviceIconBackgrounds } from '../../theme/tokens'
 import styles from './WebViewHeaderBar.module.css'
 
 interface WebViewHeaderBarProps {
@@ -10,13 +11,14 @@ interface WebViewHeaderBarProps {
 export function WebViewHeaderBar({ account, currentUrl }: WebViewHeaderBarProps) {
   if (!account) return null
 
-  const icon = serviceIcons[account.serviceId] ?? '?'
-
   return (
     <div className={styles.header}>
-      <div className={styles.serviceIcon} style={{ background: account.brandColor }}>
-        {icon}
-      </div>
+      <ServiceIcon
+        src={`/${account.iconResource}`}
+        size={18}
+        backgroundColor={serviceIconBackgrounds[account.serviceId] ?? '#ffffff'}
+        borderRadius={4}
+      />
       <span className={styles.accountName}>
         {account.serviceDisplayName} — {account.displayName}
       </span>

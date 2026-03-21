@@ -1,6 +1,7 @@
 import type { ServicePlugin } from '../../types'
-import { serviceIcons } from '../../theme/tokens'
+import { ServiceIcon } from '../../primitives/ServiceIcon'
 import { DialogOverlay } from '../../primitives/DialogOverlay'
+import { d, serviceIconBackgrounds } from '../../theme/tokens'
 import dialogStyles from './dialog.module.css'
 import styles from './AddAccountDialog.module.css'
 
@@ -32,12 +33,12 @@ export function AddAccountDialog({ services, onClose, onAdd, t }: AddAccountDial
               }}
               className={styles.serviceButton}
             >
-              <div
-                className={styles.serviceIcon}
-                style={{ background: service.brandColor }}
-              >
-                {serviceIcons[service.serviceId] ?? '?'}
-              </div>
+              <ServiceIcon
+                src={`/${service.iconResource}`}
+                size={36}
+                backgroundColor={serviceIconBackgrounds[service.serviceId] ?? '#ffffff'}
+                borderRadius={d.borderRadius.lg}
+              />
               <span className={styles.serviceName}>{service.displayName}</span>
             </button>
           ))}

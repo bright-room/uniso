@@ -1,6 +1,7 @@
 import type { AccountListItem } from '../../types'
-import { serviceIcons } from '../../theme/tokens'
+import { ServiceIcon } from '../../primitives/ServiceIcon'
 import { DialogOverlay } from '../../primitives/DialogOverlay'
+import { d, serviceIconBackgrounds } from '../../theme/tokens'
 import dialogStyles from './dialog.module.css'
 import styles from './AccountSelectDialog.module.css'
 
@@ -33,12 +34,12 @@ export function AccountSelectDialog({
               onClick={() => onSelect(account.accountId)}
               className={styles.accountButton}
             >
-              <div
-                className={styles.serviceIcon}
-                style={{ background: account.brandColor }}
-              >
-                {serviceIcons[account.serviceId] ?? '?'}
-              </div>
+              <ServiceIcon
+                src={`/${account.iconResource}`}
+                size={d.serviceIconSize}
+                backgroundColor={serviceIconBackgrounds[account.serviceId] ?? '#ffffff'}
+                borderRadius={d.serviceIconRadius}
+              />
               <span className={styles.accountName}>{account.displayName}</span>
             </button>
           ))}

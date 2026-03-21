@@ -57,14 +57,14 @@ CREATE TABLE IF NOT EXISTS settings (
 `
 
 const SEED_SERVICE_PLUGINS = `
-INSERT OR IGNORE INTO service_plugin (service_id, display_name, domain_patterns, brand_color, icon_resource, auth_type, sort_order)
+INSERT OR REPLACE INTO service_plugin (service_id, display_name, domain_patterns, brand_color, icon_resource, auth_type, sort_order)
 VALUES
-    ('x',         'X (旧Twitter)', '["x.com","twitter.com"]',  '#000000', 'icons/x.svg',         'cookie', 0),
-    ('instagram', 'Instagram',     '["instagram.com"]',        '#E1306C', 'icons/instagram.svg',  'cookie', 1),
-    ('facebook',  'Facebook',      '["facebook.com"]',         '#1877F2', 'icons/facebook.svg',   'cookie', 2),
-    ('youtube',   'YouTube',       '["youtube.com"]',          '#FF0000', 'icons/youtube.svg',    'cookie', 3),
-    ('bluesky',   'Bluesky',       '["bsky.app"]',             '#0085FF', 'icons/bluesky.svg',    'cookie', 4),
-    ('twitch',    'Twitch',        '["twitch.tv"]',            '#9146FF', 'icons/twitch.svg',     'cookie', 5);
+    ('x',         'X (旧Twitter)', '["x.com","twitter.com"]',  '#000000', 'X.svg',         'cookie', 0),
+    ('instagram', 'Instagram',     '["instagram.com"]',        '#E1306C', 'Instagram.svg',  'cookie', 1),
+    ('facebook',  'Facebook',      '["facebook.com"]',         '#1877F2', 'Facebook.png',   'cookie', 2),
+    ('youtube',   'YouTube',       '["youtube.com"]',          '#FF0000', 'Youtube.png',    'cookie', 3),
+    ('bluesky',   'Bluesky',       '["bsky.app"]',             '#0085FF', 'Bluesky.png',    'cookie', 4),
+    ('twitch',    'Twitch',        '["twitch.tv"]',            '#9146FF', 'Twitch.svg',     'cookie', 5);
 `
 
 const SEED_APP_STATE = `

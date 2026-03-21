@@ -70,11 +70,20 @@ export const d = dimensions
 
 // ─── Service Icons ──────────────────────────────────────────────────────────
 
-export const serviceIcons: Record<string, string> = {
-  x: '𝕏',
-  instagram: '📷',
-  facebook: 'f',
-  youtube: '▶',
-  bluesky: '🦋',
-  twitch: '📺',
+export const serviceIconFiles: Record<string, string> = {
+  x: 'X.svg',
+  instagram: 'Instagram.svg',
+  facebook: 'Facebook.png',
+  youtube: 'Youtube.png',
+  bluesky: 'Bluesky.png',
+  twitch: 'Twitch.svg',
+}
+
+export const serviceIconBackgrounds: Record<string, string> = {
+  x: '#000000',
+  instagram: '#ffffff',
+  facebook: '#ffffff',
+  youtube: '#ffffff',
+  bluesky: '#ffffff',
+  twitch: '#ffffff',
 }

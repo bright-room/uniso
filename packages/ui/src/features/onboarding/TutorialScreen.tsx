@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { serviceIcons } from '../../theme/tokens'
+import { ServiceIcon } from '../../primitives/ServiceIcon'
+import { serviceIconBackgrounds, serviceIconFiles } from '../../theme/tokens'
 import styles from './TutorialScreen.module.css'
 
 interface TutorialScreenProps {
@@ -85,13 +86,13 @@ function WelcomeStep() {
   return (
     <div className={styles.serviceBrands}>
       {services.map((service) => (
-        <div
+        <ServiceIcon
           key={service}
-          className={styles.brandIcon}
-          style={{ background: SERVICE_BRANDS[service] }}
-        >
-          {serviceIcons[service]}
-        </div>
+          src={`/${serviceIconFiles[service]}`}
+          size={48}
+          backgroundColor={serviceIconBackgrounds[service] ?? '#ffffff'}
+          borderRadius={12}
+        />
       ))}
     </div>
   )
@@ -115,9 +116,13 @@ function SwitchAccountStep() {
         <div
           key={service}
           className={`${styles.switchItem} ${i === 0 ? styles.activeItem : ''}`}
-          style={i !== 0 ? { background: SERVICE_BRANDS[service] } : undefined}
         >
-          {serviceIcons[service]}
+          <ServiceIcon
+            src={`/${serviceIconFiles[service]}`}
+            size={32}
+            backgroundColor={i === 0 ? 'transparent' : serviceIconBackgrounds[service] ?? '#ffffff'}
+            borderRadius={8}
+          />
         </div>
       ))}
     </div>
