@@ -155,7 +155,9 @@ test.describe('Settings screen', () => {
   })
 
   test('shows version info', async () => {
-    const { version } = JSON.parse(fs.readFileSync(path.join(__dirname, '../package.json'), 'utf-8'))
+    const { version } = JSON.parse(
+      fs.readFileSync(path.join(__dirname, '../package.json'), 'utf-8'),
+    )
     await expect(page.locator(`text=${version}`)).toBeVisible()
   })
 
