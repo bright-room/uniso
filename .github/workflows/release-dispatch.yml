@@ -1,4 +1,4 @@
-name: on-workflow-dispatch
+name: release-dispatch
 
 on:
   workflow_dispatch:
@@ -42,8 +42,7 @@ jobs:
     needs: validate
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-node-pnpm
 
       - name: Update version in package.json
         run: |
