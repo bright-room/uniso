@@ -143,10 +143,9 @@ jobs:
           ### macOS
           1. Download the `.dmg` file and open it
           2. Drag `Uniso.app` to the Applications folder
-          3. Since this app is not signed with an Apple Developer certificate, macOS will block it on first launch. To open it:
-             - **macOS Sonoma (14) or later**: Go to **System Settings → Privacy & Security**, find the message *"Uniso" was blocked*, and click **Open Anyway**
-             - **macOS Ventura (13) or earlier**: Right-click the app → **Open** → click **Open**
-             - **If the above doesn't work**: Run `xattr -cr /Applications/Uniso.app` in Terminal, then open the app
+          3. Since this app is not signed with an Apple Developer certificate, macOS will show a warning on first launch. To open it:
+             - **macOS Sequoia (15) or later**: Go to **System Settings → Privacy & Security**, find the message *"Uniso" was blocked*, and click **Open Anyway**
+             - **macOS Sonoma (14) or earlier**: Right-click the app → **Open** → click **Open** in the dialog
 
           ### Windows
           1. Download the `.exe` installer and run it
