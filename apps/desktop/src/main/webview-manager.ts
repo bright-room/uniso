@@ -7,7 +7,6 @@ import type {
   WebViewStateSaver,
 } from '@uniso/shared'
 import { BrowserWindow, Menu, shell, WebContentsView } from 'electron'
-import log from 'electron-log'
 import { getMaskElectronJs, getOrCreateSession } from './session-setup'
 
 const SIDEBAR_WIDTH = 80
@@ -125,8 +124,6 @@ export class WebViewManager implements WebViewStateSaver {
 
     // Track URL changes and catch external navigations that bypassed will-navigate
     view.webContents.on('did-navigate', (_event, url) => {
-      log.info(`[WebView:${accountId}] did-navigate: ${url}`)
-
       const goBackOrHome = (): void => {
         if (view.webContents.navigationHistory.canGoBack()) {
           view.webContents.navigationHistory.goBack()
@@ -234,7 +231,6 @@ export class WebViewManager implements WebViewStateSaver {
 
     // Handle popups
     view.webContents.setWindowOpenHandler(({ url: popupUrl }) => {
-      log.info(`[WebView:${accountId}] setWindowOpenHandler: ${popupUrl}`)
       if (
         popupUrl.includes('accounts.google.com') ||
         popupUrl.includes('accounts.youtube.com') ||
@@ -288,7 +284,6 @@ export class WebViewManager implements WebViewStateSaver {
 
     // Handle navigation
     view.webContents.on('will-navigate', (event, url) => {
-      log.info(`[WebView:${accountId}] will-navigate: ${url}`)
       // Block about:blank navigation (e.g. fallback from blocked target="_blank" popups)
       if (url === 'about:blank') {
         event.preventDefault()
