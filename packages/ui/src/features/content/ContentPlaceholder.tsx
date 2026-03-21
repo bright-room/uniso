@@ -1,5 +1,6 @@
 import type { AccountListItem } from '../../types'
-import { serviceIcons } from '../../theme/tokens'
+import { ServiceIcon } from '../../primitives/ServiceIcon'
+import { serviceIconBackgrounds } from '../../theme/tokens'
 import styles from './ContentPlaceholder.module.css'
 
 interface ContentPlaceholderProps {
@@ -8,15 +9,16 @@ interface ContentPlaceholderProps {
 }
 
 export function ContentPlaceholder({ account, t }: ContentPlaceholderProps) {
-  const icon = account ? (serviceIcons[account.serviceId] ?? '?') : null
-
   return (
     <div className={styles.container}>
       {account ? (
         <>
-          <div className={styles.serviceIcon} style={{ background: account.brandColor }}>
-            {icon}
-          </div>
+          <ServiceIcon
+            src={`/${account.iconResource}`}
+            size={64}
+            backgroundColor={serviceIconBackgrounds[account.serviceId] ?? '#ffffff'}
+            borderRadius={16}
+          />
           <span className={styles.serviceName}>{account.serviceDisplayName}</span>
           <span className={styles.displayName}>{account.displayName}</span>
         </>

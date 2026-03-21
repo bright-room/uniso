@@ -1,6 +1,7 @@
 import type { MouseEvent } from 'react'
 import type { AccountListItem } from '../../types'
-import { serviceIcons } from '../../theme/tokens'
+import { ServiceIcon } from '../../primitives/ServiceIcon'
+import { d, serviceIconBackgrounds } from '../../theme/tokens'
 import styles from './AccountItem.module.css'
 
 interface AccountItemProps {
@@ -10,7 +11,6 @@ interface AccountItemProps {
 }
 
 export function AccountItem({ account, onSwitch, onContextMenu }: AccountItemProps) {
-  const icon = serviceIcons[account.serviceId] ?? '?'
   const initials = (account.displayName ?? account.serviceDisplayName).substring(0, 2).toUpperCase()
 
   const handleContextMenu = (e: MouseEvent) => {
@@ -26,12 +26,12 @@ export function AccountItem({ account, onSwitch, onContextMenu }: AccountItemPro
     >
       {account.isActive && <div className={styles.activeIndicator} />}
 
-      <div
-        className={styles.serviceIcon}
-        style={{ background: account.brandColor }}
-      >
-        {icon}
-      </div>
+      <ServiceIcon
+        src={`/${account.iconResource}`}
+        size={d.serviceIconSize}
+        backgroundColor={serviceIconBackgrounds[account.serviceId] ?? '#ffffff'}
+        borderRadius={d.serviceIconRadius}
+      />
 
       <div
         className={styles.initials}

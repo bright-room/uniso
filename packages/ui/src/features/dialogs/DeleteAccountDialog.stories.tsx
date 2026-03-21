@@ -21,7 +21,7 @@ const meta = {
       serviceId: 'x',
       displayName: 'John Doe',
       brandColor: '#000000',
-      iconResource: '𝕏',
+      iconResource: 'X.svg',
       serviceDisplayName: 'X',
       isActive: true,
     },

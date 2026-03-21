@@ -1,0 +1,10 @@
+# Images
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.icns binary
+
+# SVG is text but should not have line ending conversion
+*.svg text eol=lf
