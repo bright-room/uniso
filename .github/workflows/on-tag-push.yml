@@ -46,7 +46,7 @@ jobs:
 
       - name: Package DMG
         working-directory: apps/desktop
-        run: pnpm exec electron-builder --mac --config electron-builder.yml
+        run: pnpm exec electron-builder --mac --config electron-builder.yml --publish never
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_IDENTITY_AUTO_DISCOVERY: false
@@ -96,9 +96,7 @@ jobs:
 
       - name: Package NSIS
         working-directory: apps/desktop
-        run: pnpm exec electron-builder --win --config electron-builder.yml
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: pnpm exec electron-builder --win --config electron-builder.yml --publish never
 
       - name: Upload EXE Artifact
         uses: actions/upload-artifact@v7
