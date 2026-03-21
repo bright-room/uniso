@@ -14,7 +14,7 @@ files:
 extraMetadata:
   main: ./out/main/index.js
 
-afterPack: ../../.github/scripts/ad-hoc-sign.cjs
+afterPack: ./scripts/ad-hoc-sign.cjs
 
 mac:
   category: public.app-category.social-networking
