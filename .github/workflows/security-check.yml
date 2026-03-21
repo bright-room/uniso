@@ -1,7 +1,7 @@
 name: security-check
 
 on:
-  pull_request:
+  workflow_call:
   schedule:
     # Run weekly on Monday at 09:00 UTC
     - cron: '0 9 * * 1'
@@ -12,6 +12,7 @@ jobs:
     timeout-minutes: 5
 
     steps:
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-node-pnpm
 
       - name: Dependency vulnerability audit
@@ -26,6 +27,7 @@ jobs:
     timeout-minutes: 5
 
     steps:
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-node-pnpm
 
       - name: Detect invisible Unicode characters (Glassworm)
@@ -36,15 +38,9 @@ jobs:
     timeout-minutes: 5
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
 
       - name: Install Aikido Safe Chain
         run: curl -fsSL https://github.com/AikidoSec/safe-chain/releases/latest/download/install-safe-chain.sh | sh -s -- --ci
 
       - uses: ./.github/actions/setup-node-pnpm
-        with:
-          checkout: "false"
-
-      - name: Install dependencies (with Safe Chain protection)
-        run: pnpm install --frozen-lockfile
