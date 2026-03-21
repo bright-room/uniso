@@ -1,4 +1,4 @@
-name: release
+name: on-tag-push
 
 on:
   push:
@@ -15,8 +15,8 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v6
-      - uses: ./.github/actions/setup-node-pnpm
+      - name: Checkout
+        uses: actions/checkout@v6
 
       - name: Set version from tag
         run: |
@@ -29,6 +29,17 @@ jobs:
               fs.writeFileSync(p, JSON.stringify(pkg, null, 2) + '\n');
             }
           "
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.1
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24.14.0
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
 
       - name: Build
         run: pnpm build
@@ -53,8 +64,8 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v6
-      - uses: ./.github/actions/setup-node-pnpm
+      - name: Checkout
+        uses: actions/checkout@v6
 
       - name: Set version from tag
         shell: bash
@@ -68,6 +79,17 @@ jobs:
               fs.writeFileSync(p, JSON.stringify(pkg, null, 2) + '\n');
             }
           "
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.1
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24.14.0
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
 
       - name: Build
         run: pnpm build
