@@ -155,7 +155,7 @@ test.describe('Settings screen', () => {
   })
 
   test('shows version info', async () => {
-    await expect(page.locator('text=0.1.0')).toBeVisible()
+    await expect(page.locator('text=0.0.5')).toBeVisible()
   })
 
   test('show tutorial button re-opens tutorial', async () => {

@@ -34,13 +34,15 @@ export function App() {
   const [dialog, setDialog] = useState<DialogState>({ type: 'none' })
   const [services, setServices] = useState<ServicePlugin[]>([])
   const [telemetryEnabled, setTelemetryEnabled] = useState(false)
+  const [appVersion, setAppVersion] = useState('')
 
   const activeAccount = accounts.find((a) => a.isActive) ?? null
   const isDialogOpen = dialog.type !== 'none'
 
-  // Fetch service plugins once
+  // Fetch service plugins and app version once
   useEffect(() => {
     window.api.getServicePlugins().then(setServices)
+    window.api.getAppVersion().then(setAppVersion)
   }, [])
 
   // First-run check: show telemetry consent if tutorial not completed
@@ -235,6 +237,7 @@ export function App() {
         <SettingsScreen
           locale={locale}
           telemetryEnabled={telemetryEnabled}
+          appVersion={appVersion}
           onLocaleChange={setLocale}
           onTelemetryChange={handleTelemetryChange}
           onClose={closeDialog}

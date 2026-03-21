@@ -5,7 +5,7 @@ import type {
   SessionManager,
   SettingsRepository,
 } from '@uniso/shared'
-import { BrowserWindow, ipcMain, Menu } from 'electron'
+import { app, BrowserWindow, ipcMain, Menu } from 'electron'
 import type { WebViewManager } from './webview-manager'
 
 export function registerIpcHandlers(
@@ -16,6 +16,10 @@ export function registerIpcHandlers(
   webViewManager: WebViewManager,
   settingsRepo: SettingsRepository,
 ): void {
+  ipcMain.handle('get-app-version', () => {
+    return app.getVersion()
+  })
+
   ipcMain.handle('add-account', (_event, serviceId: string) => {
     const account = accountManager.addAccount(serviceId)
     webViewManager.getOrCreateWebView(account.accountId)
