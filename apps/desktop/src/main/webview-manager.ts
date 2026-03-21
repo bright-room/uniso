@@ -337,8 +337,12 @@ export class WebViewManager implements WebViewStateSaver {
     const managed = this.views.get(accountId)
     if (!managed) return
 
-    this.mainWindow?.contentView.removeChildView(managed.view)
-    managed.view.webContents.close()
+    if (!managed.view.webContents.isDestroyed()) {
+      if (this.mainWindow && !this.mainWindow.isDestroyed()) {
+        this.mainWindow.contentView.removeChildView(managed.view)
+      }
+      managed.view.webContents.close()
+    }
     this.views.delete(accountId)
 
     this.sessionRepo.updateWebViewStatus(accountId, 'destroyed', new Date().toISOString())
@@ -353,10 +357,14 @@ export class WebViewManager implements WebViewStateSaver {
   removeAccountViews(accountId: string): void {
     const managed = this.views.get(accountId)
     if (managed) {
-      this.mainWindow?.contentView.removeChildView(managed.view)
-      const ses = managed.view.webContents.session
-      ses.clearStorageData()
-      managed.view.webContents.close()
+      if (!managed.view.webContents.isDestroyed()) {
+        if (this.mainWindow && !this.mainWindow.isDestroyed()) {
+          this.mainWindow.contentView.removeChildView(managed.view)
+        }
+        const ses = managed.view.webContents.session
+        ses.clearStorageData()
+        managed.view.webContents.close()
+      }
       this.views.delete(accountId)
     }
   }
