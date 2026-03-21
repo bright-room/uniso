@@ -25,6 +25,7 @@ export class WebViewManager implements WebViewStateSaver {
   private maxBackgroundWebViews = 3
   private suspendTimeoutMs = 300000 // 5 minutes
   private evictionTimer: ReturnType<typeof setInterval> | null = null
+  private dialogOpen = false
 
   private i18nManager: I18nManager | null = null
 
@@ -364,7 +365,9 @@ export class WebViewManager implements WebViewStateSaver {
     if (!this.mainWindow || !this.sidebarView) return
     const [width, height] = this.mainWindow.getContentSize()
 
-    this.sidebarView.setBounds({ x: 0, y: 0, width: SIDEBAR_WIDTH, height })
+    // When a dialog is open, keep sidebar at full window width so overlays render correctly
+    const sidebarWidth = this.dialogOpen ? width : SIDEBAR_WIDTH
+    this.sidebarView.setBounds({ x: 0, y: 0, width: sidebarWidth, height })
 
     const activeId = this.accountManager.getActiveAccountId()
     for (const [id, managed] of this.views) {
@@ -413,18 +416,18 @@ export class WebViewManager implements WebViewStateSaver {
 
   hideAllViews(): void {
     if (!this.mainWindow || !this.sidebarView) return
-    const [width, height] = this.mainWindow.getContentSize()
+    this.dialogOpen = true
 
     // Raise sidebar view above SNS WebViews by re-adding it (last child = topmost)
     this.mainWindow.contentView.removeChildView(this.sidebarView)
     this.mainWindow.contentView.addChildView(this.sidebarView)
 
-    // Expand sidebar view to full window so dialogs render without clipping
-    // SNS WebViews stay in place — visible behind the semi-transparent dialog overlay
-    this.sidebarView.setBounds({ x: 0, y: 0, width, height })
+    // layoutViews will use full window width for sidebar because dialogOpen is true
+    this.layoutViews()
   }
 
   showActiveView(): void {
+    this.dialogOpen = false
     this.layoutViews()
   }
 
