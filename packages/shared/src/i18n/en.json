@@ -72,5 +72,10 @@
   "button.update_now": "Update now",
   "button.later": "Later",
   "content.no_account": "No account selected",
-  "content.loading": "Loading..."
+  "content.loading": "Loading...",
+  "context_menu.go_home": "Go to Home",
+  "context_menu.open_in_browser": "Open link in browser",
+  "context_menu.back": "Back",
+  "context_menu.forward": "Forward",
+  "context_menu.reload": "Reload"
 }

@@ -6,7 +6,7 @@ import type {
   SessionRepository,
   WebViewStateSaver,
 } from '@uniso/shared'
-import { BrowserWindow, shell, WebContentsView } from 'electron'
+import { BrowserWindow, Menu, shell, WebContentsView } from 'electron'
 import { getMaskElectronJs, getOrCreateSession } from './session-setup'
 
 const SIDEBAR_WIDTH = 80
@@ -122,8 +122,54 @@ export class WebViewManager implements WebViewStateSaver {
       view.webContents.on('did-navigate-in-page', (_ev, url) => injectXLoginHint(url))
     }
 
-    // Track URL changes
+    // Track URL changes and catch external navigations that bypassed will-navigate
     view.webContents.on('did-navigate', (_event, url) => {
+      const goBackOrHome = (): void => {
+        if (view.webContents.navigationHistory.canGoBack()) {
+          view.webContents.navigationHistory.goBack()
+        } else {
+          const defaultUrl = this.registry.getDefaultUrl(account.serviceId)
+          if (defaultUrl) view.webContents.loadURL(defaultUrl)
+        }
+      }
+
+      // Catch about:blank navigations (e.g. from target="_blank" fallback)
+      if (url === 'about:blank') {
+        goBackOrHome()
+        return
+      }
+
+      if (!url.startsWith('data:')) {
+        // Safety net: if we ended up on an external domain (e.g. via server redirect),
+        // go back and open in the default browser instead of showing a black screen
+        const navClassification = this.linkRouter.classifyLink(url, account.serviceId)
+        if (
+          navClassification.type === 'external' ||
+          navClassification.type === 'internal-no-account'
+        ) {
+          view.webContents.stop()
+          shell.openExternal(url)
+          goBackOrHome()
+          return
+        }
+
+        // Catch same-domain redirect URLs (e.g. go.bsky.app/redirect?u=...)
+        // that were loaded in the webview — extract the target and open externally
+        const redirectTarget = this.extractRedirectTarget(url)
+        if (redirectTarget) {
+          const targetClassification = this.linkRouter.classifyLink(
+            redirectTarget,
+            account.serviceId,
+          )
+          if (targetClassification.type !== 'same-domain') {
+            view.webContents.stop()
+            shell.openExternal(redirectTarget)
+            goBackOrHome()
+            return
+          }
+        }
+      }
+
       this.sessionRepo.updateLastUrl(accountId, url, 0)
       this.notifySidebar('url-changed', {
         accountId,
@@ -137,6 +183,50 @@ export class WebViewManager implements WebViewStateSaver {
         accountId,
         url,
       })
+    })
+
+    // Right-click context menu on webview
+    view.webContents.on('context-menu', (_event, params) => {
+      const menuItems: Electron.MenuItemConstructorOptions[] = []
+
+      if (params.linkURL) {
+        menuItems.push({
+          label:
+            this.i18nManager?.getString('context_menu.open_in_browser') ?? 'Open link in browser',
+          click: () => shell.openExternal(params.linkURL),
+        })
+        menuItems.push({ type: 'separator' })
+      }
+
+      menuItems.push({
+        label: this.i18nManager?.getString('context_menu.go_home') ?? 'Go to Home',
+        click: () => {
+          const defaultUrl = this.registry.getDefaultUrl(account.serviceId)
+          if (defaultUrl) view.webContents.loadURL(defaultUrl)
+        },
+      })
+
+      menuItems.push({
+        label: this.i18nManager?.getString('context_menu.back') ?? 'Back',
+        enabled: view.webContents.navigationHistory.canGoBack(),
+        click: () => view.webContents.navigationHistory.goBack(),
+      })
+
+      menuItems.push({
+        label: this.i18nManager?.getString('context_menu.forward') ?? 'Forward',
+        enabled: view.webContents.navigationHistory.canGoForward(),
+        click: () => view.webContents.navigationHistory.goForward(),
+      })
+
+      menuItems.push({ type: 'separator' })
+
+      menuItems.push({
+        label: this.i18nManager?.getString('context_menu.reload') ?? 'Reload',
+        click: () => view.webContents.reload(),
+      })
+
+      const menu = Menu.buildFromTemplate(menuItems)
+      menu.popup()
     })
 
     // Handle popups
@@ -167,9 +257,17 @@ export class WebViewManager implements WebViewStateSaver {
         case 'internal-no-account':
           shell.openExternal(popupUrl)
           return { action: 'deny' as const }
-        case 'same-domain':
-          view.webContents.loadURL(popupUrl)
+        case 'same-domain': {
+          // Check if this is a redirect URL (e.g. go.bsky.app/redirect?u=...)
+          // If so, open the redirect target externally instead of loading in webview
+          const redirectTarget = this.extractRedirectTarget(popupUrl)
+          if (redirectTarget) {
+            shell.openExternal(redirectTarget)
+          } else {
+            view.webContents.loadURL(popupUrl)
+          }
           return { action: 'deny' as const }
+        }
         case 'internal-single-account':
           this.accountManager.setActiveAccount(classification.accountId)
           this.switchTo(classification.accountId, popupUrl)
@@ -186,6 +284,12 @@ export class WebViewManager implements WebViewStateSaver {
 
     // Handle navigation
     view.webContents.on('will-navigate', (event, url) => {
+      // Block about:blank navigation (e.g. fallback from blocked target="_blank" popups)
+      if (url === 'about:blank') {
+        event.preventDefault()
+        return
+      }
+
       // Intercept Google OAuth navigations and open in a popup window
       // Google blocks embedded WebViews but allows Electron popup windows with the same session
       if (
@@ -482,6 +586,35 @@ export class WebViewManager implements WebViewStateSaver {
     for (const state of expired) {
       this.destroyWebView(state.accountId)
     }
+  }
+
+  /**
+   * Extract the redirect target URL from common SNS redirect URLs.
+   * Handles patterns like:
+   *   - go.bsky.app/redirect?u=https://...
+   *   - l.instagram.com/?u=https://...
+   *   - l.facebook.com/l.php?u=https://...
+   *   - youtube.com/redirect?q=https://...
+   */
+  private extractRedirectTarget(url: string): string | null {
+    try {
+      const parsed = new URL(url)
+      if (
+        parsed.pathname.includes('redirect') ||
+        parsed.pathname.includes('outgoing') ||
+        parsed.pathname.includes('/l.php')
+      ) {
+        for (const param of ['u', 'url', 'q', 'dest', 'target', 'href']) {
+          const target = parsed.searchParams.get(param)
+          if (target && (target.startsWith('http://') || target.startsWith('https://'))) {
+            return target
+          }
+        }
+      }
+    } catch {
+      // Invalid URL
+    }
+    return null
   }
 
   private notifySidebar(channel: string, data: unknown): void {

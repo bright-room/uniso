@@ -72,5 +72,10 @@
   "button.update_now": "今すぐアップデート",
   "button.later": "あとで",
   "content.no_account": "アカウントが選択されていません",
-  "content.loading": "読み込み中..."
+  "content.loading": "読み込み中...",
+  "context_menu.go_home": "ホームに戻る",
+  "context_menu.open_in_browser": "リンクをブラウザで開く",
+  "context_menu.back": "戻る",
+  "context_menu.forward": "進む",
+  "context_menu.reload": "再読み込み"
 }
