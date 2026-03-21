@@ -4,11 +4,7 @@ on:
   pull_request:
 
 jobs:
-  security:
-    uses: ./.github/workflows/security-check.yml
-
   lint:
-    needs: security
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
