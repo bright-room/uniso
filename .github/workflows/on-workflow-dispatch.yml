@@ -92,9 +92,15 @@ jobs:
           # 4. Create a signed commit via API
           COMMIT_SHA=$(gh api "repos/${REPO}/git/commits" \
             --method POST \
-            --field "message=chore: bump version to ${VERSION}" \
-            --field "tree=${TREE_SHA}" \
-            --raw-field "parents=[\"${HEAD_SHA}\"]" \
+            --input <(jq -n \
+              --arg message "chore: bump version to ${VERSION}" \
+              --arg tree "${TREE_SHA}" \
+              --arg parent "${HEAD_SHA}" \
+              '{
+                message: $message,
+                tree: $tree,
+                parents: [$parent]
+              }') \
             --jq '.sha')
 
           # 5. Update branch ref (= push)
