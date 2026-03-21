@@ -58,7 +58,7 @@ jobs:
             }
           "
 
-      - name: Commit and push via GitHub API (signed)
+      - name: Commit and push via GitHub GraphQL API (signed)
         env:
           GH_TOKEN: ${{ secrets.AUTH_TOKEN }}
         run: |
@@ -69,46 +69,44 @@ jobs:
           # 1. Get current HEAD commit SHA
           HEAD_SHA=$(gh api "repos/${REPO}/git/ref/heads/${BRANCH}" --jq '.object.sha')
 
-          # 2. Get the tree SHA of that commit
-          BASE_TREE=$(gh api "repos/${REPO}/git/commits/${HEAD_SHA}" --jq '.tree.sha')
-
-          # 3. Create a new tree with updated files
-          TREE_SHA=$(gh api "repos/${REPO}/git/trees" \
-            --method POST \
-            --field "base_tree=${BASE_TREE}" \
+          # 2. Create signed commit via GraphQL createCommitOnBranch
+          #    This mutation creates a verified commit and updates the branch ref
+          COMMIT_SHA=$(gh api graphql \
             --input <(jq -n \
-              --arg content1 "$(cat apps/desktop/package.json)" \
-              --arg content2 "$(cat packages/shared/package.json)" \
-              --arg content3 "$(cat packages/ui/package.json)" \
+              --arg repo "${REPO}" \
+              --arg branch "${BRANCH}" \
+              --arg headline "chore: bump version to ${VERSION}" \
+              --arg headOid "${HEAD_SHA}" \
+              --arg content1 "$(base64 -w 0 apps/desktop/package.json)" \
+              --arg content2 "$(base64 -w 0 packages/shared/package.json)" \
+              --arg content3 "$(base64 -w 0 packages/ui/package.json)" \
               '{
-                tree: [
-                  { path: "apps/desktop/package.json",   mode: "100644", type: "blob", content: $content1 },
-                  { path: "packages/shared/package.json", mode: "100644", type: "blob", content: $content2 },
-                  { path: "packages/ui/package.json",     mode: "100644", type: "blob", content: $content3 }
-                ]
+                query: "mutation($input: CreateCommitOnBranchInput!) { createCommitOnBranch(input: $input) { commit { oid } } }",
+                variables: {
+                  input: {
+                    branch: {
+                      repositoryNameWithOwner: $repo,
+                      branchName: $branch
+                    },
+                    message: {
+                      headline: $headline
+                    },
+                    fileChanges: {
+                      additions: [
+                        { path: "apps/desktop/package.json",   contents: $content1 },
+                        { path: "packages/shared/package.json", contents: $content2 },
+                        { path: "packages/ui/package.json",     contents: $content3 }
+                      ]
+                    },
+                    expectedHeadOid: $headOid
+                  }
+                }
               }') \
-            --jq '.sha')
+            --jq '.data.createCommitOnBranch.commit.oid')
 
-          # 4. Create a signed commit via API
-          COMMIT_SHA=$(gh api "repos/${REPO}/git/commits" \
-            --method POST \
-            --input <(jq -n \
-              --arg message "chore: bump version to ${VERSION}" \
-              --arg tree "${TREE_SHA}" \
-              --arg parent "${HEAD_SHA}" \
-              '{
-                message: $message,
-                tree: $tree,
-                parents: [$parent]
-              }') \
-            --jq '.sha')
+          echo "Created signed commit: ${COMMIT_SHA}"
 
-          # 5. Update branch ref (= push)
-          gh api "repos/${REPO}/git/refs/heads/${BRANCH}" \
-            --method PATCH \
-            --field "sha=${COMMIT_SHA}"
-
-          # 6. Create annotated tag
+          # 3. Create annotated tag
           TAG_SHA=$(gh api "repos/${REPO}/git/tags" \
             --method POST \
             --field "tag=${VERSION}" \
