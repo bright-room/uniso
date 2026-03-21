@@ -14,13 +14,13 @@ Uniso lets you log in to X, Instagram, Facebook, YouTube, Bluesky, and Twitch si
 - **Link routing** — internal links open in the right account; external links go to your browser
 - **Keyboard shortcuts** — fast account switching, reload, settings access
 - **i18n** — Japanese and English with OS locale detection
-- **Encrypted local storage** — SQLite database with OS keychain key management
+- **Local-only storage** — SQLite database; all data stays on your device
 - **Auto-update** — background update checks via electron-updater
 
 ## Requirements
 
 - **macOS** 12+ or **Windows** 10+
-- **Node.js** 24+ and **pnpm** 9+ (for building from source)
+- **Node.js** 24+ and **pnpm** 10+ (for building from source)
 
 ## Building from Source
 
@@ -55,18 +55,23 @@ pnpm package:win
 
 ```
 uniso/
-├── apps/
-│   └── desktop/              # Electron main app
-│       ├── src/main/          #   Main process (IPC, session, webview)
-│       └── src/renderer/      #   Renderer process (React)
+├── apps/desktop/              # Electron main app (@uniso/desktop)
+│   ├── src/main/              #   Main process (lifecycle, IPC, WebView management)
+│   ├── src/preload/           #   Preload script (typed API bridge)
+│   ├── src/renderer/          #   React renderer (hooks, App.tsx)
+│   └── e2e/                   #   Playwright E2E tests
 ├── packages/
-│   ├── shared/                # Shared types and business logic
-│   │   └── src/types/         #   Account, settings, i18n types
-│   └── ui/                    # React component library
-│       └── src/               #   Sidebar, settings, theme
-├── .github/
-│   ├── workflows/             # CI/CD pipelines
-│   └── actions/               # Reusable composite actions
+│   ├── shared/                # Business logic & types (@uniso/shared)
+│   │   ├── src/domain/        #   AccountManager, SessionManager, LinkRouter, etc.
+│   │   ├── src/data/          #   Repositories (account, session, settings, database)
+│   │   ├── src/types/         #   TypeScript type definitions
+│   │   ├── src/i18n/          #   Localization (en.json, ja.json)
+│   │   └── src/__tests__/     #   Unit tests (Vitest)
+│   └── ui/                    # React component library (@uniso/ui)
+│       ├── src/features/      #   Sidebar, dialogs, settings, onboarding
+│       ├── src/primitives/    #   DialogOverlay, ServiceIcon, ToggleSwitch
+│       └── src/theme/         #   Design tokens, CSS variables
+├── .github/workflows/         # CI/CD pipelines
 ├── biome.json                 # Linter & formatter config
 ├── pnpm-workspace.yaml        # Monorepo workspace definition
 └── tsconfig.base.json         # Shared TypeScript config
@@ -77,9 +82,11 @@ uniso/
 - **Electron** 41 — desktop runtime
 - **React** 19 — UI framework
 - **TypeScript** 5.9 — language
-- **Vite** 8 + **electron-vite** — build tooling
-- **sql.js** — SQLite in the renderer process
+- **Vite** 7 + **electron-vite** 5 — build tooling
+- **sql.js** — SQLite via WASM
 - **Biome** — linter and formatter
+- **Vitest** — unit tests
+- **Playwright** — E2E tests
 - **Storybook** 10 — UI component development
 - **electron-builder** — native packaging (DMG, NSIS)
 - **electron-updater** — auto-update
