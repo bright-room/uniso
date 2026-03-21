@@ -88,7 +88,7 @@ function WelcomeStep() {
       {services.map((service) => (
         <ServiceIcon
           key={service}
-          src={`/${serviceIconFiles[service]}`}
+          src={`./${serviceIconFiles[service]}`}
           size={48}
           backgroundColor={serviceIconBackgrounds[service] ?? '#ffffff'}
           borderRadius={12}
@@ -118,7 +118,7 @@ function SwitchAccountStep() {
           className={`${styles.switchItem} ${i === 0 ? styles.activeItem : ''}`}
         >
           <ServiceIcon
-            src={`/${serviceIconFiles[service]}`}
+            src={`./${serviceIconFiles[service]}`}
             size={32}
             backgroundColor={i === 0 ? 'transparent' : serviceIconBackgrounds[service] ?? '#ffffff'}
             borderRadius={8}

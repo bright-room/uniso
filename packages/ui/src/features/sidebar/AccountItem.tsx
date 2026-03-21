@@ -27,7 +27,7 @@ export function AccountItem({ account, onSwitch, onContextMenu }: AccountItemPro
       {account.isActive && <div className={styles.activeIndicator} />}
 
       <ServiceIcon
-        src={`/${account.iconResource}`}
+        src={`./${account.iconResource}`}
         size={d.serviceIconSize}
         backgroundColor={serviceIconBackgrounds[account.serviceId] ?? '#ffffff'}
         borderRadius={d.serviceIconRadius}
