@@ -1,7 +1,7 @@
 name: security-check
 
 on:
-  workflow_call:
+  pull_request:
   schedule:
     # Run weekly on Monday at 09:00 UTC
     - cron: '0 9 * * 1'
