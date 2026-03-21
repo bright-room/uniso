@@ -81,8 +81,19 @@ async function createWindow(): Promise<void> {
     minHeight: 400,
     title: 'Uniso',
     backgroundColor: '#16162a',
-    titleBarStyle: 'hiddenInset',
-    trafficLightPosition: { x: 12, y: 18 },
+    ...(process.platform === 'darwin'
+      ? {
+          titleBarStyle: 'hiddenInset' as const,
+          trafficLightPosition: { x: 12, y: 18 },
+        }
+      : {
+          titleBarStyle: 'hidden' as const,
+          titleBarOverlay: {
+            color: '#16162a',
+            symbolColor: '#aaaaaa',
+            height: 40,
+          },
+        }),
   })
 
   // Create sidebar view (transparent so SNS content shows through dialog overlay)

@@ -9,7 +9,7 @@ import type {
 import { BrowserWindow, shell, WebContentsView } from 'electron'
 import { getMaskElectronJs, getOrCreateSession } from './session-setup'
 
-const SIDEBAR_WIDTH = 72
+const SIDEBAR_WIDTH = 80
 const HEADER_HEIGHT = 40
 
 interface ManagedView {
