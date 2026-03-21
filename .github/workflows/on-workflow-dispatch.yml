@@ -44,8 +44,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-        with:
-          token: ${{ secrets.AUTH_TOKEN }}
 
       - name: Update version in package.json
         run: |
@@ -60,12 +58,60 @@ jobs:
             }
           "
 
-      - name: Commit version bump and push tag
+      - name: Commit and push via GitHub API (signed)
+        env:
+          GH_TOKEN: ${{ secrets.AUTH_TOKEN }}
         run: |
-          git config user.name "${{ secrets.BR_GITHUB_MANAGER_NAME }}"
-          git config user.email "${{ secrets.BR_GITHUB_MANAGER_EMAIL }}"
-          git add apps/desktop/package.json packages/shared/package.json packages/ui/package.json
-          git commit -m "chore: bump version to ${{ inputs.version }}"
-          git push origin HEAD
-          git tag -a "${{ inputs.version }}" -m "Release ${{ inputs.version }}"
-          git push origin "${{ inputs.version }}"
+          REPO="${{ github.repository }}"
+          BRANCH="main"
+          VERSION="${{ inputs.version }}"
+
+          # 1. Get current HEAD commit SHA
+          HEAD_SHA=$(gh api "repos/${REPO}/git/ref/heads/${BRANCH}" --jq '.object.sha')
+
+          # 2. Get the tree SHA of that commit
+          BASE_TREE=$(gh api "repos/${REPO}/git/commits/${HEAD_SHA}" --jq '.tree.sha')
+
+          # 3. Create a new tree with updated files
+          TREE_SHA=$(gh api "repos/${REPO}/git/trees" \
+            --method POST \
+            --field "base_tree=${BASE_TREE}" \
+            --input <(jq -n \
+              --arg content1 "$(cat apps/desktop/package.json)" \
+              --arg content2 "$(cat packages/shared/package.json)" \
+              --arg content3 "$(cat packages/ui/package.json)" \
+              '{
+                tree: [
+                  { path: "apps/desktop/package.json",   mode: "100644", type: "blob", content: $content1 },
+                  { path: "packages/shared/package.json", mode: "100644", type: "blob", content: $content2 },
+                  { path: "packages/ui/package.json",     mode: "100644", type: "blob", content: $content3 }
+                ]
+              }') \
+            --jq '.sha')
+
+          # 4. Create a signed commit via API
+          COMMIT_SHA=$(gh api "repos/${REPO}/git/commits" \
+            --method POST \
+            --field "message=chore: bump version to ${VERSION}" \
+            --field "tree=${TREE_SHA}" \
+            --raw-field "parents=[\"${HEAD_SHA}\"]" \
+            --jq '.sha')
+
+          # 5. Update branch ref (= push)
+          gh api "repos/${REPO}/git/refs/heads/${BRANCH}" \
+            --method PATCH \
+            --field "sha=${COMMIT_SHA}"
+
+          # 6. Create annotated tag
+          TAG_SHA=$(gh api "repos/${REPO}/git/tags" \
+            --method POST \
+            --field "tag=${VERSION}" \
+            --field "message=Release ${VERSION}" \
+            --field "object=${COMMIT_SHA}" \
+            --field "type=commit" \
+            --jq '.sha')
+
+          gh api "repos/${REPO}/git/refs" \
+            --method POST \
+            --field "ref=refs/tags/${VERSION}" \
+            --field "sha=${TAG_SHA}"
