@@ -1,6 +1,7 @@
 import type { AccountListItem, ServicePlugin } from '@uniso/ui'
 
 interface Api {
+  getAppVersion(): Promise<string>
   addAccount(serviceId: string): Promise<AccountListItem>
   switchAccount(accountId: string): Promise<void>
   removeAccount(accountId: string): Promise<void>

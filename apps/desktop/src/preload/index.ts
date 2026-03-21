@@ -21,6 +21,9 @@ export interface ServicePlugin {
 }
 
 const api = {
+  // App info
+  getAppVersion: () => ipcRenderer.invoke('get-app-version') as Promise<string>,
+
   // Account management
   addAccount: (serviceId: string) => ipcRenderer.invoke('add-account', serviceId),
   switchAccount: (accountId: string) => ipcRenderer.invoke('switch-account', accountId),

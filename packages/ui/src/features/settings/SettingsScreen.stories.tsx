@@ -31,6 +31,7 @@ const meta = {
   args: {
     locale: 'en',
     telemetryEnabled: false,
+    appVersion: '0.0.5',
     onLocaleChange: fn(),
     onTelemetryChange: fn(),
     onClose: fn(),

@@ -5,6 +5,7 @@ import styles from './SettingsScreen.module.css'
 interface SettingsScreenProps {
   locale: string
   telemetryEnabled: boolean
+  appVersion: string
   onLocaleChange: (locale: string) => void
   onTelemetryChange: (enabled: boolean) => void
   onClose: () => void
@@ -15,6 +16,7 @@ interface SettingsScreenProps {
 export function SettingsScreen({
   locale,
   telemetryEnabled,
+  appVersion,
   onLocaleChange,
   onTelemetryChange,
   onClose,
@@ -66,7 +68,7 @@ export function SettingsScreen({
 
       <Section title={t('settings.app_info')}>
         <Row label={t('settings.version')}>
-          <span className={styles.versionText}>0.1.0</span>
+          <span className={styles.versionText}>{appVersion}</span>
         </Row>
       </Section>
     </div>

@@ -155,7 +155,8 @@ test.describe('Settings screen', () => {
   })
 
   test('shows version info', async () => {
-    await expect(page.locator('text=0.1.0')).toBeVisible()
+    const version = await app.evaluate(({ app: electronApp }) => electronApp.getVersion())
+    await expect(page.locator(`text=${version}`)).toBeVisible()
   })
 
   test('show tutorial button re-opens tutorial', async () => {
