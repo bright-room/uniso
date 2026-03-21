@@ -34,7 +34,7 @@ export function AddAccountDialog({ services, onClose, onAdd, t }: AddAccountDial
               className={styles.serviceButton}
             >
               <ServiceIcon
-                src={`/${service.iconResource}`}
+                src={`./${service.iconResource}`}
                 size={36}
                 backgroundColor={serviceIconBackgrounds[service.serviceId] ?? '#ffffff'}
                 borderRadius={d.borderRadius.lg}

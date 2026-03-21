@@ -14,7 +14,7 @@ export function ContentPlaceholder({ account, t }: ContentPlaceholderProps) {
       {account ? (
         <>
           <ServiceIcon
-            src={`/${account.iconResource}`}
+            src={`./${account.iconResource}`}
             size={64}
             backgroundColor={serviceIconBackgrounds[account.serviceId] ?? '#ffffff'}
             borderRadius={16}

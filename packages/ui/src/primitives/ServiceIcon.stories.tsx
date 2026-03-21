@@ -26,7 +26,7 @@ const services = [
 
 export const Default: Story = {
   args: {
-    src: `/${serviceIconFiles.x}`,
+    src: `./${serviceIconFiles.x}`,
     size: 48,
     backgroundColor: '#000000',
     borderRadius: 10,
@@ -39,7 +39,7 @@ export const AllServices: Story = {
       {services.map((service) => (
         <div key={service.id} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <ServiceIcon
-            src={`/${serviceIconFiles[service.id]}`}
+            src={`./${serviceIconFiles[service.id]}`}
             size={48}
             backgroundColor={service.backgroundColor}
             borderRadius={10}
@@ -67,7 +67,7 @@ export const Sizes: Story = {
           {services.map((service) => (
             <ServiceIcon
               key={service.id}
-              src={`/${serviceIconFiles[service.id]}`}
+              src={`./${serviceIconFiles[service.id]}`}
               size={size}
               backgroundColor={service.backgroundColor}
               borderRadius={size * 0.2}
@@ -85,7 +85,7 @@ export const WhiteBackground: Story = {
       {services.map((service) => (
         <ServiceIcon
           key={service.id}
-          src={`/${serviceIconFiles[service.id]}`}
+          src={`./${serviceIconFiles[service.id]}`}
           size={48}
           backgroundColor="#ffffff"
           borderRadius={10}

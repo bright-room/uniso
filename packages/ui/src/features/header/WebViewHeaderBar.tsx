@@ -14,7 +14,7 @@ export function WebViewHeaderBar({ account, currentUrl }: WebViewHeaderBarProps)
   return (
     <div className={styles.header}>
       <ServiceIcon
-        src={`/${account.iconResource}`}
+        src={`./${account.iconResource}`}
         size={18}
         backgroundColor={serviceIconBackgrounds[account.serviceId] ?? '#ffffff'}
         borderRadius={4}

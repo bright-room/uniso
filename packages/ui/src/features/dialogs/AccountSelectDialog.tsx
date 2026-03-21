@@ -35,7 +35,7 @@ export function AccountSelectDialog({
               className={styles.accountButton}
             >
               <ServiceIcon
-                src={`/${account.iconResource}`}
+                src={`./${account.iconResource}`}
                 size={d.serviceIconSize}
                 backgroundColor={serviceIconBackgrounds[account.serviceId] ?? '#ffffff'}
                 borderRadius={d.serviceIconRadius}
