@@ -7,9 +7,11 @@
 ## 使い方
 
 ```
-/review              # main ブランチ全体のコードレビュー
-/review main         # main ブランチ全体のコードレビュー（同上）
-/review develop      # develop ブランチとの差分レビュー
+/review                          # main ブランチ全体のコードレビュー（全カテゴリ）
+/review main                     # main ブランチ全体のコードレビュー（同上）
+/review develop                  # develop ブランチとの差分レビュー（カテゴリ自動選択）
+/review develop --full           # develop ブランチとの差分レビュー（全カテゴリ）
+/review develop --category security,code  # セキュリティとコード品質のみ
 ```
 
 ## レビューモード
@@ -19,23 +21,42 @@
 | `main` 以外のブランチ指定 | ブランチ差分レビュー | 指定ブランチとの差分 |
 | 引数なし or `main` 指定 | コードベース全体レビュー | main ブランチの全コード |
 
+## カテゴリ選択
+
+| 条件 | カテゴリ |
+|------|---------|
+| `--full` 指定 | 全6カテゴリ |
+| `--category` 指定 | 指定されたカテゴリのみ |
+| 全体レビュー | 全6カテゴリ |
+| 差分レビュー（指定なし） | 変更ファイルから自動選択 |
+
+### カテゴリ一覧
+
+| カテゴリ名 | 説明 |
+|-----------|------|
+| `architecture` | モノレポ構成・責務分離・Electron プロセス分離 |
+| `code` | ロジック・命名・TypeScript の型安全性 |
+| `test` | カバレッジ・網羅性・品質（Vitest / Playwright / Storybook） |
+| `security` | Electron セキュリティ・IPC 安全性・WebView 分離・sql.js |
+| `docs` | TSDoc・README・i18n 対応 |
+| `build` | package.json・tsconfig・Biome・electron-builder 設定 |
+
+### 自動選択の例
+
+| 変更ファイル | 選択されるカテゴリ |
+|-------------|-------------------|
+| `apps/desktop/src/main/webview-manager.ts` | architecture, security, code |
+| `packages/ui/src/features/sidebar/Sidebar.tsx` | code |
+| `packages/shared/src/domain/AccountManager.ts` | architecture, code |
+| `biome.json` | build |
+| `apps/desktop/e2e/app.spec.ts` | test |
+
 ## 出力先
 
 | モード | 出力先 |
 |--------|--------|
 | 差分レビュー | `.claude/outputs/reviews/REVIEW-<branch-name>.md` |
 | 全体レビュー | `.claude/outputs/reviews/REVIEW-main-YYYY-MM-DD.md` |
-
-## レビュー結果の構成
-
-1. **総合評価** — 観点別の星評価マトリクス
-2. **レビューサマリ** — 優先度順の指摘事項一覧表 + チェックボックス付き対応チェックリスト
-3. **アーキテクチャレビュー** — モノレポ構成・責務分離・Electron プロセス分離
-4. **プロダクトコードレビュー** — ロジック・命名・TypeScript の型安全性
-5. **テストコードレビュー** — カバレッジ・網羅性・品質 + カバレッジマトリクス（Vitest / Playwright / Storybook）
-6. **セキュリティレビュー** — Electron セキュリティ・IPC 安全性・WebView 分離・機密情報管理
-7. **ドキュメントレビュー** — TSDoc・README・i18n 対応
-8. **ビルド・設定レビュー** — package.json・tsconfig・Biome・electron-builder 設定
 
 ## 指摘の優先度
 
