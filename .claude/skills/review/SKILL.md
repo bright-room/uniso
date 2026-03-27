@@ -1,7 +1,7 @@
 ---
 name: review
 description: コードレビューを実施する。ブランチ差分または main 全体のレビューを行い、ローカルファイルとして出力する。
-argument-hint: "[base-branch] [--category <category>] [--full]"
+argument-hint: "[base-branch] [--category <category>] [--full] [--full-codebase]"
 ---
 
 # Code Review Skill
@@ -17,12 +17,14 @@ argument-hint: "[base-branch] [--category <category>] [--full]"
 
 ## レビューモードの解決ルール
 
-引数と実行環境に応じて、レビューモードを以下の優先順で決定する:
+現在のブランチと引数に応じて、レビューモードを以下の優先順で決定する:
 
 | 条件 | モード | レビュー対象 |
 |------|--------|-------------|
-| `main` 以外のブランチ指定 | **ブランチ差分レビュー** | 指定ブランチとの差分 |
-| 引数なし or `main` 指定 | **コードベース全体レビュー** | main ブランチの全コード |
+| `--full-codebase` 指定 | **コードベース全体レビュー** | main ブランチの全コード |
+| 現在のブランチが `main` 以外 + 引数なし | **main との差分レビュー** | `main` との差分 |
+| 現在のブランチが `main` 以外 + ブランチ指定 | **指定ブランチとの差分レビュー** | 指定ブランチとの差分 |
+| 現在のブランチが `main` + 引数なし | **コードベース全体レビュー** | main ブランチの全コード |
 
 ## カテゴリ選択ルール
 
@@ -32,7 +34,7 @@ argument-hint: "[base-branch] [--category <category>] [--full]"
 |------|---------|
 | `--full` 指定 | 全6カテゴリ |
 | `--category` 指定 | 指定されたカテゴリのみ |
-| 全体レビュー（引数なし or `main`） | 全6カテゴリ |
+| コードベース全体レビュー | 全6カテゴリ |
 | 差分レビュー（カテゴリ指定なし） | **変更ファイルから自動選択**（後述） |
 
 ### 変更ファイルからのカテゴリ自動選択（差分レビュー時のデフォルト）
@@ -70,16 +72,23 @@ argument-hint: "[base-branch] [--category <category>] [--full]"
 
 ### 1. レビュー対象の特定
 
-#### モード A: ブランチ差分レビュー（main 以外のブランチ指定）
+まず現在のブランチを確認する:
+```bash
+git branch --show-current
+```
+
+#### モード A: 差分レビュー
+
+現在のブランチが `main` 以外の場合のデフォルト動作。ベースブランチは引数で指定するか、未指定なら `main` を使用する。
 
 ```bash
-BASE_BRANCH="$ARGUMENTS"
+BASE_BRANCH="${ARGUMENTS:-main}"  # 引数なしなら main
 git diff ${BASE_BRANCH}...HEAD --name-only
 git diff ${BASE_BRANCH}...HEAD
 git log ${BASE_BRANCH}...HEAD --oneline
 ```
 
-#### モード B: コードベース全体レビュー（引数なし or main 指定）
+#### モード B: コードベース全体レビュー（`--full-codebase` 指定、または main ブランチ上で引数なし）
 
 - リポジトリ内のすべての TypeScript/TSX ソースファイル（`*.ts`, `*.tsx`）を読み込む
 - テストファイル、設定ファイル（`package.json`、`tsconfig.*.json`、`biome.json` 等）、ドキュメントも対象とする
