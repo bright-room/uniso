@@ -6,8 +6,6 @@
 
 ## 使い方
 
-### ローカル
-
 ```
 /implement .claude/outputs/plans/PLAN-42-add-threads-support.md
 /implement .claude/outputs/plans/PLAN-42-add-threads-support.md --branch feat/42-add-threads-support
@@ -16,22 +14,12 @@
 
 Markdown ファイルパスの指定が必須。
 
-### GitHub Issue 上（CI 環境）
-
-```
-@claude /implement                          # 現在の Issue の内容で実装
-@claude /implement --branch fix/42-xxx      # 既存ブランチ上で実装
-```
-
-引数なしで、メンションした Issue のコメント内容（実装プラン等）から自動的に実装する。
-
 ## ソースの解決ルール
 
 | 条件 | ソース |
 |------|--------|
 | 引数がファイルパス（`/` を含む or `.md` で終わる） | 指定された Markdown ファイル |
-| 引数なし + `CI=true` | 現在の Issue のコメント内容（実装プランコメント優先） |
-| 引数なし + ローカル | エラー（ソースの指定が必要） |
+| 引数なし | エラー（ソースの指定が必要） |
 
 ### ブランチの動作
 
@@ -57,8 +45,6 @@ Markdown ファイルパスの指定が必須。
 | 実装プランに基づく新規実装 | `/implement .claude/outputs/plans/PLAN-42-xxx.md` |
 | レビュー指摘の修正 | `/implement .claude/outputs/reviews/REVIEW-feat-42-xxx.md --branch feat/42-xxx` |
 | 任意の仕様書に基づく実装 | `/implement docs/spec.md` |
-| Issue 上で実装を依頼 | `@claude /implement` |
-| Issue 上で既存ブランチに修正 | `@claude /implement --branch feat/42-xxx` |
 
 ## 定義ファイル
 
