@@ -9,7 +9,9 @@ import {
   SettingsScreen,
   Sidebar,
   TelemetryConsentDialog,
+  type ThemeMode,
   TutorialScreen,
+  useTheme,
   WebViewHeaderBar,
 } from '@uniso/ui'
 import { useCallback, useEffect, useState } from 'react'
@@ -31,9 +33,11 @@ export function App() {
   const accounts = useAccounts()
   const { t, locale, setLocale } = useI18n()
   const currentUrl = useCurrentUrl()
+  const { setMode } = useTheme()
   const [dialog, setDialog] = useState<DialogState>({ type: 'none' })
   const [services, setServices] = useState<ServicePlugin[]>([])
   const [telemetryEnabled, setTelemetryEnabled] = useState(false)
+  const [themeMode, setThemeMode] = useState<ThemeMode>('dark')
   const [appVersion, setAppVersion] = useState('')
 
   const activeAccount = accounts.find((a) => a.isActive) ?? null
@@ -44,6 +48,15 @@ export function App() {
     window.api.getServicePlugins().then(setServices)
     window.api.getAppVersion().then(setAppVersion)
   }, [])
+
+  // Load theme mode from DB on startup
+  useEffect(() => {
+    window.api.getSetting('theme_mode').then((val) => {
+      const mode: ThemeMode = val === 'light' ? 'light' : 'dark'
+      setThemeMode(mode)
+      setMode(mode)
+    })
+  }, [setMode])
 
   // First-run check: show telemetry consent if tutorial not completed
   useEffect(() => {
@@ -153,6 +166,15 @@ export function App() {
     setDialog({ type: 'tutorial' })
   }, [])
 
+  const handleThemeModeChange = useCallback(
+    (mode: ThemeMode) => {
+      setThemeMode(mode)
+      setMode(mode)
+      window.api.setSetting('theme_mode', mode)
+    },
+    [setMode],
+  )
+
   const handleTelemetryChange = useCallback((enabled: boolean) => {
     setTelemetryEnabled(enabled)
     window.api.setSetting('telemetry_enabled', String(enabled))
@@ -237,9 +259,11 @@ export function App() {
         <SettingsScreen
           locale={locale}
           telemetryEnabled={telemetryEnabled}
+          themeMode={themeMode}
           appVersion={appVersion}
           onLocaleChange={setLocale}
           onTelemetryChange={handleTelemetryChange}
+          onThemeModeChange={handleThemeModeChange}
           onClose={closeDialog}
           onShowTutorial={handleShowTutorial}
           t={t}

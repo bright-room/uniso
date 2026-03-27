@@ -77,5 +77,10 @@
   "context_menu.open_in_browser": "リンクをブラウザで開く",
   "context_menu.back": "戻る",
   "context_menu.forward": "進む",
-  "context_menu.reload": "再読み込み"
+  "context_menu.reload": "再読み込み",
+  "settings.appearance": "外観",
+  "settings.theme": "テーマ",
+  "settings.theme.light": "ライト",
+  "settings.theme.dark": "ダーク",
+  "settings.theme.auto": "自動"
 }
