@@ -50,7 +50,8 @@ argument-hint: "[base-branch] [--category <category>] [--full] [--full-codebase]
 | `packages/ui/src/` | プロダクトコード |
 | `**/*.test.ts`, `**/*.spec.ts`, `**/e2e/`, `**/*.stories.tsx` | テストコード |
 | `package.json`, `tsconfig*.json`, `biome.json`, `electron-builder.yml`, `vite.config.*` | ビルド・設定 |
-| `*.md`, `CLAUDE.md`, `README.md` | ドキュメント |
+| `*.md`, `CLAUDE.md`, `README.md`（`.claude/` 配下を除く） | ドキュメント |
+| `.claude/skills/`, `.claude/rules/` | ドキュメント |
 
 - 1つのファイルが複数カテゴリにマッチする場合はすべて選択する
 - **プロダクトコード**は差分レビュー時に常に含める（最低1カテゴリ）
@@ -79,10 +80,12 @@ git branch --show-current
 
 #### モード A: 差分レビュー
 
-現在のブランチが `main` 以外の場合のデフォルト動作。ベースブランチは引数で指定するか、未指定なら `main` を使用する。
+現在のブランチが `main` 以外の場合のデフォルト動作。
+
+引数から `--category`, `--full`, `--full-codebase` フラグを除いた残りをベースブランチとする。残りが空の場合は `main` をベースブランチとする。
 
 ```bash
-BASE_BRANCH="${ARGUMENTS:-main}"  # 引数なしなら main
+# フラグを除いた残りがベースブランチ（なければ main）
 git diff ${BASE_BRANCH}...HEAD --name-only
 git diff ${BASE_BRANCH}...HEAD
 git log ${BASE_BRANCH}...HEAD --oneline

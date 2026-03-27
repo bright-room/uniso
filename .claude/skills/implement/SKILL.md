@@ -16,7 +16,7 @@ argument-hint: "[markdown-file-path] [--branch <branch-name>]"
 ## 引数
 
 ```
-$ARGUMENTS = [markdown-file-path] [--branch <branch-name>]
+$ARGUMENTS = <markdown-file-path> [--branch <branch-name>]
 ```
 
 - `<markdown-file-path>`: 実装の元となる Markdown ファイルのパス（必須）
