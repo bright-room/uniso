@@ -28,8 +28,10 @@ allowed-tools: Read, Glob, Bash(gh issue list:*), Bash(gh issue create:*), Bash(
 抽出した各展望項目について、既存の Open/Closed Issue と重複していないかを確認する。
 
 ```bash
-gh issue list --state all --json number,title,body,state --limit 200
+gh issue list --state all --json number,title,body,state --limit 500
 ```
+
+Issue が 500 件を超える場合は、タイトルのキーワード検索（`gh issue list --search "<keyword>"`）で絞り込んで重複チェックを行うこと。
 
 重複判定の基準:
 - Issue のタイトルが同じ、またはほぼ同一の内容を指している

@@ -22,7 +22,7 @@ allowed-tools: Bash(gh api:*), Bash(gh issue list:*), Bash(gh issue edit:*)
 マイルストーンの一覧と各マイルストーンの Issue 数を確認する。
 
 ```bash
-gh api repos/{owner}/{repo}/milestones --jq '.[] | select(.state=="open") | {title, open_issues, closed_issues, due_on}'
+gh api repos/:owner/:repo/milestones --jq '.[] | select(.state=="open") | {title, open_issues, closed_issues, due_on}'
 ```
 
 ### 2. マイルストーン未割り当て Issue の特定
@@ -76,7 +76,7 @@ gh api repos/{owner}/{repo}/milestones --jq '.[] | select(.state=="open") | {tit
 - 1つのマイルストーンに Issue が偏りすぎないようにする（目安: 1マイルストーンあたり 5〜8 Issue）
 - マイルストーンの作成:
   ```bash
-  gh api repos/{owner}/{repo}/milestones --method POST --field title="vX.Y.Z"
+  gh api repos/:owner/:repo/milestones --method POST --field title="vX.Y.Z"
   ```
 
 ### 6. Issue のマイルストーン割り当て

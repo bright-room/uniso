@@ -1,7 +1,6 @@
 ---
 name: triage
 description: Issue の棚卸を一括実行する。対応済み Issue のクローズ、ラベル付与、マイルストーン平準化、実装プランからの Issue 作成をすべて行い、棚卸レポートを出力する。
-disable-model-invocation: true
 ---
 
 # Issue Triage Skill
@@ -16,21 +15,39 @@ GitHub Issue の棚卸を一括で行い、プロジェクトの Issue 管理を
 
 ## 手順
 
+各ステップでは、サブスキルの SKILL.md を読み込み、記載された手順に従って実行する。各サブスキルの結果を記録し、最後のレポートに反映すること。
+
 ### 1. 対応済み Issue のクローズ
 
-`close-resolved-issues` スキルの手順に従い、対応済みの Issue を検出してクローズする。
+サブスキルファイル: `.claude/skills/close-resolved-issues/SKILL.md`
+
+1. 上記ファイルを読み込む
+2. 記載された手順に従い、対応済みの Issue を検出してクローズする
+3. クローズした Issue の一覧を記録する
 
 ### 2. 既存 Issue のラベル付与
 
-`label-issues` スキルの手順に従い、ラベル未付与の Issue に種別・優先度ラベルを付与する。
+サブスキルファイル: `.claude/skills/label-issues/SKILL.md`
+
+1. 上記ファイルを読み込む
+2. 記載された手順に従い、ラベル未付与の Issue に種別・優先度ラベルを付与する
+3. ラベルを付与した Issue の一覧を記録する
 
 ### 3. マイルストーンの平準化
 
-`balance-milestones` スキルの手順に従い、マイルストーン未割り当ての Issue にマイルストーンを紐づけ、平準化する。
+サブスキルファイル: `.claude/skills/balance-milestones/SKILL.md`
+
+1. 上記ファイルを読み込む
+2. 記載された手順に従い、マイルストーン未割り当ての Issue にマイルストーンを紐づけ、平準化する
+3. マイルストーンの変更内容を記録する
 
 ### 4. 実装プランの今後の展望からの Issue 作成
 
-`create-issues-from-plans` スキルの手順に従い、実装プランの「今後の展望」から新規 Issue を作成する。
+サブスキルファイル: `.claude/skills/create-issues-from-plans/SKILL.md`
+
+1. 上記ファイルを読み込む
+2. 記載された手順に従い、実装プランの「今後の展望」から新規 Issue を作成する
+3. 作成した Issue の一覧を記録する
 
 ### 5. 棚卸レポートの出力
 
@@ -40,7 +57,7 @@ GitHub Issue の棚卸を一括で行い、プロジェクトの Issue 管理を
 - ファイル名: `TRIAGE-YYYY-MM-DD-HHmmss.md`（実行日時のタイムスタンプ）
   - 例: `TRIAGE-2026-03-28-143025.md`
 
-以下のフォーマットで出力する:
+レポートフォーマット:
 
 ```markdown
 ## 📋 Issue 棚卸レポート
@@ -86,7 +103,7 @@ GitHub Issue の棚卸を一括で行い、プロジェクトの Issue 管理を
 
 ## 注意事項
 
-- 各サブスキルの注意事項に従うこと
+- 各サブスキルの SKILL.md に記載された注意事項にも従うこと
 - Issue のクローズは慎重に行うこと。判断に迷う場合はクローズしない
 - Renovate が管理する Issue（Dependency Dashboard）は操作しない
 - すべての操作は `gh` CLI を通じて行う

@@ -3,7 +3,7 @@ name: close-resolved-issues
 description: 対応済みの GitHub Issue を検出してクローズする。コードベースと PR を確認し、既に実装済み・マージ済みの Issue を自動的に閉じる。「対応済み Issue を閉じて」「解決済みの Issue をクローズして」のようなリクエストで使う。
 context: fork
 agent: general-purpose
-allowed-tools: Bash(gh issue list:*), Bash(gh pr list:*), Bash(gh issue close:*), Bash(git log:*), Read, Glob, Grep
+allowed-tools: Bash(gh issue list:*), Bash(gh issue view:*), Bash(gh pr list:*), Bash(gh issue close:*), Bash(git log:*), Read, Glob, Grep
 ---
 
 # Close Resolved Issues Skill

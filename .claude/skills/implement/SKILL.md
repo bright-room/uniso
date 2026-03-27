@@ -26,11 +26,11 @@ $ARGUMENTS = [markdown-file-path] [--branch <branch-name>]
 
 引数と実行環境に応じて、実装の入力ソースを以下の優先順で決定する:
 
-| 条件 | ソース | 例 |
-|------|--------|-----|
-| 引数がファイルパス（`/` を含む or `.md` で終わる） | 指定された Markdown ファイルを読み込む | `/implement .claude/outputs/plans/PLAN-42-xxx.md` |
-| 引数なし + `CI=true` | 現在の Issue のコメント内容を読み取る | `/implement` |
-| 引数なし + ローカル | エラー（ソースの指定が必要） | — |
+| 条件 | ソース |
+|------|--------|
+| 引数がファイルパス（`/` を含む or `.md` で終わる） | 指定された Markdown ファイルを読み込む |
+| 引数なし + `CI=true` | 現在の Issue のコメント内容を読み取る（`GITHUB_ISSUE_NUMBER` 環境変数から取得） |
+| 引数なし + ローカル | エラー（ソースの指定が必要） |
 
 ### ブランチの動作
 
@@ -43,16 +43,10 @@ $ARGUMENTS = [markdown-file-path] [--branch <branch-name>]
 
 ### 1. 引数の解析
 
-```
-ARGUMENTS = "$ARGUMENTS"
-```
-
 - `--branch` オプションがあればブランチ名を取得する
-- 残りの引数からソース種別を判定する（ファイルパス / Issue 番号 / なし）
+- 残りの引数からソース種別を判定する（ファイルパス / なし）
 
 ### 2. 実装ソースの取得
-
-ソースの解決ルールに従い、実装内容を取得する。
 
 #### パターン A: ファイルパスが指定された場合
 
@@ -60,28 +54,13 @@ ARGUMENTS = "$ARGUMENTS"
 
 #### パターン B: 引数なし + CI 環境
 
-現在の Issue のコンテキストからソースを取得する。
-
-```bash
-# 現在の Issue 番号を取得（GitHub Actions のコンテキストから）
-ISSUE_NUMBER=${GITHUB_ISSUE_NUMBER:-}
-
-# Issue 番号が取得できない場合
-if [ -z "$ISSUE_NUMBER" ]; then
-  echo "Error: Issue number not found in CI context"
-  exit 1
-fi
-
-# Issue 本文とコメントの取得
-gh issue view ${ISSUE_NUMBER} --json body,title,comments
-```
-
-以下の優先順でソースを特定する:
-
-1. Issue コメントの中から「実装プラン」セクション（`## 実装プラン` で始まるコメント）を検索する
-2. 実装プランコメントが見つからない場合は、Issue 本文を実装ソースとして使用する
-3. トリガーとなったコメント（`@claude /implement` を含むコメント）自体に実装指示が含まれている場合は、そのコメント内容も実装ソースに加味する
-4. いずれも実装可能な内容を含まない場合はエラーメッセージを出力して終了する
+1. `GITHUB_ISSUE_NUMBER` 環境変数から Issue 番号を取得する（未設定の場合はエラー）
+2. `gh issue view ${ISSUE_NUMBER} --json body,title,comments` で Issue 本文とコメントを取得する
+3. 以下の優先順でソースを特定する:
+   - Issue コメントの中から「実装プラン」セクション（`## 実装プラン` で始まるコメント）を検索する
+   - 実装プランコメントが見つからない場合は、Issue 本文を実装ソースとして使用する
+   - トリガーとなったコメント（`@claude /implement` を含むコメント）自体に実装指示が含まれている場合は、そのコメント内容も加味する
+   - いずれも実装可能な内容を含まない場合はエラーメッセージを出力して終了する
 
 ### 3. 実装ソースの理解
 
@@ -96,34 +75,15 @@ gh issue view ${ISSUE_NUMBER} --json body,title,comments
 
 #### `--branch` なしの場合（新規実装）
 
-1. `main` ブランチの最新を取得する
-
-```bash
-git fetch origin main
-git checkout main
-git pull origin main
-```
-
-2. ソースの内容からブランチ名を自動生成する
-   - 実装プランの場合: `feat/<issue-number>-<概要のケバブケース>` の形式
-     - 例: Issue #42 "Add Threads support" → `feat/42-add-threads-support`
-   - レビュー指摘修正の場合: `fix/<issue-number>-<概要のケバブケース>` の形式
-   - その他: `feat/<概要のケバブケース>` の形式
-
-3. ブランチを作成する
-
-```bash
-git checkout -b <branch-name>
-```
+1. `main` ブランチの最新を取得し、そこから新規ブランチを作成する
+2. ブランチ名はソースの内容から自動生成する:
+   - 実装プランの場合: `feat/<issue-number>-<概要のケバブケース>`（例: `feat/42-add-threads-support`）
+   - レビュー指摘修正の場合: `fix/<issue-number>-<概要のケバブケース>`
+   - その他: `feat/<概要のケバブケース>`
 
 #### `--branch` ありの場合（既存ブランチでの修正）
 
-1. 指定されたブランチにチェックアウトする
-
-```bash
-git checkout <branch-name>
-git pull origin <branch-name>
-```
+指定されたブランチにチェックアウトし、最新を pull する。
 
 ### 5. コードの実装
 
@@ -158,13 +118,8 @@ git pull origin <branch-name>
 実装完了後、以下を実行する:
 
 ```bash
-# フォーマットとリントの適用
 pnpm lint:fix
-
-# 型チェック
 pnpm typecheck
-
-# ユニットテストの実行
 pnpm test
 ```
 
@@ -177,9 +132,9 @@ pnpm test
 
 - コミットメッセージは変更内容を適切に要約すること
 - 実装プランの場合は Issue 番号をコミットメッセージに含めること
-  - 例: `Close #42: Add Threads support`
+  - 例: `feat: add Threads support (#42)`
 - レビュー指摘修正の場合は修正内容を簡潔に記載すること
-  - 例: `Fix review comments: improve error handling and add missing tests`
+  - 例: `fix: improve error handling and add missing tests`
 - 複数の論理的なまとまりがある場合は、適切にコミットを分割すること
 
 ```bash
@@ -187,7 +142,7 @@ git add <files>
 git commit -m "$(cat <<'EOF'
 <commit message>
 
-Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+Co-Authored-By: Claude <noreply@anthropic.com>
 EOF
 )"
 ```
@@ -202,12 +157,14 @@ EOF
 git push -u origin <branch-name>
 ```
 
-2. PR を作成する
+2. PR を作成する。Issue を紐づける場合は **PR 本文** に `Closes #<issue-number>` を記載する（PR タイトルではなく本文に書くことで GitHub が Issue を自動クローズする）。
 
 ```bash
 gh pr create --title "<PR title>" --body "$(cat <<'EOF'
 ## Summary
 <変更内容の箇条書き>
+
+Closes #<issue-number>
 
 ## Test plan
 <テスト方針のチェックリスト>
@@ -217,19 +174,12 @@ EOF
 )"
 ```
 
-- PR タイトルは Issue を閉じる場合 `Close #<issue-number>: <概要>` の形式にする
 - PR タイトルは 70 文字以内に収めること
-
-3. PR の URL をユーザーに返すこと
+- PR の URL をユーザーに返すこと
 
 #### `--branch` ありの場合（既存ブランチでの修正）
 
 1. リモートに Push する
-
-```bash
-git push origin <branch-name>
-```
-
 2. Push が完了した旨をユーザーに報告すること
 
 ## 注意事項

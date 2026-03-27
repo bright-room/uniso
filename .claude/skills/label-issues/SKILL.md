@@ -3,7 +3,7 @@ name: label-issues
 description: ラベル未付与の GitHub Issue に種別・優先度ラベルを付与する。「ラベルがついてない Issue にラベルをつけて」「Issue のラベル整理して」のようなリクエストで使う。
 context: fork
 agent: general-purpose
-allowed-tools: Bash(gh issue list:*), Bash(gh issue edit:*)
+allowed-tools: Bash(gh issue list:*), Bash(gh issue view:*), Bash(gh issue edit:*)
 ---
 
 # Label Issues Skill
@@ -71,5 +71,6 @@ gh issue edit <issue-number> --add-label "<ラベル1>,<ラベル2>"
 ## 注意事項
 
 - 既にラベルが付いている Issue のラベルは変更しない（この手順はラベル未付与の Issue のみが対象）
-- 判断に迷う場合は `Type: Enhancement` + `Priority: Medium` をデフォルトとする
+- 種別の判断に迷う場合は `Type: Enhancement` をデフォルトとする
+- 優先度の判断に迷う場合は `Priority: Medium` をデフォルトとする。ただし、ユーザーに直接影響する内容であれば `Priority: High` を検討すること
 - ラベルがリポジトリに存在しない場合は付与せず、その旨を報告する
