@@ -184,6 +184,7 @@ packages/ui/src/
 | `CLAUDE.md` | コマンド変更・プロジェクト構成変更 |
 | `.claude/rules/architecture.md` | ドメインマネージャー追加・パッケージ構成変更・IPC チャネル変更 |
 | `.claude/rules/coding.md` | コーディング規約変更 |
+| `.claude/skills/references/project-context.md` | パッケージ構成変更・ビルドコマンド変更・レビュー観点変更 |
 
 ## ラベル・ワークフロー規約
 
