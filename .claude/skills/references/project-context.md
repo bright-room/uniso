@@ -190,4 +190,4 @@ packages/ui/src/
 
 ### Issue/PR ラベルの prefix
 
-`Type:` prefix を使用する（例: `Type: Bug Fix`, `Type: Feature`）。
+`Kind:` prefix を使用する（例: `Kind: Bug Fix`, `Kind: Feature`）。
