@@ -34,7 +34,7 @@
     }
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.8",
+    "@biomejs/biome": "^2.4.10",
     "anti-trojan-source": "^1.8.1"
   }
 }
