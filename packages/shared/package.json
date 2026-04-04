@@ -14,7 +14,7 @@
     "test:watch": "vitest"
   },
   "devDependencies": {
-    "@types/sql.js": "^1.4.10",
+    "@types/sql.js": "^1.4.11",
     "sql.js": "^1.14.1",
     "typescript": "^5.9.3",
     "vitest": "^4.1.2"
