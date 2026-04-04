@@ -6,12 +6,12 @@
   "labels": ["dependencies", "renovate"],
   "prConcurrentLimit": 0,
   "prHourlyLimit": 0,
-  "minimumReleaseAge": "3 days",
+  "minimumReleaseAge": "7 days",
   "rangeStrategy": "bump",
   "postUpdateOptions": ["pnpmDedupe"],
   "automerge": true,
   "major": {
-    "minimumReleaseAge": "7 days",
+    "minimumReleaseAge": "14 days",
     "automerge": false
   },
   "packageRules": [
