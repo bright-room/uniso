@@ -77,5 +77,10 @@
   "context_menu.open_in_browser": "Open link in browser",
   "context_menu.back": "Back",
   "context_menu.forward": "Forward",
-  "context_menu.reload": "Reload"
+  "context_menu.reload": "Reload",
+  "settings.appearance": "Appearance",
+  "settings.theme": "Theme",
+  "settings.theme.light": "Light",
+  "settings.theme.dark": "Dark",
+  "settings.theme.auto": "Auto"
 }
