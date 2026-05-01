@@ -3,7 +3,7 @@
   "private": true,
   "engines": {
     "node": ">=24.15.0",
-    "pnpm": ">=10.33.0"
+    "pnpm": ">=10.33.2"
   },
   "scripts": {
     "dev": "pnpm --filter @uniso/desktop dev",
@@ -34,7 +34,7 @@
     }
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.12",
+    "@biomejs/biome": "^2.4.13",
     "anti-trojan-source": "^1.8.1"
   }
 }
