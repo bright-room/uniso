@@ -1,6 +1,12 @@
 name: Setup Node.js & pnpm
 description: Install pnpm, setup Node.js with cache, and install dependencies
 
+inputs:
+  install-dependencies:
+    description: Whether to run `pnpm install --frozen-lockfile` after setup
+    required: false
+    default: 'true'
+
 runs:
   using: composite
   steps:
@@ -14,5 +20,6 @@ runs:
         cache: pnpm
 
     - name: Install dependencies
+      if: inputs.install-dependencies == 'true'
       shell: bash
       run: pnpm install --frozen-lockfile
