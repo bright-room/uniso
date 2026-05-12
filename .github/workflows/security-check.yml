@@ -40,7 +40,12 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - uses: ./.github/actions/setup-node-pnpm
+        with:
+          install-dependencies: 'false'
+
       - name: Install Aikido Safe Chain
         run: curl -fsSL https://github.com/AikidoSec/safe-chain/releases/latest/download/install-safe-chain.sh | sh -s -- --ci
 
-      - uses: ./.github/actions/setup-node-pnpm
+      - name: Install dependencies under safe-chain
+        run: pnpm install --frozen-lockfile
