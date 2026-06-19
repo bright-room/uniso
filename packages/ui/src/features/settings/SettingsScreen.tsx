@@ -1,13 +1,16 @@
 import type { ReactNode } from 'react'
+import type { ThemeMode } from '../../theme/ThemeContext'
 import { ToggleSwitch } from '../../primitives/ToggleSwitch'
 import styles from './SettingsScreen.module.css'
 
 interface SettingsScreenProps {
   locale: string
   telemetryEnabled: boolean
+  themeMode: ThemeMode
   appVersion: string
   onLocaleChange: (locale: string) => void
   onTelemetryChange: (enabled: boolean) => void
+  onThemeModeChange: (mode: ThemeMode) => void
   onClose: () => void
   onShowTutorial: () => void
   t: (key: string) => string
@@ -16,9 +19,11 @@ interface SettingsScreenProps {
 export function SettingsScreen({
   locale,
   telemetryEnabled,
+  themeMode,
   appVersion,
   onLocaleChange,
   onTelemetryChange,
+  onThemeModeChange,
   onClose,
   onShowTutorial,
   t,
@@ -47,6 +52,20 @@ export function SettingsScreen({
           <button className={styles.showTutorialButton} onClick={onShowTutorial}>
             {t('settings.show_tutorial')}
           </button>
+        </Row>
+      </Section>
+
+      <Section title={t('settings.appearance')}>
+        <Row label={t('settings.theme')}>
+          <div className={styles.themeToggle}>
+            <span className={styles.themeLabel}>
+              {themeMode === 'light' ? t('settings.theme.light') : t('settings.theme.dark')}
+            </span>
+            <ToggleSwitch
+              checked={themeMode === 'light'}
+              onChange={(checked) => onThemeModeChange(checked ? 'light' : 'dark')}
+            />
+          </div>
         </Row>
       </Section>
 

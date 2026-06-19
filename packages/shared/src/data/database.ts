@@ -76,6 +76,7 @@ const SEED_SETTINGS = `
 INSERT OR IGNORE INTO settings (key, value) VALUES ('locale', '');
 INSERT OR IGNORE INTO settings (key, value) VALUES ('telemetry_enabled', 'false');
 INSERT OR IGNORE INTO settings (key, value) VALUES ('tutorial_completed', 'false');
+INSERT OR IGNORE INTO settings (key, value) VALUES ('theme_mode', 'dark');
 INSERT OR IGNORE INTO settings (key, value) VALUES ('webview_suspend_timeout_ms', '300000');
 INSERT OR IGNORE INTO settings (key, value) VALUES ('max_background_webviews', '3');
 `
