@@ -2,8 +2,8 @@
   "name": "uniso",
   "private": true,
   "engines": {
-    "node": ">=24.15.0",
-    "pnpm": ">=10.33.2"
+    "node": ">=24.17.0",
+    "pnpm": ">=10.34.3"
   },
   "scripts": {
     "dev": "pnpm --filter @uniso/desktop dev",
@@ -34,7 +34,7 @@
     }
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.13",
-    "anti-trojan-source": "^1.8.1"
+    "@biomejs/biome": "^2.5.0",
+    "anti-trojan-source": "^1.11.4"
   }
 }
